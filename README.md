@@ -142,3 +142,78 @@ Portal disponible en: `http://localhost:4200`
 2. Sincronizar Gradle.
 3. Definir la IP local o dominio en la configuracion de Retrofit (`BASE_URL`).
 4. Ejecutar en emulador o dispositivo fisico 
+
+Diagrama de Arquitectura General
+
+
+```mermaid
+flowchart TB
+    subgraph MOVIL["📱 App Móvil - Android (Kotlin)"]
+        UI[Activities / Fragments]
+        RV[RecyclerView + Adapters]
+        RETRO[Retrofit Client]
+        ROOM[(SQLite / Room)]
+        UI --> RV
+        UI --> RETRO
+        UI --> ROOM
+    end
+
+    subgraph WEB["💻 Portal Web Admin (Angular 17+)"]
+        COMP[Componentes / Módulos]
+        SERV[Servicios HTTP - RxJS]
+        COMP --> SERV
+    end
+
+    subgraph BACK["⚙️ Backend - Spring Boot"]
+        CTRL[Controllers REST]
+        SEC[Spring Security]
+        JPA[Spring Data JPA]
+        SWAG[Swagger Docs]
+        CTRL --> SEC
+        CTRL --> JPA
+    end
+
+    subgraph DATA["☁️ Base de Datos en la Nube"]
+        DB[(MySQL / PostgreSQL)]
+    end
+
+    RETRO -- "HTTP / REST\nJSON" --> CTRL
+    SERV -- "HTTP / REST\nJSON" --> CTRL
+    ROOM -. "Sync diferido\n(offline-first)" .-> RETRO
+    JPA --> DB
+
+    classDef mobile fill:#a8dadc,stroke:#1d3557,stroke-width:1px,color:#1d3557;
+    classDef web fill:#f1faee,stroke:#457b9d,stroke-width:1px,color:#1d3557;
+    classDef backend fill:#457b9d,stroke:#1d3557,stroke-width:1px,color:#fff;
+    classDef data fill:#e63946,stroke:#1d3557,stroke-width:1px,color:#fff;
+
+    class UI,RV,RETRO,ROOM mobile;
+    class COMP,SERV web;
+    class CTRL,SEC,JPA,SWAG backend;
+    class DB data;
+```
+
+
+Diagrama de flujo offline-first (opcional, refuerza el punto de SQLite/sincronización
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant App as App Android
+    participant DB as SQLite Local
+    participant API as API Spring Boot
+    participant Cloud as BD en la Nube
+
+    U->>App: Resuelve "Evaluar mi nivel"
+    App->>DB: INSERT resultado local
+    Note over App,DB: Funciona sin conexión
+    U->>App: Presiona "Sincronizar"
+    App->>DB: SELECT registros pendientes
+    App->>API: POST /api/evaluaciones/sincronizar
+    API->>Cloud: Persiste resultados
+    Cloud-->>API: OK
+    API-->>App: Confirmación
+    App->>DB: UPDATE estado = sincronizado
+```
+
+
