@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFF">
+
+    <!-- HEADER -->
+    <include
+        android:id="@+id/header"
+        layout="@layout/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- SUBHEADER: Slogan + Omitir -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clSubheader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="4dp"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <TextView
+            android:id="@+id/tvSlogan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.1"
+            android:text="@string/slogan_text"
+            android:textColor="@color/text_gray"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.8" />
+
+        <TextView
+            android:id="@+id/tvOmitir"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/txtOmitir"
+            android:textColor="@color/purple"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- VIEWPAGER ONBOARDING -->
+    <!-- INDICADOR DE PUNTOS -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPagerOnboarding"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/indicadorPuntos"
+        app:layout_constraintTop_toBottomOf="@id/clSubheader"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp" />
+
+    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+        android:id="@+id/indicadorPuntos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        app:dotsColor="#EAEAF4"
+        app:dotsCornerRadius="4dp"
+        app:dotsSize="8dp"
+        app:dotsSpacing="6dp"
+        app:dotsWidthFactor="3.5"
+        app:layout_constraintBottom_toTopOf="@id/btnEmpezarCamino"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:progressMode="false"
+        app:selectedDotColor="@color/purple" />
+
+    <!-- BOTÓN CTA: Empezar Camino / Continuar -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEmpezarCamino"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="24dp"
+        android:text="Continuar"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/purple"
+        app:cornerRadius="12dp"
+        app:icon="@drawable/ic_arrow_right_white"
+        app:iconGravity="textEnd"
+        app:iconPadding="8dp"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toTopOf="@id/tvYaTienesCuenta"
+        tools:layout_editor_absoluteX="24dp" />
+
+    <!-- TEXTO: Ya tienes cuenta -->
+    <TextView
+        android:id="@+id/tvYaTienesCuenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="48dp"
+        android:textColor="@color/text_gray"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="@string/txtYaTienesCuenta" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
