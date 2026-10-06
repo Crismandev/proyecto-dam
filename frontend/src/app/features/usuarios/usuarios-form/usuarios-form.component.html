@@ -1,0 +1,47 @@
+<div class="page-header">
+  <h1>{{ isEditing ? 'Editar Usuario' : 'Nuevo Usuario' }}</h1>
+  <button class="btn btn-secondary" (click)="goBack()">Volver</button>
+</div>
+
+<div class="card" style="max-width: 600px;">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    
+    <div class="d-flex gap-2">
+      <div class="form-group" style="flex: 1;">
+        <label>Nombres <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" formControlName="nombres"
+               [class.is-invalid]="form.controls.nombres.invalid && form.controls.nombres.touched">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Apellidos</label>
+        <input type="text" class="form-control" formControlName="apellidos">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Correo Electrónico <span class="text-danger">*</span></label>
+      <input type="email" class="form-control" formControlName="correo"
+             [class.is-invalid]="form.controls.correo.invalid && form.controls.correo.touched">
+    </div>
+
+    <div class="form-group">
+      <label>Rol <span class="text-danger">*</span></label>
+      <select class="form-control" formControlName="idRol"
+              [class.is-invalid]="form.controls.idRol.invalid && form.controls.idRol.touched">
+        <option [ngValue]="null">Seleccione un rol</option>
+        <option *ngFor="let rol of roles()" [ngValue]="rol.idRol">{{ rol.nombreRol }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Contraseña <span class="text-danger" *ngIf="!isEditing">*</span></label>
+      <input type="password" class="form-control" formControlName="contrasena"
+             [class.is-invalid]="form.controls.contrasena.invalid && form.controls.contrasena.touched">
+      <small class="text-muted" *ngIf="isEditing">Dejar en blanco para mantener la contraseña actual.</small>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar Usuario</button>
+    </div>
+  </form>
+</div>

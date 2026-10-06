@@ -1,0 +1,312 @@
+@import 'styles/variables';
+
+.stats-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+
+  .stat-card {
+    position: relative;
+    overflow: hidden;
+    background: #FFFFFF;
+    border: 1px solid rgba($border-color, 0.8);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+
+      .icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: $radius-md;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+      }
+
+      .trend-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 99px;
+
+        &.positive {
+          background-color: rgba(16, 185, 129, 0.1);
+          color: #047857;
+        }
+        &.neutral {
+          background-color: rgba(6, 182, 212, 0.1);
+          color: #0891B2;
+        }
+        &.info {
+          background-color: rgba(245, 158, 11, 0.1);
+          color: #D97706;
+        }
+      }
+    }
+
+    .stat-body {
+      .stat-value {
+        font-family: $font-heading;
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: $text-heading;
+        line-height: 1;
+        margin-bottom: 0.375rem;
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: $text-muted;
+      }
+    }
+
+    // Color themes
+    &.color-indigo .icon-wrapper {
+      background: rgba(99, 102, 241, 0.1);
+      color: $primary;
+    }
+    &.color-cyan .icon-wrapper {
+      background: rgba(6, 182, 212, 0.1);
+      color: $accent-cyan;
+    }
+    &.color-emerald .icon-wrapper {
+      background: rgba(16, 185, 129, 0.1);
+      color: $accent-emerald;
+    }
+    &.color-amber .icon-wrapper {
+      background: rgba(245, 158, 11, 0.1);
+      color: $accent-amber;
+    }
+  }
+}
+
+.main-widgets {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr;
+  gap: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.widget-header {
+  margin-bottom: 1.5rem;
+
+  h3 {
+    font-size: 1.15rem;
+    color: $text-heading;
+  }
+
+  .widget-sub {
+    font-size: 0.825rem;
+    color: $text-muted;
+    margin-top: 0.15rem;
+  }
+}
+
+// Modern Bar Chart
+.chart-widget {
+  .bar-chart {
+    height: 320px;
+    display: flex;
+    align-items: flex-end;
+    border-bottom: 2px solid $bg-subtle;
+    padding-bottom: 10px;
+    padding-top: 20px;
+  }
+
+  .chart-bars {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  .bar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    flex: 1;
+    max-width: 70px;
+  }
+
+  .bar-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .bar {
+    width: 100%;
+    max-width: 44px;
+    background: linear-gradient(180deg, $primary 0%, #4338CA 100%);
+    border-radius: $radius-sm $radius-sm 0 0;
+    position: relative;
+    transition: height 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+
+    &:hover {
+      background: linear-gradient(180deg, $accent-cyan 0%, $primary 100%);
+
+      .bar-val {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-2px);
+      }
+    }
+
+    .bar-val {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: $primary;
+      background: #FFFFFF;
+      padding: 0.15rem 0.5rem;
+      border-radius: 99px;
+      box-shadow: $shadow-sm;
+      transition: all 0.2s ease;
+    }
+  }
+
+  .bar-label {
+    margin-top: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $text-muted;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+}
+
+// Activity Timeline
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .timeline-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+
+    .timeline-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(16, 185, 129, 0.12);
+      color: #059669;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+
+      &.new-user {
+        background: rgba(99, 102, 241, 0.12);
+        color: $primary;
+      }
+    }
+
+    .timeline-content {
+      flex: 1;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba($border-color, 0.5);
+
+      .act-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .act-title {
+          font-weight: 700;
+          font-size: 0.9rem;
+          color: $text-heading;
+        }
+
+        .act-time {
+          font-size: 0.75rem;
+          color: $text-muted;
+          font-weight: 500;
+        }
+      }
+
+      .act-desc {
+        color: $text-muted;
+        font-size: 0.85rem;
+        margin-top: 0.2rem;
+      }
+    }
+
+    &:last-child .timeline-content {
+      border-bottom: none;
+    }
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  color: $text-muted;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.4;
+  }
+
+  p {
+    font-size: 0.9rem;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  color: $text-muted;
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba($primary, 0.15);
+    border-top-color: $primary;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 1rem;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

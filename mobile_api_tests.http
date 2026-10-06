@@ -1,0 +1,64 @@
+### TechMentor Mobile API Tests
+# Usar extensión REST Client de VS Code
+
+@host = http://localhost:8080
+@token = {{login.response.body.token}}
+
+### 1. Login (Retorna el token JWT)
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "correo": "luis@correo.com",
+  "contrasena": "Luis12345*"
+}
+
+### 2. Obtener Perfil del estudiante
+GET {{host}}/api/mobile/perfil
+Authorization: Bearer {{token}}
+
+### 3. Listar Cursos Activos
+GET {{host}}/api/mobile/cursos
+Authorization: Bearer {{token}}
+
+### 4. Obtener Ruta de un Curso (Ej. Curso ID 1: APIs con Spring Boot)
+GET {{host}}/api/mobile/cursos/1/ruta
+Authorization: Bearer {{token}}
+
+### 5. Obtener Detalle de una Lección (Ej. Lección ID 1)
+GET {{host}}/api/mobile/lecciones/1
+Authorization: Bearer {{token}}
+
+### 6. Evaluar Ejercicio de Opción Múltiple
+# Ejercicio 1 de APIs. Opción 1 es REST, que debería ser la correcta en el seed data
+POST {{host}}/api/mobile/evaluacion
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "idEjercicio": 1,
+  "idOpcionSeleccionada": 1
+}
+
+### 7. Procesar Entrevista del Mentor Virtual
+POST {{host}}/api/mobile/entrevista
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "idEjercicio": 4,
+  "inputEstudiante": "Podemos usar la anotación @RestController y definir endpoints que devuelven JSON."
+}
+
+### 8. Sincronizar Progreso de Lección
+POST {{host}}/api/mobile/progreso/sincronizar
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "idLeccion": 1,
+  "xpGanado": 30,
+  "preguntasCorrectas": 3,
+  "preguntasIncorrectas": 0
+}

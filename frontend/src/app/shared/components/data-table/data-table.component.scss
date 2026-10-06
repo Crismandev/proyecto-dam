@@ -1,0 +1,92 @@
+@import 'styles/variables';
+
+.table-responsive {
+  overflow-x: auto;
+  border-radius: $radius-md;
+  border: 1px solid $border-color;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+
+  th, td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid $border-color;
+  }
+
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: $text-muted;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover {
+    background-color: rgba(0,0,0,0.02);
+  }
+}
+
+.empty-state {
+  padding: 3rem !important;
+  color: $text-muted;
+  text-align: center;
+}
+
+.actions-col {
+  width: 150px;
+  white-space: nowrap;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.2s;
+
+  &:hover { background: #f0f0f0; }
+  &.btn-delete:hover { background: rgba($accent-red, 0.1); }
+}
+
+.badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  
+  &-success { background: rgba($accent-green, 0.1); color: $accent-green; }
+  &-danger { background: rgba($accent-red, 0.1); color: $accent-red; }
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding: 0 0.5rem;
+
+  .page-info {
+    color: $text-muted;
+    font-size: 0.9rem;
+  }
+
+  .page-controls {
+    display: flex;
+    gap: 0.5rem;
+    
+    button {
+      padding: 0.4rem 1rem;
+      font-size: 0.9rem;
+    }
+  }
+}

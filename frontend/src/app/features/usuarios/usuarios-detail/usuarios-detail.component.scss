@@ -1,0 +1,94 @@
+@import 'styles/variables';
+
+.header-card {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+
+  .avatar-large {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: $primary;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+
+  .info-large {
+    h2 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    .correo {
+      color: $text-muted;
+      margin: 0.25rem 0 1rem 0;
+      font-size: 1.1rem;
+    }
+    .badges {
+      display: flex;
+      gap: 0.5rem;
+
+      .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+
+        &-success { background-color: rgba($accent-green, 0.1); color: $accent-green; }
+        &-primary { background-color: rgba($primary, 0.1); color: $primary; }
+        &-orange { background-color: rgba($accent-orange, 0.1); color: darken($accent-orange, 15%); }
+      }
+    }
+  }
+}
+
+.tabs-container {
+  margin-top: 2rem;
+
+  .tabs-nav {
+    display: flex;
+    gap: 1rem;
+    border-bottom: 2px solid $border-color;
+    margin-bottom: -2px; // overlap border
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 1rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: $text-muted;
+      cursor: pointer;
+      position: relative;
+
+      &.active {
+        color: $primary;
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -2px;
+          left: 0;
+          right: 0;
+          height: 3px;
+          background-color: $primary;
+          border-radius: 3px 3px 0 0;
+        }
+      }
+
+      &:hover:not(.active) {
+        color: $text-main;
+      }
+    }
+  }
+
+  .tab-content {
+    border-top-left-radius: 0; // if first tab is active
+    padding: 2rem;
+  }
+}

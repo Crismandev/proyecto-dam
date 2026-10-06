@@ -1,45 +1,20 @@
-# Entorno de desarrollo Android
-*.iml
-.gradle/
+# Compiled outputs
+backend/target/
+frontend/dist/
+frontend/tmp/
+frontend/out-tsc/
+
+# Node dependencies
+node_modules/
+frontend/node_modules/
+
+# Angular cache
+.angular/
+frontend/.angular/
+
+# IDE and OS files
 .idea/
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/gradle.xml
-.idea/assetWizardSettings.xml
-.idea/dictionaries
-.idea/libraries
-.idea/caches
-.idea/modules.xml
-
-# Archivos de compilación y generados por Gradle
-build/
-*/build/
-captures/
-.externalNativeBuild
-.cxx
-*.apk
-*.ap_
-*.aab
-
-# Configuraciones locales y variables de entorno
-local.properties
-gradle-local.properties
-
-# Keystores y credenciales de firma (Datos sensibles)
-*.jks
-*.keystore
-*keystore.properties
-key.properties
-
-# Archivos de Google Services
-google-services.json
-
-# Logs y archivos del sistema operativo
-*.log
-.DS_Store
-Thumbs.db
-
-# Archivos temporales
-*~
+.vscode/
 *.swp
-# -----------------------------------------------------------------------
+*.DS_Store
+Thumbs.db
