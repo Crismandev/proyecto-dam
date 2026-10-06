@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">TechMentor</string>
+    <string name="demo_badge">DEMO</string>
+    <string name="slogan_text">APRENDE · PRACTICA · AVANZA</string>
+    <string name="skip_text">Omitir</string>
+    <string name="continue_button">Continuar →</string>
+    <string name="already_have_account_full">¿Ya tienes cuenta? Inicia sesión</string>
+    <string name="txtDemo">DEMO</string>
+    <string name="txtOmitir">Omitir</string>
+    <string name="txtYaTienesCuenta">Ya tienes cuenta? Inicia sesión</string>
+    <string name="txtDeLaTeoria">De la teoría a lo que puedes crear</string>
+    <string name="txtExploraReact">Explora React, bases de datos, APIs y desarrollo móvil.</string>
+    <string name="txtAprendeTecnologia">Aprende tecnología y prepárate para tu próxima oportunidad a tu ritmo.</string>
+    <string name="txtTuFuturoTech">Tu futuro tech/n empieza aquí</string>
+</resources>
