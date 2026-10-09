@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "280934530964",
+    "project_id": "techmentor-6644f",
+    "storage_bucket": "techmentor-6644f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280934530964:android:eedb0dafd8136082e11981",
+        "android_client_info": {
+          "package_name": "pe.edu.cibertec.techmentor"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280934530964-d3hvs0727a880kv6isfq7r7u3o2sutvf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pe.edu.cibertec.techmentor",
+            "certificate_hash": "497d799129773d702237b48e24571563abb7735c"
+          }
+        },
+        {
+          "client_id": "280934530964-k52vc5tdtjbkhrakqni374v3joqse3a3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAC_qRtt0XKthmwfukmyCGQeRpp9ThG5hw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280934530964-k52vc5tdtjbkhrakqni374v3joqse3a3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

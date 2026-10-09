@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TechMentor</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="default_web_client_id">280934530964-k52vc5tdtjbkhrakqni374v3joqse3a3.apps.googleusercontent.com</string>
+</resources>

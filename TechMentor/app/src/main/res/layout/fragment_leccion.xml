@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp">
+
+        <!-- Encabezado -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🚀 LECCIÓN 1"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tvTituloLeccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Introducción a las APIs"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginTop="8dp" />
+
+        <!-- Progreso -->
+
+        <TextView
+            android:id="@+id/tvProgresoLeccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lección 1 de 4"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginTop="8dp" />
+
+        <ProgressBar
+            android:id="@+id/progresoLeccion"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:max="100"
+            android:progress="25"
+            android:layout_marginTop="8dp" />
+
+        <!-- Concepto -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🌐 ¿Qué es una API?"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:layout_marginTop="28dp" />
+
+        <TextView
+            android:id="@+id/tvContenidoLeccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Contenido de la lección"
+            android:textSize="16sp"
+            android:lineSpacingExtra="6dp"
+            android:layout_marginTop="10dp" />
+
+        <!-- Ejemplo -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="💡 EJEMPLO"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="28dp" />
+
+        <TextView
+            android:id="@+id/tvEjemploLeccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ejemplo de una API"
+            android:textSize="16sp"
+            android:lineSpacingExtra="6dp"
+            android:layout_marginTop="10dp" />
+
+        <!-- Para recordar -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🧠 PARA RECORDAR"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="28dp" />
+
+        <TextView
+            android:id="@+id/tvRecordarLeccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Idea principal"
+            android:textSize="16sp"
+            android:lineSpacingExtra="6dp"
+            android:layout_marginTop="10dp" />
+
+        <!-- Completar -->
+
+        <Button
+            android:id="@+id/btnCompletarLeccion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✓  MARCAR COMO COMPLETADA"
+            android:layout_marginTop="32dp" />
+
+    </LinearLayout>
+
+</ScrollView>

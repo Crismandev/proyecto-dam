@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp">
+
+        <!-- ====================================== -->
+        <!-- ENCABEZADO -->
+        <!-- ====================================== -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hola, Luis 👋"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="¿Qué quieres lograr hoy?"
+                    android:textSize="15sp"
+                    android:layout_marginTop="4dp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCerrarSesion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cerrar sesión"
+                android:textSize="13sp"
+                android:padding="8dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+        </LinearLayout>
+
+
+        <!-- ====================================== -->
+        <!-- MI PROGRESO -->
+        <!-- ====================================== -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mi progreso"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="#F2F6FF">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Cursos completados"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvCursosCompletados"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0 cursos"
+                android:textSize="14sp"
+                android:layout_marginTop="5dp" />
+
+            <ProgressBar
+                android:id="@+id/progresoGeneral"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:max="100"
+                android:progress="0"
+                android:layout_marginTop="12dp" />
+
+            <TextView
+                android:id="@+id/tvPorcentajeGeneral"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0% completado"
+                android:textSize="14sp"
+                android:layout_marginTop="5dp" />
+
+        </LinearLayout>
+
+
+        <!-- ====================================== -->
+        <!-- CONTINÚA TU CURSO -->
+        <!-- ====================================== -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Continúa tu curso"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="#F2F6FF">
+
+            <!-- Nombre del curso -->
+
+            <TextView
+                android:id="@+id/tvCursoContinuar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="APIs con Spring Boot"
+                android:textSize="19sp"
+                android:textStyle="bold" />
+
+            <!-- Nivel -->
+
+            <TextView
+                android:id="@+id/tvNivelContinuar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nivel Básico"
+                android:textSize="14sp"
+                android:layout_marginTop="5dp" />
+
+            <!-- Progreso -->
+
+            <TextView
+                android:id="@+id/tvProgresoContinuar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0% completado"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp" />
+
+            <ProgressBar
+                android:id="@+id/progresoContinuar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:max="100"
+                android:progress="0"
+                android:layout_marginTop="8dp" />
+
+            <!-- Siguiente lección -->
+
+            <TextView
+                android:id="@+id/tvSiguienteLeccion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Siguiente: Introducción a las APIs"
+                android:textSize="15sp"
+                android:layout_marginTop="10dp" />
+
+            <!-- Botón -->
+
+            <Button
+                android:id="@+id/btnContinuarCurso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CONTINUAR"
+                android:layout_marginTop="14dp" />
+
+        </LinearLayout>
+
+
+        <!-- ====================================== -->
+        <!-- GAMIFICACIÓN -->
+        <!-- ====================================== -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gamificación"
+            android:textSize="21sp"
+            android:textStyle="bold"
+            android:layout_marginTop="28dp"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="18dp"
+            android:background="#F2F6FF">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🏆 ¡Sigue avanzando!"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Consulta tus logros, puntos y recompensas."
+                android:textSize="14sp"
+                android:layout_marginTop="5dp" />
+
+            <Button
+                android:id="@+id/btnVerLogros"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="VER LOGROS"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
