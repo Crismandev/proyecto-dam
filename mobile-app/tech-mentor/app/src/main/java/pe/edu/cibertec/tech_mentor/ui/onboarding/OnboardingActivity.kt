@@ -14,7 +14,7 @@ import androidx.viewpager2.widget.ViewPager2
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.ActivityOnboardingBinding
 import pe.edu.cibertec.tech_mentor.ui.login.LoginActivity
-import pe.edu.cibertec.tech_mentor.ui.register.RegistroActivity
+import pe.edu.cibertec.tech_mentor.ui.register.RegisterActivity
 
 class OnboardingActivity : AppCompatActivity() {
 
@@ -88,14 +88,14 @@ class OnboardingActivity : AppCompatActivity() {
             if (nextItem < onboardingAdapter.itemCount) {
                 binding.viewPagerOnboarding.currentItem = nextItem
             } else {
-                val intent = Intent(this, RegistroActivity::class.java)
+                val intent = Intent(this, RegisterActivity::class.java)
                 startActivity(intent)
                 finish()
             }
         }
 
         binding.tvOmitir.setOnClickListener {
-            startActivity(Intent(this, RegistroActivity::class.java))
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 

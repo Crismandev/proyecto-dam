@@ -3,10 +3,11 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="purple">#7C4DFF</color>
+    <color name="gray_light">#e9e4f2</color>
     <color name="text_dark">#1E1E38</color>
     <color name="text_gray">#8E8E9F</color>
     <color name="text_gray_medium">#7A7A9D</color>
-    <color name="bg_light">#FAFAFF</color>
+    <color name="bg_light">#f7f6fc</color>
     <color name="bg_purple">#eee8fc</color>
     <color name="green">#137553</color>
     <color name="bg_green">#e5f7ee</color>

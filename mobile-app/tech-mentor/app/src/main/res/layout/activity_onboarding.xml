@@ -5,7 +5,7 @@
     android:id="@+id/clRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFF">
+    android:background="@color/bg_light">
 
     <!-- HEADER -->
     <include
@@ -28,10 +28,11 @@
             android:id="@+id/tvSlogan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/plus_jakarta_sans_bold"
             android:letterSpacing="0.1"
-            android:text="@string/slogan_text"
+            android:text="@string/desc_slogan"
             android:textColor="@color/text_gray"
-            android:textSize="11sp"
+            android:textSize="10sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,9 +43,10 @@
             android:id="@+id/tvOmitir"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/txtOmitir"
+            android:fontFamily="@font/plus_jakarta_sans_bold"
+            android:text="@string/action_skip"
             android:textColor="@color/purple"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,14 +81,18 @@
         app:progressMode="false"
         app:selectedDotColor="@color/purple" />
 
-    <!-- BOTÓN CTA: Empezar Camino / Continuar -->
+    <!-- BOTÓN: Empezar Camino / Continuar -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnEmpezarCamino"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_marginHorizontal="24dp"
         android:layout_marginBottom="24dp"
-        android:text="Continuar"
+        android:fontFamily="@font/plus_jakarta_sans_extrabold"
+        android:includeFontPadding="false"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="@string/action_continue"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textSize="16sp"
@@ -106,12 +112,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="48dp"
+        android:fontFamily="@font/plus_jakarta_sans_medium"
         android:textColor="@color/text_gray"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/txtYaTienesCuenta" />
+        tools:text="@string/btn_already_have_account" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
