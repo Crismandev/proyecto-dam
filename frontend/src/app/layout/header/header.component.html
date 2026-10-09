@@ -1,0 +1,23 @@
+<header class="top-header">
+  <div class="header-left">
+    <div class="status-indicator">
+      <span class="pulse-dot"></span>
+      <span class="status-text">Backend Online</span>
+    </div>
+  </div>
+  
+  <div class="header-right">
+    <div class="header-user">
+      <div class="user-info">
+        <span class="user-email">{{ user()?.correo || 'admin@techmentor.com' }}</span>
+        <span class="user-role-badge">
+          <i class="ri-shield-star-line"></i>
+          {{ user()?.rol || 'ADMINISTRADOR' }}
+        </span>
+      </div>
+      <div class="user-avatar">
+        {{ user()?.correo?.charAt(0)?.toUpperCase() || 'A' }}
+      </div>
+    </div>
+  </div>
+</header>

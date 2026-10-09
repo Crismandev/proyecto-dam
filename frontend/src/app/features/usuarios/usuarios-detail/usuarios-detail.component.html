@@ -1,0 +1,76 @@
+<div class="page-header">
+  <h1>Perfil del Estudiante</h1>
+  <button class="btn btn-secondary" (click)="goBack()">Volver a Usuarios</button>
+</div>
+
+<div *ngIf="alumno() as a; else loading">
+  <div class="card header-card">
+    <div class="avatar-large">{{ a.nombres.charAt(0) }}</div>
+    <div class="info-large">
+      <h2>{{ a.nombres }} {{ a.apellidos }}</h2>
+      <p class="correo">{{ a.correo }}</p>
+      <div class="badges">
+        <span class="badge badge-success">XP Total: {{ a.xpTotal }}</span>
+        <span class="badge badge-primary">Nivel Actual: {{ a.nivelActual }}</span>
+        <span class="badge badge-orange">Racha: {{ a.rachaDias }} días</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs-container">
+    <div class="tabs-nav">
+      <button class="tab-btn" [class.active]="activeTab() === 'progreso'" (click)="activeTab.set('progreso')">
+        Progreso General
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'cursos'" (click)="activeTab.set('cursos')">
+        Cursos Inscritos
+      </button>
+      <button class="tab-btn" [class.active]="activeTab() === 'datos'" (click)="activeTab.set('datos')">
+        Datos Adicionales
+      </button>
+    </div>
+
+    <div class="tab-content card">
+      <!-- Tab Progreso -->
+      <div *ngIf="activeTab() === 'progreso'">
+        <h3>Últimas Lecciones Completadas</h3>
+        <table class="table" style="width: 100%; border-collapse: collapse; margin-top: 1rem;">
+          <thead>
+            <tr>
+              <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd;">Curso</th>
+              <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd;">Lección</th>
+              <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd;">XP Ganado</th>
+              <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid #ddd;">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of a.progresos">
+              <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ p.curso }}</td>
+              <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ p.leccion }}</td>
+              <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">+{{ p.xpGanado }}</td>
+              <td style="padding: 0.5rem; border-bottom: 1px solid #eee;">{{ p.fecha | date:'short' }}</td>
+            </tr>
+            <tr *ngIf="!a.progresos || a.progresos.length === 0">
+              <td colspan="4" style="text-align: center; padding: 1rem; color: #666;">No hay progreso registrado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Tab Cursos -->
+      <div *ngIf="activeTab() === 'cursos'">
+        <p style="color: #666; font-style: italic;">Información detallada de avance por curso en desarrollo...</p>
+      </div>
+
+      <!-- Tab Datos -->
+      <div *ngIf="activeTab() === 'datos'">
+        <p><strong>Fecha de Registro:</strong> {{ a.fechaRegistro | date:'longDate' }}</p>
+        <p><strong>ID Usuario:</strong> {{ a.idUsuario }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <p>Cargando información del estudiante...</p>
+</ng-template>

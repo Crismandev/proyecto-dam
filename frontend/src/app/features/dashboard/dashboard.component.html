@@ -1,0 +1,130 @@
+<div class="page-header">
+  <div>
+    <h1>Dashboard Administrativo</h1>
+    <p>Bienvenido de nuevo al panel de gestión pedagógica de TechMentor.</p>
+  </div>
+</div>
+
+<div class="dashboard-grid animate-fade-in" *ngIf="data() as d; else loading">
+  <!-- Top Stat Cards Grid -->
+  <div class="stats-cards">
+    <div class="card stat-card color-indigo">
+      <div class="stat-header">
+        <div class="icon-wrapper">
+          <i class="ri-user-heart-line"></i>
+        </div>
+        <span class="trend-badge positive">+100%</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ d.totalAlumnos }}</div>
+        <div class="stat-label">Estudiantes Registrados</div>
+      </div>
+    </div>
+
+    <div class="card stat-card color-cyan">
+      <div class="stat-header">
+        <div class="icon-wrapper">
+          <i class="ri-book-open-line"></i>
+        </div>
+        <span class="trend-badge neutral">Activos</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ d.totalCursos }}</div>
+        <div class="stat-label">Cursos en Catálogo</div>
+      </div>
+    </div>
+
+    <div class="card stat-card color-emerald">
+      <div class="stat-header">
+        <div class="icon-wrapper">
+          <i class="ri-node-tree"></i>
+        </div>
+        <span class="trend-badge positive">Publicados</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ d.totalLecciones }}</div>
+        <div class="stat-label">Lecciones Creadas</div>
+      </div>
+    </div>
+
+    <div class="card stat-card color-amber">
+      <div class="stat-header">
+        <div class="icon-wrapper">
+          <i class="ri-code-box-line"></i>
+        </div>
+        <span class="trend-badge info">Prácticas</span>
+      </div>
+      <div class="stat-body">
+        <div class="stat-value">{{ d.totalEjercicios }}</div>
+        <div class="stat-label">Ejercicios Interactivos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-widgets">
+    <!-- Chart Widget -->
+    <div class="card chart-widget">
+      <div class="widget-header">
+        <div>
+          <h3>Alumnos Inscritos por Curso</h3>
+          <p class="widget-sub">Distribución de estudiantes activos en la plataforma</p>
+        </div>
+      </div>
+      
+      <div class="bar-chart">
+        <div class="chart-bars" *ngIf="d.alumnosPorCurso.length > 0; else noData">
+          <div class="bar-container" *ngFor="let item of d.alumnosPorCurso">
+            <div class="bar-wrapper">
+              <div class="bar" [style.height]="getBarHeight(item.alumnos, getMaxAlumnos())">
+                <span class="bar-val">{{ item.alumnos }}</span>
+              </div>
+            </div>
+            <div class="bar-label" [title]="item.curso">{{ item.curso }}</div>
+          </div>
+        </div>
+        <ng-template #noData>
+          <div class="empty-state">
+            <i class="ri-bar-chart-2-line empty-icon"></i>
+            <p>No hay datos suficientes para graficar inscripciones.</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+
+    <!-- Recent Activity Timeline -->
+    <div class="card activity-widget">
+      <div class="widget-header">
+        <h3>Actividad Reciente</h3>
+        <p class="widget-sub">Últimos eventos del sistema</p>
+      </div>
+      
+      <div class="timeline" *ngIf="d.actividadReciente.length > 0; else noActivity">
+        <div class="timeline-item" *ngFor="let act of d.actividadReciente">
+          <div class="timeline-icon" [class.new-user]="act.tipo === 'NUEVO_ALUMNO'">
+            <i [class]="act.tipo === 'NUEVO_ALUMNO' ? 'ri-user-add-line' : 'ri-check-double-line'"></i>
+          </div>
+          <div class="timeline-content">
+            <div class="act-header">
+              <span class="act-title">{{ act.titulo }}</span>
+              <span class="act-time">{{ act.tiempoRelativo }}</span>
+            </div>
+            <div class="act-desc">{{ act.descripcion }}</div>
+          </div>
+        </div>
+      </div>
+      <ng-template #noActivity>
+        <div class="empty-state">
+          <i class="ri-history-line empty-icon"></i>
+          <p>Sin actividad registrada recientemente.</p>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>
+
+<ng-template #loading>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando información del dashboard...</p>
+  </div>
+</ng-template>

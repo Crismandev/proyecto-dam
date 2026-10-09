@@ -1,0 +1,51 @@
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th *ngFor="let col of columns">{{ col.header }}</th>
+        <th *ngIf="!hideActions" class="actions-col">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="data.length === 0">
+        <td [attr.colspan]="hideActions ? columns.length : columns.length + 1" class="text-center empty-state">
+          No hay registros para mostrar.
+        </td>
+      </tr>
+      <tr *ngFor="let row of data">
+        <td *ngFor="let col of columns">
+          <ng-container *ngIf="col.type === 'date'">
+            {{ getValue(row, col) | date:'mediumDate' }}
+          </ng-container>
+          <ng-container *ngIf="col.type === 'boolean'">
+            <span class="badge" [ngClass]="getValue(row, col) ? 'badge-success' : 'badge-danger'">
+              {{ getValue(row, col) ? 'Sí' : 'No' }}
+            </span>
+          </ng-container>
+          <ng-container *ngIf="col.type !== 'date' && col.type !== 'boolean'">
+            {{ getValue(row, col) }}
+          </ng-container>
+        </td>
+        <td *ngIf="!hideActions" class="actions-col">
+          <button class="btn-icon btn-view" (click)="view.emit(row)" title="Ver Detalle">
+            👁️
+          </button>
+          <button class="btn-icon btn-edit" (click)="edit.emit(row)" title="Editar">
+            ✏️
+          </button>
+          <button class="btn-icon btn-delete" (click)="delete.emit(row)" title="Eliminar">
+            🗑️
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="pagination" *ngIf="totalPages > 1">
+  <span class="page-info">Mostrando página {{ currentPage + 1 }} de {{ totalPages }} ({{ totalElements }} registros)</span>
+  <div class="page-controls">
+    <button class="btn btn-secondary" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">Anterior</button>
+    <button class="btn btn-secondary" [disabled]="currentPage >= totalPages - 1" (click)="onPageChange(currentPage + 1)">Siguiente</button>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<div class="page-header">
+  <h1>{{ isEditing ? 'Editar Curso' : 'Nuevo Curso' }}</h1>
+  <button class="btn btn-secondary" (click)="goBack()">Volver</button>
+</div>
+
+<div class="card" style="max-width: 800px;">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    
+    <div class="form-group">
+      <label>Nombre del Curso <span class="text-danger">*</span></label>
+      <input type="text" class="form-control" formControlName="nombreCurso"
+             [class.is-invalid]="form.controls.nombreCurso.invalid && form.controls.nombreCurso.touched">
+    </div>
+
+    <div class="form-group">
+      <label>Categoría <span class="text-danger">*</span></label>
+      <select class="form-control" formControlName="idCategoria"
+              [class.is-invalid]="form.controls.idCategoria.invalid && form.controls.idCategoria.touched">
+        <option [ngValue]="null">Seleccione una categoría</option>
+        <option *ngFor="let cat of categorias()" [ngValue]="cat.idCategoria">{{ cat.nombreCategoria }}</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Dificultad <span class="text-danger">*</span></label>
+      <select class="form-control" formControlName="dificultad"
+              [class.is-invalid]="form.controls.dificultad.invalid && form.controls.dificultad.touched">
+        <option value="PRINCIPIANTE">Principiante</option>
+        <option value="INTERMEDIO">Intermedio</option>
+        <option value="AVANZADO">Avanzado</option>
+      </select>
+    </div>
+
+    <div class="d-flex gap-2">
+      <div class="form-group" style="flex: 1;">
+        <label>XP Requerido para desbloquear <span class="text-danger">*</span></label>
+        <input type="number" class="form-control" formControlName="xpRequerido">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>XP Recompensa total <span class="text-danger">*</span></label>
+        <input type="number" class="form-control" formControlName="xpRecompensa">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Icono (URL o Clase FontAwesome)</label>
+      <input type="text" class="form-control" formControlName="icono">
+    </div>
+
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea class="form-control" rows="4" formControlName="descripcion"></textarea>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <button type="submit" class="btn btn-primary" [disabled]="form.invalid">Guardar Curso</button>
+    </div>
+  </form>
+</div>

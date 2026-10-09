@@ -1,0 +1,20 @@
+@import 'styles/variables';
+
+.layout-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 250px; // matches sidebar width
+  display: flex;
+  flex-direction: column;
+  background-color: $bg-body;
+}
+
+.content-area {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
