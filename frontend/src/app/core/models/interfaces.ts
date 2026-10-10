@@ -62,3 +62,15 @@ export interface UsuarioDTO {
   rol: RolDTO;
   fechaRegistro: string;
 }
+
+export interface MisionDTO {
+  idMision?: number;
+  nombre: string;
+  descripcion?: string;
+  tipo: string;
+  meta: number;
+  xpRecompensa: number;
+  fechaInicio?: string;
+  fechaFin?: string;
+  activa: boolean;
+}

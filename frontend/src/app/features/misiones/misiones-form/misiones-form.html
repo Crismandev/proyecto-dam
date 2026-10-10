@@ -1,0 +1,69 @@
+<div class="container-fluid p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ isEditing ? 'Editar Misión' : 'Nueva Misión' }}</h2>
+    <a routerLink="/admin/misiones" class="btn btn-outline-secondary">
+      Volver
+    </a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="guardar()">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label class="form-label">Nombre de la Misión *</label>
+            <input type="text" formControlName="nombre" class="form-control" placeholder="Ej. Completa 3 lecciones" />
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Tipo *</label>
+            <select formControlName="tipo" class="form-select">
+              <option value="DIARIA">Diaria</option>
+              <option value="SEMANAL">Semanal</option>
+              <option value="LOGRO">Logro</option>
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Descripción</label>
+            <textarea formControlName="descripcion" class="form-control" rows="2" placeholder="Detalle objetivo de la misión..."></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Meta (Cantidad objetivo) *</label>
+            <input type="number" formControlName="meta" class="form-control" min="1" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">XP Recompensa *</label>
+            <input type="number" formControlName="xpRecompensa" class="form-control" min="0" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Fecha Inicio</label>
+            <input type="date" formControlName="fechaInicio" class="form-control" />
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Fecha Fin</label>
+            <input type="date" formControlName="fechaFin" class="form-control" />
+          </div>
+
+          <div class="col-12">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" formControlName="activa" id="activaSwitch" />
+              <label class="form-check-label" for="activaSwitch">Misión Activa</label>
+            </div>
+          </div>
+
+          <div class="col-12 text-end mt-4">
+            <a routerLink="/admin/misiones" class="btn btn-secondary me-2">Cancelar</a>
+            <button type="submit" [disabled]="form.invalid" class="btn btn-primary">
+              {{ isEditing ? 'Guardar Cambios' : 'Crear Misión' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

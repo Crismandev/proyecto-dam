@@ -1,0 +1,58 @@
+<div class="container-fluid p-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Gestión de Misiones</h2>
+    <a routerLink="/admin/misiones/nueva" class="btn btn-primary">
+      <i class="bi bi-plus-lg"></i> Nueva Misión
+    </a>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Tipo</th>
+              <th>Meta</th>
+              <th>XP Recompensa</th>
+              <th>Estado</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of misiones()">
+              <td>{{ m.idMision }}</td>
+              <td>
+                <strong>{{ m.nombre }}</strong>
+                <p class="text-muted small mb-0">{{ m.descripcion }}</p>
+              </td>
+              <td><span class="badge bg-info text-dark">{{ m.tipo }}</span></td>
+              <td>{{ m.meta }}</td>
+              <td><span class="badge bg-warning text-dark">+{{ m.xpRecompensa }} XP</span></td>
+              <td>
+                <span class="badge" [ngClass]="m.activa ? 'bg-success' : 'bg-secondary'">
+                  {{ m.activa ? 'Activa' : 'Inactiva' }}
+                </span>
+              </td>
+              <td class="text-end">
+                <a [routerLink]="['/admin/misiones', m.idMision, 'editar']" class="btn btn-sm btn-outline-primary me-2">
+                  Editar
+                </a>
+                <button (click)="eliminar(m.idMision)" class="btn btn-sm btn-outline-danger">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="misiones().length === 0">
+              <td colspan="7" class="text-center py-4 text-muted">
+                No se encontraron misiones registradas.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
