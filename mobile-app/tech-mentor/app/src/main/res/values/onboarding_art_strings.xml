@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="onboarding_art_description">Bit, tu compañero de aprendizaje</string>
+    <string name="onboarding_art_short_lessons">Lecciones breves</string>
+    <string name="onboarding_art_one_step">Un paso a la vez</string>
+    <string name="onboarding_art_no_pressure">Sin presión</string>
+    <string name="onboarding_art_your_level">Encuentra tu nivel</string>
+    <string name="onboarding_art_your_pace">A tu ritmo</string>
+    <string name="onboarding_art_your_progress">Tu avance contigo</string>
+    <string name="onboarding_continue">Continuar</string>
+</resources>

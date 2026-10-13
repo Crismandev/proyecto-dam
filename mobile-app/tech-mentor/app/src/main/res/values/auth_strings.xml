@@ -1,0 +1,4 @@
+<resources>
+    <string name="auth_welcome_title">¡Qué bueno verte!</string>
+    <string name="auth_welcome_description">Un pequeño momento para seguir aprendiendo.</string>
+</resources>

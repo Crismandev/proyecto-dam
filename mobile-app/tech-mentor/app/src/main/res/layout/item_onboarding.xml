@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:paddingHorizontal="24dp">
 
+    <!-- Versión anterior conservada: la fotografía se reemplaza por arte local de Bit.
     <ImageView
         android:id="@+id/ivOnboardingImage"
         android:layout_width="0dp"
@@ -16,7 +17,142 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:src="@tools:sample/backgrounds/scenic" />
+    -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/onboardingArtwork"
+        android:layout_width="0dp"
+        android:layout_height="240dp"
+        android:layout_marginTop="8dp"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <View
+            android:layout_width="232dp"
+            android:layout_height="232dp"
+            android:background="@drawable/bg_onboarding_art_ring"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:layout_width="208dp"
+            android:layout_height="208dp"
+            android:background="@drawable/bg_onboarding_art_circle"
+            android:importantForAccessibility="no"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="32dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_onboarding_spark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#A08CE8" />
+
+        <ImageView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_marginTop="63dp"
+            android:layout_marginEnd="26dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_onboarding_spark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#5B9AEA" />
+
+        <ImageView
+            android:id="@+id/ivOnboardingImage"
+            android:layout_width="184dp"
+            android:layout_height="184dp"
+            android:contentDescription="@string/onboarding_art_description"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_bit"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:layout_marginBottom="42dp"
+            android:background="@drawable/bg_onboarding_art_chip"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="11dp" android:paddingEnd="11dp"
+            android:paddingTop="9dp" android:paddingBottom="9dp"
+            android:rotation="-6"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/ivArtChipIcon"
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_clock"
+                app:tint="@color/purple" />
+
+            <TextView
+                android:id="@+id/tvArtChipLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:fontFamily="@font/plus_jakarta_sans_bold"
+                android:textColor="#62538E"
+                android:textSize="10sp"
+                tools:text="@string/onboarding_art_short_lessons" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/bg_onboarding_art_chip"
+            android:elevation="2dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="11dp" android:paddingEnd="11dp"
+            android:paddingTop="9dp" android:paddingBottom="9dp"
+            android:rotation="5"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_check"
+                app:tint="@color/purple" />
+
+            <TextView
+                android:id="@+id/tvArtChipSecondaryLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="7dp"
+                android:fontFamily="@font/plus_jakarta_sans_bold"
+                android:textColor="#4D709B"
+                android:textSize="10sp"
+                tools:text="@string/onboarding_art_one_step" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Versión anterior conservada: el título ahora se ancla debajo del área de ilustración.
     <TextView
         android:id="@+id/tvOnboardingTitle"
         android:layout_width="0dp"
@@ -30,6 +166,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivOnboardingImage"
+        tools:text="Tu futuro tech\nempieza aquí." />
+    -->
+    <TextView
+        android:id="@+id/tvOnboardingTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:fontFamily="@font/plus_jakarta_sans_bold"
+        android:gravity="center"
+        android:textColor="#2D2D42"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/onboardingArtwork"
         tools:text="Tu futuro tech\nempieza aquí." />
 
     <TextView

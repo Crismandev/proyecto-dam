@@ -35,11 +35,19 @@ class HomeFragment : Fragment() {
         binding.tvObjectiveType.text = "Ruta"
         binding.tvObjectiveLevel.text = nivelActual
 
+// Versión anterior conservada; sustituida por el bloque activo que sigue.
+//         when (nivelActual.lowercase()) {
+//             "básico" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
+//             "intermedio" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
+//             "avanzado" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
+//             else -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
+//         }
+
         when (nivelActual.lowercase()) {
-            "básico" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
-            "intermedio" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
-            "avanzado" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
-            else -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
+            "básico" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_low)
+            "intermedio" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_medium)
+            "avanzado" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_high)
+            else -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_none)
         }
 
         binding.tvObjectiveCourse.text = "Desarrollo Frontend con JavaScript"

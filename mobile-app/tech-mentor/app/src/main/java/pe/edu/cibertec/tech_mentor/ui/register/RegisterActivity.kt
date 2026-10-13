@@ -6,6 +6,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import pe.edu.cibertec.tech_mentor.ui.common.showAnimatedBit
 import pe.edu.cibertec.tech_mentor.databinding.ActivityRegisterBinding
 import java.util.Calendar
 
@@ -33,10 +34,15 @@ class RegisterActivity : AppCompatActivity() {
         setupListeners()
     }
 
+// Versión anterior conservada; sustituida por el bloque activo que sigue.
+//     private fun setupImage() {
+//         Glide.with(this)
+//             .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjNDbDyBz9vuv0SOM3tfDx6fZVbUZJgF10nUXLmdT6hxpAgWd0kDlSSwc&s=10")
+//             .into(binding.ivRobotRegister)
+//     }
+
     private fun setupImage() {
-        Glide.with(this)
-            .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjNDbDyBz9vuv0SOM3tfDx6fZVbUZJgF10nUXLmdT6hxpAgWd0kDlSSwc&s=10")
-            .into(binding.ivRobotRegister)
+        showAnimatedBit(binding.ivRobotRegister)
     }
 
     private fun setupDatePicker() {
@@ -69,11 +75,25 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+// Versión anterior conservada; sustituida por el bloque activo que sigue.
+//     private fun setupListeners() {
+//         binding.cvBack.setOnClickListener {
+//             finish()
+//         }
+//
+//         binding.btnRegister.setOnClickListener {
+//
+//         }
+//     }
+
     private fun setupListeners() {
+        binding.authTabs.tvRegister.isSelected = true
+        binding.authTabs.tvLogin.setOnClickListener {
+            finish()
+        }
         binding.cvBack.setOnClickListener {
             finish()
         }
-
         binding.btnRegister.setOnClickListener {
 
         }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@drawable/ic_bit">
+    <target android:name="bit_float" android:animation="@animator/bit_float" />
+    <target android:name="bit_eyes" android:animation="@animator/bit_blink" />
+    <target android:name="bit_antenna" android:animation="@animator/bit_glow" />
+</animated-vector>

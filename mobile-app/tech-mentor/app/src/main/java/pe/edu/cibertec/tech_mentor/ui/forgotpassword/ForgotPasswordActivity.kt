@@ -5,7 +5,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.bumptech.glide.Glide
+// import com.bumptech.glide.Glide // Usado en la versión anterior.
+import pe.edu.cibertec.tech_mentor.ui.common.showAnimatedBit
 // Asegúrate de que el import del binding coincida con el nombre de tu paquete
 import pe.edu.cibertec.tech_mentor.databinding.ActivityForgotPasswordBinding
 
@@ -30,10 +31,15 @@ class ForgotPasswordActivity : AppCompatActivity() {
         setupListeners()
     }
 
+// Versión anterior conservada; sustituida por el bloque activo que sigue.
+//     private fun setupImage() {
+//         Glide.with(this)
+//             .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjNDbDyBz9vuv0SOM3tfDx6fZVbUZJgF10nUXLmdT6hxpAgWd0kDlSSwc&s=10")
+//             .into(binding.ivRobotForgotPassword)
+//     }
+
     private fun setupImage() {
-        Glide.with(this)
-            .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjNDbDyBz9vuv0SOM3tfDx6fZVbUZJgF10nUXLmdT6hxpAgWd0kDlSSwc&s=10")
-            .into(binding.ivRobotForgotPassword)
+        showAnimatedBit(binding.ivRobotForgotPassword)
     }
 
     private fun setupListeners() {
