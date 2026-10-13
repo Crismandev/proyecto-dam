@@ -4,9 +4,9 @@
         android:icon="@drawable/ic_house"
         android:title="@string/tab_home"/>
 
-    <item android:id="@+id/coursesFragment"
+    <item android:id="@+id/categoriesFragment"
         android:icon="@drawable/ic_book_open"
-        android:title="@string/tab_courses"/>
+        android:title="@string/tab_categories"/>
 
     <item android:id="@+id/practiceFragment"
         android:icon="@drawable/ic_chats_purple"

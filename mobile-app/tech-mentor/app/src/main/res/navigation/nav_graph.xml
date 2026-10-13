@@ -6,10 +6,10 @@
     app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/coursesFragment"
-        android:name="pe.edu.cibertec.tech_mentor.ui.courses.CoursesFragment"
-        android:label="@string/tab_courses"
-        tools:layout="@layout/fragment_courses" />
+        android:id="@+id/categoriesFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.categories.CategoriesFragment"
+        android:label="@string/tab_categories"
+        tools:layout="@layout/fragment_categories" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.home.HomeFragment"

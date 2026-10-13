@@ -41,7 +41,7 @@
     <string name="msg_password_min_length">Mínimo 8 caracteres</string>
     <string name="hint_country">Tu país</string>
     <string name="tab_home">Inicio</string>
-    <string name="tab_courses">Cursos</string>
+    <string name="tab_categories">Categorias</string>
     <string name="tab_practice">Práctica</string>
     <string name="tab_profile">Perfil</string>
     <string name="title_home_greeting">Un paso más, %1$s.</string>

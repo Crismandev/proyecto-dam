@@ -1,4 +1,4 @@
-package pe.edu.cibertec.tech_mentor.ui.courses
+package pe.edu.cibertec.tech_mentor.ui.categories
 
 import android.graphics.Color
 import android.os.Bundle
@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import pe.edu.cibertec.tech_mentor.databinding.FragmentCoursesBinding
-import pe.edu.cibertec.tech_mentor.databinding.ItemCourseCategoryBinding
+import pe.edu.cibertec.tech_mentor.databinding.FragmentCategoriesBinding
+import pe.edu.cibertec.tech_mentor.databinding.ItemCategoryBinding
 
 data class CourseCategory(
     val title: String,
@@ -18,16 +18,16 @@ data class CourseCategory(
     val bgColorHex: String
 )
 
-class CoursesFragment : Fragment() {
+class CategoriesFragment : Fragment() {
 
-    private var _binding: FragmentCoursesBinding? = null
+    private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentCoursesBinding.inflate(inflater, container, false)
+        _binding = FragmentCategoriesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -63,7 +63,7 @@ class CoursesFragment : Fragment() {
 class CourseCategoryAdapter(private val categories: List<CourseCategory>) :
     RecyclerView.Adapter<CourseCategoryAdapter.CategoryViewHolder>() {
 
-    inner class CategoryViewHolder(val binding: ItemCourseCategoryBinding) :
+    inner class CategoryViewHolder(val binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CourseCategory) {
@@ -77,7 +77,7 @@ class CourseCategoryAdapter(private val categories: List<CourseCategory>) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
-        val binding = ItemCourseCategoryBinding.inflate(
+        val binding = ItemCategoryBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
         return CategoryViewHolder(binding)
