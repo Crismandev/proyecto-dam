@@ -55,4 +55,8 @@
     <string name="label_level_intermediate">Intermedio</string>
     <string name="label_level_advanced">Avanzado</string>
     <string name="title_route_name">Desarrollo Frontend con JavaScript</string>
+    <string name="title_explore_routes">Explora nuestras rutas</string>
+    <string name="btn_view">Ver</string>
+    <string name="label_courses_count">%1$d Cursos</string>
+
 </resources>
