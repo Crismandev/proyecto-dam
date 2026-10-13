@@ -58,5 +58,5 @@
     <string name="title_explore_routes">Explora nuestras rutas</string>
     <string name="btn_view">Ver</string>
     <string name="label_courses_count">%1$d Cursos</string>
-
+    <string name="title_course_levels">Niveles del curso</string>
 </resources>
