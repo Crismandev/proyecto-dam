@@ -18,8 +18,18 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_nav"
+        style="@style/Widget.MaterialComponents.BottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
+        android:background="@android:color/white"
+        android:paddingTop="12dp"
+        android:paddingBottom="16dp"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:itemBackground="@drawable/selector_nav_item_bg"
+        app:itemRippleColor="@null"
+        app:labelVisibilityMode="labeled"
         app:menu="@menu/bottom_menu" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -15,4 +15,8 @@
     <color name="bg_orange">#fff0df</color>
     <color name="red">#a83f41</color>
     <color name="bg_red">#fff0ee</color>
+    <color name="bg_blue">#e5f5ff</color>
+    <color name="blue">#2592c5</color>
+    <color name="discord">#5865F2</color>
+    <color name="bg_discord">#EFEFFF</color>
 </resources>

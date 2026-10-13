@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fondo cuando el ítem está seleccionado -->
+    <item android:state_checked="true">
+        <!-- inset ajusta los márgenes para que el fondo no toque los extremos -->
+        <inset android:insetLeft="8dp" android:insetRight="8dp" android:insetTop="6dp" android:insetBottom="6dp">
+            <shape android:shape="rectangle">
+                <!-- Color morado claro (fondo) -->
+                <solid android:color="#F0E6FF" />
+                <!-- Bordes redondeados para simular la píldora -->
+                <corners android:radius="16dp" />
+            </shape>
+        </inset>
+    </item>
+
+    <!-- Fondo inactivo (Transparente para que solo se vea el texto/ícono gris) -->
+    <item android:drawable="@android:color/transparent" />
+</selector>

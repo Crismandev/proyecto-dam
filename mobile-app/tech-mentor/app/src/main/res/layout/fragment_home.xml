@@ -1,7 +1,652 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/red"
-    tools:context=".ui.home.HomeFragment"/>
+    android:background="@color/bg_light"
+    android:fitsSystemWindows="true">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="40dp">
+
+    <!-- HEADER -->
+    <include
+        android:id="@+id/header"
+        layout="@layout/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- COMPONENTE DE SALUDO Y ESTADÍSTICAS -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clUserStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <!-- TÍTULO -->
+        <TextView
+            android:id="@+id/tvWelcomeTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/plus_jakarta_sans_extrabold"
+            android:textColor="@color/black"
+            android:textSize="26sp"
+            app:layout_constraintEnd_toStartOf="@id/cvSparkle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/title_home_greeting" />
+
+        <!-- SUBTÍTULO -->
+        <TextView
+            android:id="@+id/tvWelcomeSubtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="@font/plus_jakarta_sans_medium"
+            android:text="@string/desc_home_subtitle"
+            android:textColor="@color/text_gray_medium"
+            android:textSize="13sp"
+            app:layout_constraintEnd_toStartOf="@id/cvSparkle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWelcomeTitle" />
+
+        <!-- BOTÓN / ÍCONO DE DESTELLOS -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvSparkle"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            app:cardBackgroundColor="@color/bg_purple"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:layout_constraintBottom_toBottomOf="@id/tvWelcomeSubtitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvWelcomeTitle">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_sparkle"
+                app:tint="@color/purple" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ESTADÍSTICAS -->
+        <LinearLayout
+            android:id="@+id/llStatsRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvWelcomeSubtitle">
+
+            <!-- Ícono Racha -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_fire"
+                app:tint="@color/orange" />
+
+            <!-- Texto Racha -->
+            <TextView
+                android:id="@+id/tvStreak"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="@font/plus_jakarta_sans_bold"
+                android:textColor="@color/orange"
+                android:textSize="13sp"
+                tools:text="@string/label_streak_days" />
+
+            <!-- Divisor Vertical -->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="16dp"
+                android:layout_marginHorizontal="12dp"
+                android:background="@color/gray_light" />
+
+            <!-- Ícono XP -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_lightning"
+                app:tint="@color/purple" />
+
+            <!-- Texto XP -->
+            <TextView
+                android:id="@+id/tvXp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="@font/plus_jakarta_sans_bold"
+                android:textColor="@color/purple"
+                android:textSize="13sp"
+                tools:text="@string/label_xp_points" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- SECCIÓN: OBJETIVOS POR COMPLETAR -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/clObjectives"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintTop_toBottomOf="@id/clUserStats">
+
+        <!-- Título de la sección -->
+        <TextView
+            android:id="@+id/tvObjectivesTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/plus_jakarta_sans_extrabold"
+            android:text="@string/title_home_goals"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Tarjeta del objetivo / curso -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvCurrentObjective"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:strokeColor="@color/gray_light"
+            app:strokeWidth="1dp"
+            app:layout_constraintTop_toBottomOf="@id/tvObjectivesTitle"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <!-- Logo -->
+                <ImageView
+                    android:id="@+id/ivObjectiveLogo"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_code_purple"
+                    app:tint="@color/purple"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Etiquetas: Ruta y Nivel -->
+                <LinearLayout
+                    android:id="@+id/llTags"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ivObjectiveLogo">
+
+                    <!-- Tag: Tipo -->
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_bookmark_simple"
+                        app:tint="@color/text_gray" />
+
+                    <TextView
+                        android:id="@+id/tvObjectiveType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/plus_jakarta_sans_medium"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp"
+                        tools:text="@string/label_route" />
+
+                    <!-- Divisor entre tags -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="12dp"
+                        android:layout_marginHorizontal="8dp"
+                        android:background="@color/gray_light" />
+
+                    <!-- Tag: Nivel -->
+                    <ImageView
+                        android:id="@+id/ivObjectiveLevelIcon"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_cell_signal_medium"
+                        app:tint="@color/text_gray" />
+
+                    <TextView
+                        android:id="@+id/tvObjectiveLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/plus_jakarta_sans_medium"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp"
+                        tools:text="@string/label_courses_progress" />
+                </LinearLayout>
+
+                <!-- Título de la Ruta -->
+                <TextView
+                    android:id="@+id/tvObjectiveCourse"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/plus_jakarta_sans_bold"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/llTags"
+                    tools:text="@string/title_route_name" />
+
+                <!-- Barra de progreso -->
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/pbObjective"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    app:trackColor="@color/bg_purple"
+                    app:indicatorColor="@color/purple"
+                    app:trackThickness="6dp"
+                    app:trackCornerRadius="3dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvObjectiveCourse"
+                    tools:progress="15"
+                    app:indicatorTrackGapSize="0dp"
+                    app:trackStopIndicatorSize="0dp"/>
+
+                <!-- Progreso en texto -->
+                <TextView
+                    android:id="@+id/tvObjectiveProgressText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="@font/plus_jakarta_sans_medium"
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/pbObjective"
+                    tools:text="@string/label_courses_progress" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- SECCIÓN: MISIONES Y ACTIVIDADES -->
+            <LinearLayout
+                android:id="@+id/llActivities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="40dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/clObjectives">
+
+                <!-- 1. TARJETA: Misión Diaria -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvDailyMission"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/gray_light"
+                    app:strokeWidth="1dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <!-- Fondo del ícono -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cvMissionIconBg"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardBackgroundColor="@color/bg_orange"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="0dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_lightning"
+                                app:tint="@color/orange" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Fracción -->
+                        <TextView
+                            android:id="@+id/tvMissionProgressText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/plus_jakarta_sans_medium"
+                            android:textColor="@color/text_gray"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="@id/tvMissionSubtitle"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tvMissionTitle"
+                            tools:text="1/2" />
+
+                        <!-- Título -->
+                        <TextView
+                            android:id="@+id/tvMissionTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="8dp"
+                            android:fontFamily="@font/plus_jakarta_sans_bold"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/tvMissionProgressText"
+                            app:layout_constraintStart_toEndOf="@id/cvMissionIconBg"
+                            app:layout_constraintTop_toTopOf="@id/cvMissionIconBg"
+                            tools:text="Tu pequeño logro de hoy" />
+
+                        <!-- Subtítulo -->
+                        <TextView
+                            android:id="@+id/tvMissionSubtitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/plus_jakarta_sans_medium"
+                            android:textColor="@color/text_gray"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="@id/tvMissionTitle"
+                            app:layout_constraintStart_toStartOf="@id/tvMissionTitle"
+                            app:layout_constraintTop_toBottomOf="@id/tvMissionTitle"
+                            tools:text="Completa una lección más." />
+
+                        <!-- Barra de progreso dinámica -->
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/pbMission"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            app:indicatorColor="@color/purple"
+                            app:indicatorTrackGapSize="0dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/tvMissionTitle"
+                            app:layout_constraintTop_toBottomOf="@id/tvMissionSubtitle"
+                            app:trackColor="@color/bg_purple"
+                            app:trackCornerRadius="3dp"
+                            app:trackStopIndicatorSize="0dp"
+                            app:trackThickness="6dp"
+                            tools:max="2"
+                            tools:progress="1" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 2. TARJETA: Desafío Semanal -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvWeeklyChallenge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/gray_light"
+                    app:strokeWidth="1dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <!-- Fondo del ícono -->
+                        <com.google.android.material.card.MaterialCardView
+                            android:id="@+id/cvChallengeIconBg"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardBackgroundColor="@color/bg_blue"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="0dp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_trophy"
+                                app:tint="@color/blue" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <!-- Fracción XP -->
+                        <TextView
+                            android:id="@+id/tvChallengeProgressText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/plus_jakarta_sans_medium"
+                            android:textColor="@color/text_gray"
+                            android:textSize="12sp"
+                            app:layout_constraintBottom_toBottomOf="@id/tvChallengeSubtitle"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tvChallengeTitle"
+                            tools:text="150/500 XP" />
+
+                        <!-- Título -->
+                        <TextView
+                            android:id="@+id/tvChallengeTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:layout_marginEnd="8dp"
+                            android:fontFamily="@font/plus_jakarta_sans_bold"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/tvChallengeProgressText"
+                            app:layout_constraintStart_toEndOf="@id/cvChallengeIconBg"
+                            app:layout_constraintTop_toTopOf="@id/cvChallengeIconBg"
+                            tools:text="Desafío de la semana" />
+
+                        <!-- Subtítulo -->
+                        <TextView
+                            android:id="@+id/tvChallengeSubtitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/plus_jakarta_sans_medium"
+                            android:textColor="@color/text_gray"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="@id/tvChallengeTitle"
+                            app:layout_constraintStart_toStartOf="@id/tvChallengeTitle"
+                            app:layout_constraintTop_toBottomOf="@id/tvChallengeTitle"
+                            tools:text="Acumula puntos para tu próxima medalla." />
+
+                        <!-- Barra de progreso -->
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/pbChallenge"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            app:indicatorColor="@color/blue"
+                            app:indicatorTrackGapSize="0dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@id/tvChallengeTitle"
+                            app:layout_constraintTop_toBottomOf="@id/tvChallengeSubtitle"
+                            app:trackColor="@color/bg_blue"
+                            app:trackCornerRadius="3dp"
+                            app:trackStopIndicatorSize="0dp"
+                            app:trackThickness="6dp"
+                            tools:max="500"
+                            tools:progress="150" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 3. TARJETA: Comunidad -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvCommunity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/gray_light"
+                    app:strokeWidth="1dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:id="@+id/ivCommunityIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_discord"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/discord" />
+
+                        <!-- Ícono flecha derecha -->
+                        <ImageView
+                            android:id="@+id/ivCommunityArrow"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_up_right"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/discord" />
+
+                        <TextView
+                            android:id="@+id/tvCommunityTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:fontFamily="@font/plus_jakarta_sans_bold"
+                            android:text="Comunidad TechMentor"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/ivCommunityArrow"
+                            app:layout_constraintStart_toEndOf="@id/ivCommunityIcon"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvCommunitySubtitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/plus_jakarta_sans_medium"
+                            android:text="Conecta y comparte con otros estudiantes"
+                            android:textColor="@color/text_gray"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="@id/tvCommunityTitle"
+                            app:layout_constraintStart_toStartOf="@id/tvCommunityTitle"
+                            app:layout_constraintTop_toBottomOf="@id/tvCommunityTitle" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 4. TARJETA: Práctica con Bit -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvPractice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="@color/bg_purple"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="16dp">
+
+                        <ImageView
+                            android:id="@+id/ivPracticeIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_robot"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/purple" />
+
+                        <!-- Ícono -->
+                        <ImageView
+                            android:id="@+id/ivPracticeArrow"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@drawable/ic_arrow_up_right"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/purple" />
+
+                        <TextView
+                            android:id="@+id/tvPracticeTitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:fontFamily="@font/plus_jakarta_sans_bold"
+                            android:text="Tu próxima entrevista, con Bit"
+                            android:textColor="@color/black"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/ivPracticeArrow"
+                            app:layout_constraintStart_toEndOf="@id/ivPracticeIcon"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvPracticeSubtitle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/plus_jakarta_sans_medium"
+                            android:text="Practica con tu mentor virtual"
+                            android:textColor="@color/text_gray"
+                            android:textSize="12sp"
+                            app:layout_constraintEnd_toEndOf="@id/tvPracticeTitle"
+                            app:layout_constraintStart_toStartOf="@id/tvPracticeTitle"
+                            app:layout_constraintTop_toBottomOf="@id/tvPracticeTitle" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

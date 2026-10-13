@@ -30,25 +30,20 @@ class LoginActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
 
-        // 1. Lógica del botón con inicio de sesión falso conectado a btnLogin
         binding.btnLogin.setOnClickListener {
             sessionManager.saveAuthToken("token_virtual_12345")
 
             startActivity(Intent(this, MainActivity::class.java))
         }
 
-        // 2. Cargar imagen random con Glide
         setupImage()
 
-        // 3. Configurar el texto de registro
         setupTextViewColors()
 
-        // 4. Configurar la navegación hacia la recuperación de contraseña
         setupForgotPassword()
     }
 
     private fun setupImage() {
-        // Usamos una URL de RoboHash que genera un robot aleatorio (ideal para "Bit")
         Glide.with(this)
             .load("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjNDbDyBz9vuv0SOM3tfDx6fZVbUZJgF10nUXLmdT6hxpAgWd0kDlSSwc&s=10")
             .into(binding.ivRobotLogin)
@@ -63,14 +58,12 @@ class LoginActivity : AppCompatActivity() {
 
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
-                // Navegación hacia RegisterActivity
                 startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
             }
 
             override fun updateDrawState(ds: TextPaint) {
                 super.updateDrawState(ds)
                 ds.isUnderlineText = false
-                // Color morado de tu línea gráfica
                 ds.color = Color.parseColor("#7C4DFF")
             }
         }
@@ -87,7 +80,6 @@ class LoginActivity : AppCompatActivity() {
         binding.tvRegister.highlightColor = Color.TRANSPARENT
     }
 
-    // Nuevo método para manejar el clic en "¿Olvidaste tu contraseña?"
     private fun setupForgotPassword() {
         binding.tvForgotPassword.setOnClickListener {
             val intent = Intent(this, ForgotPasswordActivity::class.java)
