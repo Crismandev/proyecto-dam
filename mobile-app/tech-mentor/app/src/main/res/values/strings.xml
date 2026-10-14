@@ -60,4 +60,7 @@
     <string name="label_courses_count">%1$d Cursos</string>
     <string name="title_course_levels">Niveles del curso</string>
     <string name="title_lessons">Lecciones</string>
+    <string name="feedback_correct_title">¡Bien hecho!</string>
+    <string name="feedback_incorrect_title">Vamos a entenderlo.</string>
+    <string name="btn_back_to_my_route">Volver a mi ruta</string>
 </resources>
