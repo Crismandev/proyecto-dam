@@ -4,7 +4,7 @@
         android:icon="@drawable/ic_house"
         android:title="@string/tab_home"/>
 
-    <item android:id="@+id/categoriesFragment"
+    <item android:id="@+id/categoryFragment"
         android:icon="@drawable/ic_book_open"
         android:title="@string/tab_categories"/>
 

@@ -18,8 +18,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- TÍTULO PRINCIPAL -->
-
-    <!-- CATEGORÍAS -->
     <TextView
         android:id="@+id/tvCoursesTitle"
         android:layout_width="0dp"
@@ -35,6 +33,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header" />
 
+    <!-- CATEGORÍAS -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCourses"
         android:layout_width="match_parent"
@@ -42,7 +41,7 @@
         android:layout_marginTop="16dp"
         android:clipToPadding="false"
         android:paddingHorizontal="24dp"
-        android:paddingBottom="100dp"
+        android:paddingBottom="20dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvCoursesTitle"

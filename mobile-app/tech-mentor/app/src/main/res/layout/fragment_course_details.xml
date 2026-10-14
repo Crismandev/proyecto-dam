@@ -29,7 +29,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="40dp">
+            android:paddingBottom="20dp">
 
             <!-- BANNER DEL CURSO -->
             <com.google.android.material.card.MaterialCardView
