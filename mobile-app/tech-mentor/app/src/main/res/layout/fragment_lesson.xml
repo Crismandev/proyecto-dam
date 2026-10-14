@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_light"
+    android:fitsSystemWindows="true">
+
+    <!-- HEADER -->
+    <include
+        android:id="@+id/header"
+        layout="@layout/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- SCROLLVIEW -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp">
+
+            <!-- INDICADOR DE ORDEN DE LA LECCIÓN -->
+            <TextView
+                android:id="@+id/tvLessonOrder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/plus_jakarta_sans_bold"
+                android:textColor="@color/purple"
+                android:textSize="14sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="LECCIÓN 1" />
+
+            <!-- TÍTULO DE LA LECCIÓN -->
+            <TextView
+                android:id="@+id/tvLessonTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                android:textColor="@color/black"
+                android:textSize="28sp"
+                app:layout_constraintTop_toBottomOf="@id/tvLessonOrder"
+                tools:text="Introducción a las Variables" />
+
+            <!-- DESCRIPCIÓN DE LA LECCIÓN (Opcional, a modo de resumen) -->
+            <TextView
+                android:id="@+id/tvLessonDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/plus_jakarta_sans_medium"
+                android:lineSpacingExtra="4dp"
+                android:textColor="@color/text_gray_medium"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                app:layout_constraintTop_toBottomOf="@id/tvLessonTitle"
+                tools:layout_editor_absoluteX="24dp"
+                tools:text="En esta lección aprenderemos qué son las variables, cómo declararlas y los tipos de datos básicos que puedes almacenar en ellas." />
+
+            <!-- DIVISOR VISUAL SUTIL -->
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:background="@color/purple"
+                app:layout_constraintTop_toBottomOf="@id/tvLessonDescription"/>
+
+            <!-- CONTENIDO DE LA LECCIÓN -->
+            <TextView
+                android:id="@+id/tvLessonContent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/jakarta"
+                android:lineSpacingExtra="6dp"
+                android:textColor="@color/black"
+                android:textIsSelectable="true"
+                android:textSize="16sp"
+                app:layout_constraintTop_toBottomOf="@id/divider"
+                tools:layout_editor_absoluteX="24dp"
+                tools:text="Imagina que una variable es como una caja vacía donde puedes guardar cosas. Para poder encontrar esa caja más tarde, necesitas ponerle una etiqueta con un nombre.\n\nEn programación, usamos variables para guardar información temporalmente mientras nuestro programa se está ejecutando. Por ejemplo, si estás haciendo un juego, podrías usar una variable para guardar la puntuación del jugador.\n\nPara crear (o 'declarar') una variable, primero debes decirle a la computadora qué tipo de caja necesitas y luego ponerle un nombre. \n\nExisten diferentes tipos de cajas para diferentes tipos de información. Si quieres guardar un número, usarás un tipo de variable; si quieres guardar una palabra, usarás otro." />
+
+            <!-- BOTÓN: RESOLVER EJERCICIOS -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSolveExercises"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="24dp"
+                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                android:includeFontPadding="false"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="Resolver ejercicios"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:backgroundTint="@color/purple"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_arrow_right_white"
+                app:iconTint="@color/white"
+                app:iconGravity="textEnd"
+                app:iconPadding="12dp"
+                app:iconSize="20dp"
+                app:layout_constraintTop_toBottomOf="@id/tvLessonContent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

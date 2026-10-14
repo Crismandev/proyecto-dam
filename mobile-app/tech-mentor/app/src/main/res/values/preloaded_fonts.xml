@@ -4,6 +4,7 @@
         <item>@font/plus_jakarta_sans</item>
         <item>@font/plus_jakarta_sans_bold</item>
         <item>@font/plus_jakarta_sans_medium</item>
+        <item>@font/plus_jakarta_sans_regular</item>
         <item>@font/plus_jakarta_sans_semibold</item>
     </array>
 </resources>
