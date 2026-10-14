@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/purple"
+    app:strokeWidth="1dp">
+
+    <!-- TÍTULO -->
+    <TextView
+        android:id="@+id/tvLessonTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="18dp"
+        android:fontFamily="@font/plus_jakarta_sans_bold"
+        android:textColor="#2D2D42"
+        android:textSize="15sp"
+        android:maxLines="2"
+        android:ellipsize="end"
+        tools:text="1. Introducción al curso con un título exageradamente largo para probar los puntos suspensivos..." />
+
+</com.google.android.material.card.MaterialCardView>
