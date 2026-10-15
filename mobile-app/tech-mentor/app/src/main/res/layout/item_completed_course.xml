@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:paddingVertical="14dp">
+
+    <!-- ÍCONO DEL CURSO / RUTA -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvCourseIcon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:cardBackgroundColor="@color/bg_purple"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/purple"
+        app:strokeWidth="1.5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivCourseIcon"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_code_purple"
+            app:tint="@color/purple" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- TÍTULO DEL CURSO O RUTA TERMINADA -->
+    <TextView
+        android:id="@+id/tvCompletedTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="12dp"
+        android:ellipsize="end"
+        android:fontFamily="@font/plus_jakarta_sans_bold"
+        android:maxLines="2"
+        android:textColor="#2D2D42"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/cvCourseIcon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Curso de NPM: Gestión de Paquetes y Dependencias en JavaScript" />
+
+    <!-- FILA: COMPLETADO CON CHECK VERDE -->
+    <LinearLayout
+        android:id="@+id/llCompletedStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toEndOf="@id/cvCourseIcon"
+        app:layout_constraintTop_toBottomOf="@id/tvCompletedTitle">
+
+        <!-- Círculo purpura de Check -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            app:cardBackgroundColor="@color/purple"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_check"
+                app:tint="@color/white" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:fontFamily="@font/plus_jakarta_sans_semibold"
+            android:text="@string/label_completed"
+            android:textColor="@color/text_gray"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Divisor inferior sutil -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="14dp"
+        android:background="@color/gray_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/tvCompletedTitle"
+        app:layout_constraintTop_toBottomOf="@id/llCompletedStatus" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

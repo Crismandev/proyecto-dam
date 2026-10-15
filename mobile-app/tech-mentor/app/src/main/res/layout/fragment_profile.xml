@@ -1,7 +1,601 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/orange"
-    tools:context=".ui.profile.ProfileFragment"/>
+    android:background="@color/bg_light"
+    android:fitsSystemWindows="true">
+
+    <!-- HEADER -->
+    <include
+        android:id="@+id/header"
+        layout="@layout/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- SCROLLVIEW -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="20dp">
+
+            <!-- TÍTULO DE SECCIÓN Y BOTÓN AJUSTES  -->
+            <TextView
+                android:id="@+id/tvProfileHeaderTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="6dp"
+                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                android:text="@string/title_profile"
+                android:textColor="@color/black"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/ivSettings"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="24dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_gear_six"
+                app:layout_constraintBottom_toBottomOf="@id/tvProfileHeaderTitle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvProfileHeaderTitle"
+                app:tint="@color/text_gray_medium" />
+
+            <!-- CABECERA DE DATOS DEL USUARIO -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clUserInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:paddingHorizontal="24dp"
+                app:layout_constraintTop_toBottomOf="@id/tvProfileHeaderTitle">
+
+                <!-- AVATAR CIRCULAR -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvAvatar"
+                    android:layout_width="76dp"
+                    android:layout_height="76dp"
+                    app:cardBackgroundColor="@color/bg_purple"
+                    app:cardCornerRadius="38dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/purple"
+                    app:strokeWidth="2dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/ivAvatar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        tools:src="@tools:sample/avatars" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- INSIGNIA DE NIVEL -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cvLevelBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@color/purple"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="2dp"
+                    app:strokeColor="@color/white"
+                    app:strokeWidth="2dp"
+                    app:layout_constraintBottom_toBottomOf="@id/cvAvatar"
+                    app:layout_constraintEnd_toEndOf="@id/cvAvatar">
+
+                    <TextView
+                        android:id="@+id/tvUserLevel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                        android:paddingHorizontal="6dp"
+                        android:paddingVertical="2dp"
+                        android:textColor="@color/white"
+                        android:textSize="10sp"
+                        tools:text="@string/label_level_short" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- NOMBRES Y APELLIDOS -->
+                <TextView
+                    android:id="@+id/tvFullName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/cvAvatar"
+                    app:layout_constraintTop_toTopOf="@id/cvAvatar"
+                    tools:text="Erick Santos Aveiro" />
+
+                <!-- EMAIL -->
+                <TextView
+                    android:id="@+id/tvEmail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="2dp"
+                    android:fontFamily="@font/plus_jakarta_sans_medium"
+                    android:textColor="@color/text_gray"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/cvAvatar"
+                    app:layout_constraintTop_toBottomOf="@id/tvFullName"
+                    tools:text="tu.correo@gmail.com" />
+
+                <!-- PROFESIÓN -->
+                <TextView
+                    android:id="@+id/tvProfession"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="4dp"
+                    android:fontFamily="@font/plus_jakarta_sans_bold"
+                    android:textColor="@color/text_gray"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/cvAvatar"
+                    app:layout_constraintTop_toBottomOf="@id/tvEmail"
+                    tools:text="Desarrollador Web" />
+
+                <!-- FILA DE CIUDAD Y TELÉFONO -->
+                <LinearLayout
+                    android:id="@+id/llLocationPhone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/cvAvatar"
+                    app:layout_constraintTop_toBottomOf="@id/tvProfession">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_map_pin"
+                        app:tint="@color/text_gray" />
+
+                    <TextView
+                        android:id="@+id/tvCity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/plus_jakarta_sans_semibold"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp"
+                        tools:text="Lima, Perú" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="8dp"
+                        android:text="•"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp" />
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@drawable/ic_phone"
+                        app:tint="@color/text_gray" />
+
+                    <TextView
+                        android:id="@+id/tvPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:fontFamily="@font/plus_jakarta_sans_semibold"
+                        android:textColor="@color/text_gray"
+                        android:textSize="12sp"
+                        tools:text="987 654 321" />
+                </LinearLayout>
+
+                <!-- BIOGRAFÍA -->
+                <TextView
+                    android:id="@+id/tvBio"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:fontFamily="@font/plus_jakarta_sans_medium"
+                    android:lineSpacingExtra="4dp"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    app:layout_constraintTop_toBottomOf="@id/cvAvatar"
+                    tools:layout_editor_absoluteX="24dp"
+                    tools:text="Apasionado por el desarrollo web y móvil. Aprendiendo paso a paso junto a Bit para convertirme en Full Stack Developer." />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- ESTADÍSTICAS GAMIFICADAS -->
+            <TextView
+                android:id="@+id/tvStatsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="24dp"
+                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                android:text="@string/title_profile_stats"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/clUserInfo"
+                tools:layout_editor_absoluteX="24dp" />
+
+            <!-- Contenedor de las filas -->
+            <LinearLayout
+                android:id="@+id/llStatsGrid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="24dp"
+                app:layout_constraintTop_toBottomOf="@id/tvStatsTitle">
+
+                <!-- FILA 1: Racha Actual y Racha Máxima -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <!-- Tarjeta 1: Racha Actual -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/gray_light"
+                        app:strokeWidth="1dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cvIconStreak"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                app:cardBackgroundColor="@color/bg_orange"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_fire"
+                                    app:tint="@color/orange" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/tvCurrentStreak"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconStreak"
+                                app:layout_constraintTop_toTopOf="@id/cvIconStreak"
+                                tools:text="@string/label_days_count" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_medium"
+                                android:text="@string/label_streak_current"
+                                android:textColor="@color/text_gray"
+                                android:textSize="11sp"
+                                app:layout_constraintBottom_toBottomOf="@id/cvIconStreak"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconStreak"
+                                app:layout_constraintTop_toBottomOf="@id/tvCurrentStreak" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Tarjeta 2: Racha Máxima -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/gray_light"
+                        app:strokeWidth="1dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cvIconMaxStreak"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                app:cardBackgroundColor="@color/bg_orange"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_fire"
+                                    app:tint="@color/orange" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/tvMaxStreak"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconMaxStreak"
+                                app:layout_constraintTop_toTopOf="@id/cvIconMaxStreak"
+                                tools:text="@string/label_days_count" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_medium"
+                                android:text="@string/label_streak_max"
+                                android:textColor="@color/text_gray"
+                                android:textSize="11sp"
+                                app:layout_constraintBottom_toBottomOf="@id/cvIconMaxStreak"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconMaxStreak"
+                                app:layout_constraintTop_toBottomOf="@id/tvMaxStreak" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- FILA 2: XP Total y Monedas -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <!-- Tarjeta 3: XP Total -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/gray_light"
+                        app:strokeWidth="1dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cvIconXp"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                app:cardBackgroundColor="@color/bg_blue"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_lightning"
+                                    app:tint="@color/blue" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/tvTotalXp"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconXp"
+                                app:layout_constraintTop_toTopOf="@id/cvIconXp"
+                                tools:text="1,450" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_medium"
+                                android:text="@string/label_xp_total"
+                                android:textColor="@color/text_gray"
+                                android:textSize="11sp"
+                                app:layout_constraintBottom_toBottomOf="@id/cvIconXp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconXp"
+                                app:layout_constraintTop_toBottomOf="@id/tvTotalXp" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Tarjeta 4: Monedas -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeColor="@color/gray_light"
+                        app:strokeWidth="1dp">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="14dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/cvIconCoins"
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                app:cardBackgroundColor="@color/bg_yellow"
+                                app:cardCornerRadius="10dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent">
+
+                                <ImageView
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_coins"
+                                    app:tint="@color/yellow" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:id="@+id/tvCoins"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconCoins"
+                                app:layout_constraintTop_toTopOf="@id/cvIconCoins"
+                                tools:text="320" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:fontFamily="@font/plus_jakarta_sans_medium"
+                                android:text="@string/label_coins"
+                                android:textColor="@color/text_gray"
+                                android:textSize="11sp"
+                                app:layout_constraintBottom_toBottomOf="@id/cvIconCoins"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/cvIconCoins"
+                                app:layout_constraintTop_toBottomOf="@id/tvCoins" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- LOGROS -->
+            <TextView
+                android:id="@+id/tvCertificatesTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="28dp"
+                android:fontFamily="@font/plus_jakarta_sans_extrabold"
+                android:text="@string/title_profile_courses_routes"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/llStatsGrid"
+                tools:layout_editor_absoluteX="24dp" />
+
+            <!-- PESTAÑAS: Cursos | Rutas -->
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayoutCompleted"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="8dp"
+                android:background="@android:color/transparent"
+                app:tabGravity="start"
+                app:tabIndicatorColor="@color/purple"
+                app:tabIndicatorFullWidth="false"
+                app:tabIndicatorHeight="3dp"
+                app:tabMode="scrollable"
+                app:tabRippleColor="@android:color/transparent"
+                app:tabSelectedTextColor="@color/purple"
+                app:tabTextColor="@color/text_gray"
+                app:layout_constraintTop_toBottomOf="@id/tvCertificatesTitle">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_profile_courses" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_profile_routes" />
+            </com.google.android.material.tabs.TabLayout>
+
+            <!-- Línea divisoria -->
+            <View
+                android:id="@+id/dividerTabs"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="24dp"
+                android:background="@color/gray_light"
+                app:layout_constraintTop_toBottomOf="@id/tabLayoutCompleted" />
+
+            <!-- RECYCLER VIEW -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCompletedItems"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:paddingHorizontal="24dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@id/dividerTabs"
+                tools:itemCount="4"
+                tools:listitem="@layout/item_completed_course" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

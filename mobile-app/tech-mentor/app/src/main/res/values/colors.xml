@@ -19,4 +19,6 @@
     <color name="blue">#2592c5</color>
     <color name="discord">#5865F2</color>
     <color name="bg_discord">#EFEFFF</color>
+    <color name="yellow">#f3a318</color>
+    <color name="bg_yellow">#fcf6dd</color>
 </resources>

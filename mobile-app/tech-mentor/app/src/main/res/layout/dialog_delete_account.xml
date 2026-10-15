@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="24dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp"
+    app:strokeColor="@color/selector_border_input"
+    app:strokeWidth="1dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- ÍCONO -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            app:cardBackgroundColor="@color/bg_red"
+            app:cardCornerRadius="26dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_trash"
+                app:tint="@color/red" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- TÍTULO DEL MODAL -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/plus_jakarta_sans_extrabold"
+            android:text="@string/title_delete_account"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <!-- TEXTO DE ADVERTENCIA + PLAZO DE 30 DÍAS -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/plus_jakarta_sans_medium"
+            android:lineSpacingExtra="4dp"
+            android:text="@string/desc_delete_account"
+            android:textAlignment="center"
+            android:textColor="@color/text_gray_medium"
+            android:textSize="13sp" />
+
+        <!-- BOTÓN ROJO CON TEMPORIZADOR -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnConfirmDelete"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="24dp"
+            android:enabled="false"
+            android:fontFamily="@font/plus_jakarta_sans_extrabold"
+            android:includeFontPadding="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/btn_delete_account_countdown"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            app:backgroundTint="@color/red"
+            app:cornerRadius="12dp" />
+
+        <!-- BOTÓN CANCELAR -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelDelete"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/plus_jakarta_sans_bold"
+            android:includeFontPadding="false"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="@string/btn_cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:backgroundTint="@color/white"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/selector_border_input"
+            app:strokeWidth="1dp" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
