@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cvEvaluationItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardBackgroundColor="@android:color/white"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/white"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- BADGE DE ESTADO -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvStatusBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/bg_purple"
+            app:cardCornerRadius="6dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvStatusBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/plus_jakarta_sans_bold"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:textAllCaps="true"
+                android:textColor="@color/purple"
+                android:textSize="10sp"
+                tools:text="BORRADOR" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- FECHA O INFO SECUNDARIA -->
+        <TextView
+            android:id="@+id/tvEvaluationDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/plus_jakarta_sans_medium"
+            android:textColor="@color/text_gray"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/cvStatusBadge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/cvStatusBadge"
+            tools:text="Hace 2 horas" />
+
+        <!-- NOMBRE DEL CURSO -->
+        <TextView
+            android:id="@+id/tvCourseName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/plus_jakarta_sans_bold"
+            android:textColor="@color/purple"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cvStatusBadge"
+            tools:text="Desarrollo Web con React" />
+
+        <!-- TÍTULO DE LA LECCIÓN -->
+        <TextView
+            android:id="@+id/tvEvaluationTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/plus_jakarta_sans_extrabold"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvCourseName"
+            tools:text="Evaluación: Manejo de Estado y Props" />
+
+        <!-- DETALLE DE AVANCE -->
+        <TextView
+            android:id="@+id/tvEvaluationMetrics"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/plus_jakarta_sans_medium"
+            android:textColor="@color/text_gray_medium"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/tvActionLink"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvEvaluationTitle"
+            tools:text="Progreso: 2/5 preguntas" />
+
+        <!-- ACCIÓN: Retomar -> / Revisar -> -->
+        <TextView
+            android:id="@+id/tvActionLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/plus_jakarta_sans_bold"
+            android:textColor="@color/purple"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="@id/tvEvaluationMetrics"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvEvaluationMetrics"
+            tools:text="@string/btn_resume" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

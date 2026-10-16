@@ -105,4 +105,19 @@
     <string name="btn_delete_account_confirm">Eliminar mi cuenta</string>
     <string name="btn_delete_account_countdown">Eliminar mi cuenta (%1$d)</string>
     <string name="btn_cancel">Cancelar</string>
+    <string name="title_practice">Lo que vas logrando.</string>
+    <string name="desc_practice_subtitle">Retoma tus borradores y revisa tus resultados.</string>
+    <string name="hint_search_by_course">Buscar por curso</string>
+    <string name="btn_filter_all">Todas</string>
+    <string name="btn_filter_drafts">Borradores</string>
+    <string name="btn_filter_results">Resultados</string>
+    <string name="btn_submit_results">Envío de resultados</string>
+    <string name="desc_submit_results_demo">%1$d pendientes. Este botón simula la confirmación; no transmite información a un servidor.</string>
+    <string name="btn_resume">Retomar →</string>
+    <string name="btn_new_practice">Nueva práctica</string>
+    <string name="title_diagnostic_exams">Exámenes de diagnóstico.</string>
+    <string name="desc_diagnostic_exams">Mide tu nivel actual en cada curso y personaliza tu ruta de aprendizaje.</string>
+    <string name="hint_search_course_or_exam">Buscar por curso o examen</string>
+    <string name="label_diagnostic_evaluation">Evaluación diagnóstica</string>
+    <string name="btn_start_evaluation">Iniciar evaluación →</string>
 </resources>
