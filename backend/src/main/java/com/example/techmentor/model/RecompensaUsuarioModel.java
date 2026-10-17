@@ -35,7 +35,8 @@ public class RecompensaUsuarioModel implements RecompensaUsuarioUseCase {
         if (!Boolean.TRUE.equals(recompensa.getActiva())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La recompensa no está activa");
         }
-        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResponseStatusException(
+        // Antes: Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(() -> new ResponseStatusException(
+        Usuario usuario = usuarioRepository.bloquearPorId(idUsuario).orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, "Usuario no encontrado: " + idUsuario));
 
         // Recompensas de racha: requieren N días seguidos y se obtienen una sola vez
@@ -78,6 +79,10 @@ public class RecompensaUsuarioModel implements RecompensaUsuarioUseCase {
     @Override
     @Transactional
     public RecompensaUsuarioDto reclamar(Long idRecompensaUsuario, Long idUsuario) {
+        // El bloqueo va antes de leer reclamada, para que dos solicitudes no cobren el mismo premio.
+        Usuario usuario = usuarioRepository.bloquearPorId(idUsuario)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Usuario no encontrado: " + idUsuario));
         RecompensaUsuario ru = recompensaUsuarioRepository.findById(idRecompensaUsuario)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Recompensa de usuario no encontrada: " + idRecompensaUsuario));
@@ -90,7 +95,7 @@ public class RecompensaUsuarioModel implements RecompensaUsuarioUseCase {
         ru.setReclamada(true);
 
         Recompensa recompensa = ru.getRecompensa();
-        Usuario usuario = ru.getUsuario();
+        // Antes: Usuario usuario = ru.getUsuario();
         if ("XP".equals(recompensa.getTipo())) {
             usuario.setXpTotal(usuario.getXpTotal() + recompensa.getCantidad());
         } else if ("MONEDAS".equals(recompensa.getTipo())) {

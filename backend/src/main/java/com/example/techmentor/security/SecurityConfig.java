@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import com.example.techmentor.usecase.AuthUseCase;
 
 /** Configuración de Spring Security: API sin sesión (JWT), /auth/login público y permisos por método (@PreAuthorize). */
 @Configuration
@@ -22,7 +23,8 @@ public class SecurityConfig {
     private final JwtUtil jwtUtil;
 
     @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    // Antes: SecurityFilterChain filterChain(HttpSecurity http) throws Exception
+    SecurityFilterChain filterChain(HttpSecurity http, AuthUseCase authUseCase) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
@@ -32,7 +34,8 @@ public class SecurityConfig {
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                // Antes: .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtFilter(jwtUtil, authUseCase), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

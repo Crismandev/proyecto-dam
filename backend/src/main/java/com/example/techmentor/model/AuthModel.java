@@ -68,6 +68,29 @@ public class AuthModel implements AuthUseCase {
         credencial.setPasswordHash(passwordEncoder.encode(dto.getClaveNueva()));
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public UsuarioAutenticado validarSesion(Long idUsuario, String username) {
+        if (idUsuario == null || username == null || username.isBlank()) {
+            throw credencialesInvalidas();
+        }
+
+        CredencialUsuario credencial = credencialRepository.findByUsername(username)
+                .orElseThrow(this::credencialesInvalidas);
+        Usuario usuario = credencial.getUsuario();
+        if (usuario == null || !idUsuario.equals(usuario.getIdUsuario())
+                || usuario.getEstadoUsuario() == null
+                || !ESTADO_ACTIVO.equals(usuario.getEstadoUsuario().getNombre())
+                || usuario.getRol() == null || usuario.getRol().getNombre() == null
+                || usuario.getRol().getNombre().isBlank()) {
+            throw credencialesInvalidas();
+        }
+
+        // El JWT identifica la cuenta; su estado y rol pueden cambiar antes de que expire.
+        return new UsuarioAutenticado(usuario.getIdUsuario(), credencial.getUsername(),
+                usuario.getRol().getNombre());
+    }
+
     private ResponseStatusException credencialesInvalidas() {
         return new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Credenciales inválidas");
     }

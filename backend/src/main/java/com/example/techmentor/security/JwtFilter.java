@@ -14,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import com.example.techmentor.usecase.AuthUseCase;
 
 /**
  * No lleva @Component: lo instancia SecurityConfig (así no se registra dos veces).
@@ -23,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final AuthUseCase authUseCase;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -34,10 +36,13 @@ public class JwtFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             try {
                 Claims claims = jwtUtil.extraerClaims(header.substring(7));
-                String rol = claims.get("rol", String.class);
                 Long idUsuario = ((Number) claims.get("idUsuario")).longValue();
 
-                UsuarioAutenticado principal = new UsuarioAutenticado(idUsuario, claims.getSubject(), rol);
+                // Antes se conservaban los permisos del token aunque la cuenta cambiara:
+                // String rol = claims.get("rol", String.class);
+                // UsuarioAutenticado principal = new UsuarioAutenticado(idUsuario, claims.getSubject(), rol);
+                UsuarioAutenticado principal = authUseCase.validarSesion(idUsuario, claims.getSubject());
+                String rol = principal.rol();
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         principal, null, List.of(new SimpleGrantedAuthority("ROLE_" + rol)));
 

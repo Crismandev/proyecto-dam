@@ -11,6 +11,9 @@ public interface AuthUseCase {
     /** Valida credenciales y estado ACTIVO; devuelve el JWT. */
     TokenDto login(LoginDto dto);
 
+    /** Comprueba que la cuenta del JWT siga activa y obtiene sus permisos actuales. */
+    UsuarioAutenticado validarSesion(Long idUsuario, String username);
+
     /** Cambia la contraseña del usuario autenticado (exige la clave actual). */
     void cambiarClave(UsuarioAutenticado usuario, CambiarClaveDto dto);
 }

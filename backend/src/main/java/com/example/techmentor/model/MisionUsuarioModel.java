@@ -69,6 +69,13 @@ public class MisionUsuarioModel implements MisionUsuarioUseCase {
     @Override
     @Transactional
     public MisionUsuarioDto actualizarProgreso(Long idMisionUsuario, ProgresoMisionDto dto) {
+        // Carga solo el ID: leer primero la entidad conservaría un saldo o estado anterior al bloqueo.
+        Long idUsuario = misionUsuarioRepository.buscarIdUsuario(idMisionUsuario)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Misión de usuario no encontrada: " + idMisionUsuario));
+        Usuario usuario = usuarioRepository.bloquearPorId(idUsuario)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Usuario no encontrado: " + idUsuario));
         MisionUsuario mu = misionUsuarioRepository.findById(idMisionUsuario)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Misión de usuario no encontrada: " + idMisionUsuario));
@@ -79,7 +86,8 @@ public class MisionUsuarioModel implements MisionUsuarioUseCase {
         if (mu.getProgresoActual() >= mu.getMision().getMeta()) {
             mu.setCompletada(true);
             mu.setFechaCompletada(OffsetDateTime.now());
-            Usuario usuario = mu.getUsuario();
+            // Antes: Usuario usuario = mu.getUsuario();
+            // Se usa el saldo cargado bajo el mismo bloqueo que lecciones y recompensas.
             usuario.setXpTotal(usuario.getXpTotal() + mu.getMision().getXpRecompensa());
             usuarioRepository.save(usuario);
         }
