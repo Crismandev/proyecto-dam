@@ -1,5 +1,6 @@
 -- ============================================================
--- TECHMENTOR - PostgreSQL 
+-- TECHMENTOR - PostgreSQL  |  ESQUEMA COMPLETO v2
+-- Total: 31 tablas.
 -- ============================================================
 
 DROP DATABASE IF EXISTS techmentor;
@@ -57,6 +58,9 @@ CREATE TABLE usuarios (
     fecha_inicio_racha DATE,
     ultima_actividad_racha DATE,
     
+    email_verificado BOOLEAN NOT NULL DEFAULT FALSE, 
+    fecha_verificacion_email TIMESTAMPTZ,
+
     fecha_registro TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP, -- TIMESTAMPTZ para zonas horarias
     fecha_actualizacion TIMESTAMPTZ,
     
@@ -96,6 +100,41 @@ CREATE TABLE historial_estados_usuario (
 
 CREATE INDEX idx_historial_usuario ON historial_estados_usuario(id_usuario);
 CREATE INDEX idx_historial_estado_usuario ON historial_estados_usuario(id_estado_usuario); -- Índice faltante agregado
+
+-- v2: cuentas de Google / GitHub vinculadas al usuario (login externo)
+CREATE TABLE cuentas_externas (
+    id_cuenta_externa BIGSERIAL PRIMARY KEY,
+    id_usuario BIGINT NOT NULL REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    proveedor VARCHAR(20) NOT NULL CHECK (proveedor IN ('GOOGLE', 'GITHUB')),
+    id_externo VARCHAR(150) NOT NULL,          -- "sub" de Google / id numérico de GitHub
+    email_externo VARCHAR(150),
+    nombre_externo VARCHAR(200),
+    avatar_url VARCHAR(500),
+    fecha_vinculacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ultimo_acceso TIMESTAMPTZ,
+    CONSTRAINT uq_cuenta_externa UNIQUE (proveedor, id_externo),   -- una cuenta de Google/GitHub = un usuario
+    CONSTRAINT uq_usuario_proveedor UNIQUE (id_usuario, proveedor) -- un usuario no repite proveedor
+);
+
+CREATE INDEX idx_cuentas_externas_usuario ON cuentas_externas(id_usuario);
+
+-- v2: códigos enviados por correo (verificar correo / recuperar clave). Solo se guarda el HASH del código.
+CREATE TABLE verificaciones_email (
+    id_verificacion BIGSERIAL PRIMARY KEY,
+    id_usuario BIGINT NOT NULL REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    email VARCHAR(150) NOT NULL,
+    codigo_hash VARCHAR(255) NOT NULL,
+    tipo VARCHAR(30) NOT NULL DEFAULT 'VERIFICAR_EMAIL'
+        CHECK (tipo IN ('VERIFICAR_EMAIL', 'RECUPERAR_CLAVE')),
+    intentos INTEGER NOT NULL DEFAULT 0 CHECK (intentos >= 0),
+    usado BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fecha_expiracion TIMESTAMPTZ NOT NULL,
+    fecha_uso TIMESTAMPTZ,
+    CONSTRAINT ck_verificacion_expiracion CHECK (fecha_expiracion > fecha_creacion)
+);
+
+CREATE INDEX idx_verificaciones_usuario_tipo ON verificaciones_email(id_usuario, tipo);
 
 -- ============================================================
 -- 2. CATÁLOGO EDUCATIVO
@@ -171,6 +210,27 @@ CREATE TABLE opciones_ejercicio (
     CONSTRAINT uq_opcion_ejercicio_orden UNIQUE (id_ejercicio, orden)
 );
 
+-- v2: contenido de cada lección: videos (YouTube u otros), textos y enlaces
+CREATE TABLE recursos_leccion (
+    id_recurso BIGSERIAL PRIMARY KEY,
+    id_leccion BIGINT NOT NULL REFERENCES lecciones(id_leccion) ON DELETE CASCADE,
+    tipo VARCHAR(20) NOT NULL CHECK (tipo IN ('VIDEO', 'TEXTO', 'ENLACE')),
+    titulo VARCHAR(200) NOT NULL,
+    url VARCHAR(1000),                          -- link del video o enlace externo
+    contenido TEXT,                             -- texto/explicación (tipo TEXTO)
+    plataforma VARCHAR(30) CHECK (plataforma IN ('YOUTUBE', 'VIMEO', 'OTRO')),
+    duracion_segundos INTEGER CHECK (duracion_segundos >= 0),
+    orden INTEGER NOT NULL CHECK (orden > 0),
+    activo BOOLEAN NOT NULL DEFAULT TRUE,
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_recurso_leccion_orden UNIQUE (id_leccion, orden),
+    -- VIDEO y ENLACE necesitan url; TEXTO necesita contenido
+    CONSTRAINT ck_recurso_contenido CHECK (
+        (tipo = 'TEXTO' AND contenido IS NOT NULL) OR
+        (tipo IN ('VIDEO', 'ENLACE') AND url IS NOT NULL)
+    )
+);
+
 -- ============================================================
 -- 3. PROFESIONES E INTERESES
 -- ============================================================
@@ -195,6 +255,18 @@ CREATE INDEX idx_usuario_profesiones_profesion ON usuario_profesiones(id_profesi
 -- Índice parcial para garantizar una única profesión principal por usuario
 CREATE UNIQUE INDEX uq_usuario_profesion_principal ON usuario_profesiones(id_usuario) WHERE principal;
 
+-- v2: cursos que exige cada puesto (regla de recomendación). prioridad 1 = alta ... 3 = baja
+CREATE TABLE profesion_cursos (
+    id_profesion_curso BIGSERIAL PRIMARY KEY,
+    id_profesion BIGINT NOT NULL REFERENCES profesiones(id_profesion) ON DELETE CASCADE,
+    id_curso BIGINT NOT NULL REFERENCES cursos(id_curso) ON DELETE CASCADE,
+    prioridad INTEGER NOT NULL DEFAULT 2 CHECK (prioridad BETWEEN 1 AND 3),
+    obligatorio BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT uq_profesion_curso UNIQUE (id_profesion, id_curso)
+);
+
+CREATE INDEX idx_profesion_cursos_curso ON profesion_cursos(id_curso);
+
 -- ============================================================
 -- 4. DIAGNÓSTICO / NIVELACIÓN
 -- ============================================================
@@ -205,9 +277,22 @@ CREATE TABLE categorias_pregunta (
     descripcion TEXT
 );
 
+-- v2: curso que refuerza cada categoría de pregunta (regla de recomendación).
+-- Si el % obtenido en la categoría es menor al umbral, se recomienda el curso.
+CREATE TABLE categoria_pregunta_cursos (
+    id_categoria_pregunta_curso BIGSERIAL PRIMARY KEY,
+    id_categoria_pregunta BIGINT NOT NULL REFERENCES categorias_pregunta(id_categoria_pregunta) ON DELETE CASCADE,
+    id_curso BIGINT NOT NULL REFERENCES cursos(id_curso) ON DELETE CASCADE,
+    umbral_porcentaje INTEGER NOT NULL DEFAULT 60 CHECK (umbral_porcentaje BETWEEN 0 AND 100),
+    CONSTRAINT uq_categoria_pregunta_curso UNIQUE (id_categoria_pregunta, id_curso)
+);
+
+CREATE INDEX idx_cat_pregunta_cursos_curso ON categoria_pregunta_cursos(id_curso);
+
 CREATE TABLE examenes_diagnostico (
     id_examen BIGSERIAL PRIMARY KEY,
     id_curso BIGINT REFERENCES cursos(id_curso),
+    id_profesion BIGINT REFERENCES profesiones(id_profesion), -- v2: examen adaptado a un puesto (NULL = examen general)
     nombre VARCHAR(150) NOT NULL,
     descripcion TEXT,
     activo BOOLEAN NOT NULL DEFAULT TRUE,
@@ -216,6 +301,8 @@ CREATE TABLE examenes_diagnostico (
 
 -- Evitar nombres de examen duplicados cuando no están atados a un curso (id_curso es NULL)
 CREATE UNIQUE INDEX uq_examen_global_nombre ON examenes_diagnostico(nombre) WHERE id_curso IS NULL;
+
+CREATE INDEX idx_examenes_profesion ON examenes_diagnostico(id_profesion); -- v2
 
 CREATE TABLE preguntas_diagnostico (
     id_pregunta BIGSERIAL PRIMARY KEY,
@@ -269,6 +356,26 @@ CREATE TABLE respuestas_diagnostico (
 );
 
 CREATE INDEX idx_respuestas_pregunta ON respuestas_diagnostico(id_pregunta);
+
+-- v2: cursos recomendados a un usuario. origen REGLAS (BD) o IA; explicacion_ia queda lista para la IA.
+CREATE TABLE recomendaciones_curso (
+    id_recomendacion BIGSERIAL PRIMARY KEY,
+    id_usuario BIGINT NOT NULL REFERENCES usuarios(id_usuario) ON DELETE CASCADE,
+    id_resultado BIGINT REFERENCES resultados_diagnostico(id_resultado) ON DELETE CASCADE,
+    id_curso BIGINT NOT NULL REFERENCES cursos(id_curso) ON DELETE CASCADE,
+    id_profesion BIGINT REFERENCES profesiones(id_profesion),
+    prioridad INTEGER NOT NULL DEFAULT 2 CHECK (prioridad BETWEEN 1 AND 3),
+    motivo TEXT NOT NULL,
+    origen VARCHAR(20) NOT NULL DEFAULT 'REGLAS' CHECK (origen IN ('REGLAS', 'IA')),
+    explicacion_ia TEXT,
+    estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE'
+        CHECK (estado IN ('PENDIENTE', 'INICIADA', 'DESCARTADA')),
+    fecha_creacion TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_recomendacion_resultado_curso UNIQUE (id_resultado, id_curso)
+);
+
+CREATE INDEX idx_recomendaciones_usuario ON recomendaciones_curso(id_usuario);
+CREATE INDEX idx_recomendaciones_curso ON recomendaciones_curso(id_curso);
 
 -- ============================================================
 -- 5. PROGRESO
