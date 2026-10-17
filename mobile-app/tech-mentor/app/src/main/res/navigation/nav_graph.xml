@@ -7,9 +7,9 @@
 
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="pe.edu.cibertec.tech_mentor.ui.categories.CategoriesFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.practice.ExamFragment"
         android:label="@string/tab_categories"
-        tools:layout="@layout/fragment_categories" />
+        tools:layout="@layout/fragment_exam" />
     <fragment
         android:id="@+id/homeFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.home.HomeFragment"

@@ -6,6 +6,7 @@
     android:orientation="horizontal"
     android:padding="4dp"
     android:background="@drawable/bg_auth_tabs">
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/tvLogin"
         style="@style/Widget.MaterialComponents.Button.TextButton"
@@ -24,6 +25,7 @@
         android:textColor="@color/auth_tab_text"
         app:backgroundTint="@color/auth_tab_background"
         app:cornerRadius="10dp" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/tvRegister"
         style="@style/Widget.MaterialComponents.Button.TextButton"

@@ -31,8 +31,8 @@
     <!-- IMAGEN -->
     <ImageView
         android:id="@+id/ivRobotLogin"
-        android:layout_width="104dp"
-        android:layout_height="104dp"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
         android:src="@drawable/ic_bit"
         android:contentDescription="@string/bit_description"
         android:layout_marginHorizontal="24dp"
@@ -47,15 +47,14 @@
     <!-- TÍTULO PRINCIPAL -->
     <TextView
         android:id="@+id/tvTitle"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="16dp"
         android:fontFamily="@font/plus_jakarta_sans_extrabold"
         android:text="@string/auth_welcome_title"
-        android:textAlignment="center"
-        android:textColor="@color/text_dark"
-        android:textSize="28sp"
+        android:textColor="@color/black"
+        android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,15 +63,14 @@
     <!-- DESCRIPCIÓN -->
     <TextView
         android:id="@+id/tvDescription"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/plus_jakarta_sans_medium"
         android:text="@string/auth_welcome_description"
-        android:textAlignment="center"
         android:textColor="@color/text_gray_medium"
-        android:textSize="12sp"
+        android:textSize="13sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
