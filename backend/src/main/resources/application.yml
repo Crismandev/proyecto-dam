@@ -1,0 +1,82 @@
+# =====================================================================
+# TECHMENTOR - application.yml
+# Si tu proyecto tiene application.properties, bórralo o pasa sus valores aquí.
+# =====================================================================
+spring:
+  application:
+    name: TechMentor
+
+  # ---- Base de datos PostgreSQL (la base "techmentor" debe existir y estar vacía la primera vez) ----
+  datasource:
+    url: jdbc:postgresql://localhost:5432/techmentor
+    username: postgres
+    password: root            # <-- cámbiala
+
+  # ---- JPA: el esquema lo crea Flyway, Hibernate NO debe tocarlo ----
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    show-sql: false
+
+  # ---- Flyway: ejecuta V1__esquema_completo.sql (las 31 tablas) desde db/migration ----
+  #flyway:
+   # enabled: true
+  #locations: classpath:db/migration
+  # Si tu BD YA existe (creada con techmentor.sql original) y le aplicaste
+    # db/upgrade/migracion_bd_existente_v1_a_v2.sql, descomenta estas dos líneas
+    # para que Flyway marque V1 como aplicada y no la ejecute otra vez:
+    # baseline-on-migrate: true
+    # baseline-version: 1
+
+  # ---- Correo (para la verificación por código; se usará en la siguiente etapa) ----
+  # mail:
+  #   host: smtp.gmail.com
+  #   port: 587
+  #   username: tu_correo@gmail.com
+  #   password: CLAVE_DE_APLICACION
+  #   properties:
+  #     mail.smtp.auth: true
+  #     mail.smtp.starttls.enable: true
+
+  # ---- Login con Google / GitHub (siguiente etapa) ----
+  # security:
+  #   oauth2:
+  #     client:
+  #       registration:
+  #         google:
+  #           client-id: TU_CLIENT_ID
+  #           client-secret: TU_CLIENT_SECRET
+  #           scope: openid,profile,email
+  #         github:
+  #           client-id: TU_CLIENT_ID
+  #           client-secret: TU_CLIENT_SECRET
+  #           scope: read:user,user:email
+
+server:
+  port: 8080
+
+# ---- JWT: clave en Base64 (mínimo 256 bits). En producción define la variable de entorno JWT_SECRET ----
+jwt:
+  secret: ${JWT_SECRET:Lqz0QNkygp4LEjd9A79rcCh8K970cKfOh+9hyLJsSfJE2Mt9tAsYcuWdETe2y35g}
+  expiration-ms: 3600000          # 1 hora
+
+# ---- Reglas propias de TechMentor ----
+techmentor:
+  diagnostico:
+    # Asignación automática de nivel tras el diagnóstico (60% = aprobado, 80% = dominio).
+    # Se puede editar sin tocar código: cada banda indica desde qué % se asigna el nivel de ese orden.
+    bandas:
+      - { desde-porcentaje: 0,  orden-nivel: 1 }
+      - { desde-porcentaje: 40, orden-nivel: 2 }
+      - { desde-porcentaje: 60, orden-nivel: 3 }
+      - { desde-porcentaje: 80, orden-nivel: 4 }
+  ia:
+    habilitada: false             # true cuando exista una implementación de ExplicadorIaUseCase con IA
+
+# ---- Actuator: solo salud ----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
