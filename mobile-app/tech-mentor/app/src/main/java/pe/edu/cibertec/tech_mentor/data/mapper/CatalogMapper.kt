@@ -102,3 +102,22 @@ fun ExerciseOptionDto.toDomain(): ExerciseOption {
         orden = this.orden ?: 0
     )
 }
+
+fun ProfessionResponseDto.toDomain(): Profession {
+    return Profession(
+        idProfesion = this.idProfesion,
+        nombre = this.nombre,
+        descripcion = this.descripcion.orEmpty(),
+        activo = this.activo ?: true
+    )
+}
+
+fun ProfessionCourseResponseDto.toDomain(): ProfessionCourse {
+    return ProfessionCourse(
+        idProfesionCurso = this.idProfesionCurso,
+        idProfesion = this.idProfesion,
+        idCurso = this.idCurso,
+        prioridad = this.prioridad ?: 1,
+        obligatorio = this.obligatorio ?: false
+    )
+}
