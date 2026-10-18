@@ -1,27 +1,34 @@
 package pe.edu.cibertec.tech_mentor.ui.categories
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentCategoriesBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCategoryBinding
 
 data class CourseCategory(
+    val idCategory: Int,
     val title: String,
-    val coursesCount: Int,
-    val iconColorHex: String,
-    val bgColorHex: String
+    val coursesCount: Int
 )
 
 class CategoriesFragment : Fragment() {
 
     private var _binding: FragmentCategoriesBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var catalogRepository: CatalogRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,45 +41,81 @@ class CategoriesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupRecyclerView()
+        setupRepository()
+        loadCategories()
     }
 
-    private fun setupRecyclerView() {
-        val fakeData = listOf(
-            CourseCategory("Desarrollo Web", 16, "#198754", "#E8F5E9"), // Verde
-            CourseCategory("English Academy", 7, "#D81B60", "#FCE4EC"), // Rosa
-            CourseCategory("Marketing Digital", 15, "#0D6EFD", "#E3F2FD"), // Azul
-            CourseCategory("Data Science", 12, "#6F42C1", "#F4F0FF"), // Morado
-            CourseCategory("Diseño UX/UI", 9, "#FD7E14", "#FFF3E0"), // Naranja
-            CourseCategory("Desarrollo Móvil", 11, "#20C997", "#E6F8F3"), // Verde agua
-            CourseCategory("Ciberseguridad", 5, "#DC3545", "#FFEBEE"), // Rojo
-            CourseCategory("Cloud Computing", 8, "#0DCAF0", "#E0F7FA")  // Cian
-        )
+    private fun setupRepository() {
+        // MODO PRUEBA
+        catalogRepository = FakeCatalogRepository()
 
-        val adapter = CourseCategoryAdapter(fakeData)
+        // Descomentar cuando el backend esté listo
+        // val context = requireContext()
+        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
+    }
+
+    private fun loadCategories() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val categoriesDeferred = async { catalogRepository.getCategories() }
+            val coursesDeferred = async { catalogRepository.getCourses() }
+
+            val categoriesResult = categoriesDeferred.await()
+            val coursesResult = coursesDeferred.await()
+
+            if (categoriesResult.isSuccess && coursesResult.isSuccess) {
+                val apiCategories = categoriesResult.getOrDefault(emptyList())
+                val apiCourses = coursesResult.getOrDefault(emptyList())
+
+                val displayCategories = apiCategories.map { category ->
+                    val courseCount = apiCourses.count { it.idCategory == category.idCategory }
+
+                    CourseCategory(
+                        idCategory = category.idCategory,
+                        title = category.name,
+                        coursesCount = courseCount
+                    )
+                }
+
+                setupRecyclerView(displayCategories)
+            } else {
+                Toast.makeText(requireContext(), "Error al cargar las rutas", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupRecyclerView(categories: List<CourseCategory>) {
+        val adapter = CourseCategoryAdapter(categories) { selectedCategoryId ->
+
+            val bundle = bundleOf("idCategory" to selectedCategoryId)
+
+            findNavController().navigate(
+                R.id.action_categoryFragment_to_categoryDetailsFragment,
+                bundle
+            )
+        }
         binding.rvCourses.layoutManager = LinearLayoutManager(requireContext())
         binding.rvCourses.adapter = adapter
     }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 }
 
-class CourseCategoryAdapter(private val categories: List<CourseCategory>) :
-    RecyclerView.Adapter<CourseCategoryAdapter.CategoryViewHolder>() {
+class CourseCategoryAdapter(
+    private val categories: List<CourseCategory>,
+    private val onCategoryClick: (Int) -> Unit
+) : RecyclerView.Adapter<CourseCategoryAdapter.CategoryViewHolder>() {
 
     inner class CategoryViewHolder(val binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(category: CourseCategory) {
             binding.tvCategoryTitle.text = category.title
-
             binding.tvCategorySubtitle.text = "${category.coursesCount} Cursos"
 
-            binding.ivCategoryIcon.setColorFilter(Color.parseColor(category.iconColorHex))
-            binding.cvIconContainer.setCardBackgroundColor(Color.parseColor(category.bgColorHex))
+            binding.root.setOnClickListener {
+                onCategoryClick(category.idCategory)
+            }
+            binding.btnVer.setOnClickListener {
+                onCategoryClick(category.idCategory)
+            }
         }
     }
 

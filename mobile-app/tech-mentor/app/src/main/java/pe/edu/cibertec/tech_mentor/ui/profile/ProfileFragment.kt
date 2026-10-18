@@ -1,41 +1,34 @@
 package pe.edu.cibertec.tech_mentor.ui.profile
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.os.Bundle
-import com.bumptech.glide.Glide
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentProfileBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCompletedCourseBinding
-
-data class CompletedItem(
-    val title: String,
-    val strokeColorHex: String,
-    val bgColorHex: String
-)
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val completedCourses = listOf(
-        CompletedItem("Curso de NPM: Gestión de Paquetes y Dependencias en JavaScript", "#F59E0B", "#FFFBEB"),
-        CompletedItem("Curso de ECMAScript: Historia y Versiones de JavaScript", "#F59E0B", "#FFFBEB"),
-        CompletedItem("Curso de JavaScript: Manipulación del DOM", "#6F42C1", "#F0E6FF"),
-        CompletedItem("Curso de Materialize y Diseño Web Moderno", "#10B981", "#ECFDF5")
-    )
+    private lateinit var sessionManager: SessionManager
+    private lateinit var progressRepository: ProgressRepository
+    private lateinit var catalogRepository: CatalogRepository
 
-    private val completedRoutes = listOf(
-        CompletedItem("Ruta de Desarrollo Frontend con JavaScript", "#6F42C1", "#F0E6FF"),
-        CompletedItem("Ruta de Fundamentos de Programación y Lógica", "#0088CC", "#E6F7FF")
-    )
+    private var completedCourses = listOf<String>()
+    private var completedRoutes = listOf<String>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,40 +41,86 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupUserProfileData()
-        setupCertificatesSection()
+        sessionManager = SessionManager(requireContext())
+        setupRepositories()
+        setupListeners()
+        loadUserProfile()
+        loadCompletedCoursesAndRoutes()
     }
 
-    private fun setupUserProfileData() {
-        val nombres = "Yabet Mathias"
-        val apellidos = "Porras Vilca"
-        val email = "mathias.porras@cibertec.edu.pe"
-        val biografia = "Apasionado por el desarrollo web y móvil. Aprendiendo paso a paso junto a Bit para convertirme en Full Stack Developer."
-        val telefono = "987 654 321"
-        val ciudad = "Lima, Perú"
-        val profesion = "Desarrollador Web"
-        val xpTotal = 1450
-        val monedas = 320
-        val nivelUsuario = 5
-        val rachaActual = 7
-        val rachaMaxima = 21
+    private fun setupRepositories() {
+        // MODO PRUEBA (Datos desde los FakeRepository)
+        progressRepository = FakeProgressRepository()
+        catalogRepository = FakeCatalogRepository()
 
-        binding.tvFullName.text = "$nombres $apellidos"
-        binding.tvEmail.text = email
-        binding.tvBio.text = biografia
-        binding.tvPhone.text = telefono
-        binding.tvCity.text = ciudad
-        binding.tvProfession.text = profesion
-        binding.tvUserLevel.text = "Nvl. $nivelUsuario"
+        // MODO REAL (Descomentar cuando el backend esté listo):
+        // val context = requireContext()
+        // progressRepository = ProgressRepositoryImpl(RetrofitClient.getProgressApi(context))
+        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
+    }
 
-        Glide.with(this)
-            .load("https://avatars.githubusercontent.com/u/145881432?v=4")
-            .into(binding.ivAvatar)
+    private fun setupListeners() {
+        binding.ivSettings.setOnClickListener {
+            findNavController().navigate(R.id.action_profileFragment_to_settingsFragment)
+        }
+    }
 
-        binding.tvCurrentStreak.text = "$rachaActual días"
-        binding.tvMaxStreak.text = "$rachaMaxima días"
-        binding.tvTotalXp.text = "$xpTotal XP"
-        binding.tvCoins.text = monedas.toString()
+    private fun loadUserProfile() {
+        val user = sessionManager.getUser() ?: return
+
+        binding.tvFullName.text = "${user.firstName} ${user.lastName.orEmpty()}".trim()
+        binding.tvEmail.text = user.email
+        binding.tvBio.text = user.biography.orEmpty()
+        binding.tvPhone.text = user.phone.orEmpty()
+        binding.tvCity.text = user.city.orEmpty()
+        binding.tvProfession.text = user.profession.orEmpty()
+        binding.tvUserLevel.text = "Nvl. ${user.level}"
+
+        binding.tvCurrentStreak.text = "${user.currentStreak} días"
+        binding.tvMaxStreak.text = "${user.maxStreak} días"
+        binding.tvTotalXp.text = "${user.totalXp} XP"
+        binding.tvCoins.text = user.coins.toString()
+
+        val avatarUrl = user.avatar
+        if (!avatarUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(avatarUrl)
+                .into(binding.ivAvatar)
+        }
+    }
+
+    private fun loadCompletedCoursesAndRoutes() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val progressDeferred = async { progressRepository.getMyCoursesProgress() }
+            val coursesDeferred = async { catalogRepository.getCourses() }
+            val categoriesDeferred = async { catalogRepository.getCategories() }
+
+            val progressResult = progressDeferred.await()
+            val coursesResult = coursesDeferred.await()
+            val categoriesResult = categoriesDeferred.await()
+
+            if (progressResult.isSuccess && coursesResult.isSuccess && categoriesResult.isSuccess) {
+                val allCourses = coursesResult.getOrDefault(emptyList())
+                val allCategories = categoriesResult.getOrDefault(emptyList())
+                val completedProgress = progressResult.getOrDefault(emptyList())
+                    .filter { it.status.equals("COMPLETADO", ignoreCase = true) }
+
+                val completedCourseIds = completedProgress.map { it.idCourse }.toSet()
+
+                completedCourses = completedProgress.mapNotNull { progress ->
+                    progress.course?.name ?: allCourses.find { it.idCourse == progress.idCourse }?.name
+                }
+
+                completedRoutes = allCategories.filter { category ->
+                    val categoryCourses = allCourses.filter { it.idCategory == category.idCategory }
+                    categoryCourses.isNotEmpty() && categoryCourses.all { it.idCourse in completedCourseIds }
+                }.map { it.name }
+
+                setupCertificatesSection()
+            } else {
+                Toast.makeText(requireContext(), "Error al cargar el progreso", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun setupCertificatesSection() {
@@ -107,25 +146,18 @@ class ProfileFragment : Fragment() {
     }
 }
 
-class CompletedAdapter(private var items: List<CompletedItem>) :
+class CompletedAdapter(private var items: List<String>) :
     RecyclerView.Adapter<CompletedAdapter.CompletedViewHolder>() {
 
     inner class CompletedViewHolder(val binding: ItemCompletedCourseBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: CompletedItem) {
-            binding.tvCompletedTitle.text = item.title
-
-            val strokeColor = Color.parseColor(item.strokeColorHex)
-            val bgColor = Color.parseColor(item.bgColorHex)
-
-            binding.cvCourseIcon.strokeColor = strokeColor
-            binding.cvCourseIcon.setCardBackgroundColor(bgColor)
-            binding.ivCourseIcon.imageTintList = ColorStateList.valueOf(strokeColor)
+        fun bind(title: String) {
+            binding.tvCompletedTitle.text = title
         }
     }
 
-    fun updateList(newItems: List<CompletedItem>) {
+    fun updateList(newItems: List<String>) {
         items = newItems
         notifyDataSetChanged()
     }

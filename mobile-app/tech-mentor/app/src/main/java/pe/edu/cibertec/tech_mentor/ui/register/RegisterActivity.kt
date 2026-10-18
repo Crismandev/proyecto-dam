@@ -12,11 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.MainActivity
-import pe.edu.cibertec.tech_mentor.data.local.SessionManager
-import pe.edu.cibertec.tech_mentor.data.repository.FakeAuthRepository
 import pe.edu.cibertec.tech_mentor.databinding.ActivityRegisterBinding
-import pe.edu.cibertec.tech_mentor.domain.model.RegisterUserParams
-import pe.edu.cibertec.tech_mentor.domain.repository.AuthRepository
 import pe.edu.cibertec.tech_mentor.ui.common.showAnimatedBit
 import java.util.Calendar
 

@@ -36,7 +36,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_code_purple"
-                app:tint="@color/purple" />
+                app:tint="@color/black" />
         </com.google.android.material.card.MaterialCardView>
 
         <!-- TÍTULO DE LA CATEGORÍA -->

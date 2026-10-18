@@ -7,9 +7,15 @@
 
     <fragment
         android:id="@+id/categoryFragment"
-        android:name="pe.edu.cibertec.tech_mentor.ui.practice.ExamFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.categories.CategoriesFragment"
         android:label="@string/tab_categories"
-        tools:layout="@layout/fragment_exam" />
+        tools:layout="@layout/fragment_categories">
+
+        <action
+            android:id="@+id/action_categoryFragment_to_categoryDetailsFragment"
+            app:destination="@id/categoryDetailsFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/homeFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.home.HomeFragment"
@@ -24,5 +30,22 @@
         android:id="@+id/profileFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.profile.ProfileFragment"
         android:label="@string/tab_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+
+        <action
+            android:id="@+id/action_profileFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/categoryDetailsFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.categories.CategoryDetailsFragment"
+        android:label="Detalle de Categoría"
+        tools:layout="@layout/fragment_category_details" />
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.settings.SettingsFragment"
+        android:label="Ajustes"
+        tools:layout="@layout/fragment_settings" />
 </navigation>

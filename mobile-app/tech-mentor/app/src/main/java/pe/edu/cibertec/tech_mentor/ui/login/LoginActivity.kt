@@ -7,10 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.MainActivity
-import pe.edu.cibertec.tech_mentor.data.local.SessionManager
-import pe.edu.cibertec.tech_mentor.data.repository.FakeAuthRepository
 import pe.edu.cibertec.tech_mentor.databinding.ActivityLoginBinding
-import pe.edu.cibertec.tech_mentor.domain.repository.AuthRepository
 import pe.edu.cibertec.tech_mentor.ui.common.showAnimatedBit
 import pe.edu.cibertec.tech_mentor.ui.forgotpassword.ForgotPasswordActivity
 import pe.edu.cibertec.tech_mentor.ui.register.RegisterActivity

@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
 import pe.edu.cibertec.tech_mentor.R
-import pe.edu.cibertec.tech_mentor.data.local.SessionManager
 import pe.edu.cibertec.tech_mentor.databinding.ActivityOnboardingBinding
 import pe.edu.cibertec.tech_mentor.ui.login.LoginActivity
 

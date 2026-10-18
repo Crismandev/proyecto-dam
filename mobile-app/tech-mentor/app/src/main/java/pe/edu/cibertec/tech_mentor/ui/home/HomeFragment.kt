@@ -1,16 +1,24 @@
 package pe.edu.cibertec.tech_mentor.ui.home
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var catalogRepository: CatalogRepository
+    private lateinit var gamificationRepository: GamificationRepository
+    private lateinit var progressRepository: ProgressRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,52 +31,139 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupMockData()
+        setupRepositories()
+        loadHomeData()
     }
 
-    private fun setupMockData() {
-        binding.tvWelcomeTitle.text = "Un paso más, Luis."
-        binding.tvStreak.text = "7 días de racha"
-        binding.tvXp.text = "240 XP"
+    private fun setupRepositories() {
+        // Datos simulados
+        catalogRepository = FakeCatalogRepository()
+        gamificationRepository = FakeGamificationRepository()
+        progressRepository = FakeProgressRepository()
 
-        val nivelActual = "Básico"
+        // Descomentar cuando el backend esté listo
+        // val context = requireContext()
+        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
+        // gamificationRepository = GamificationRepositoryImpl(RetrofitClient.getGamificationApi(context))
+        // progressRepository = ProgressRepositoryImpl(RetrofitClient.getProgressApi(context))
+    }
+
+    private fun loadHomeData() {
+        setupUserHeader(
+            firstName = "Luis",
+            streakDays = 7,
+            totalXp = 240
+        )
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            val coursesDeferred = async { catalogRepository.getCourses() }
+            val progressDeferred = async { progressRepository.getMyCoursesProgress() }
+            val missionsDeferred = async { gamificationRepository.getMyMissions() }
+
+            val allCoursesResult = coursesDeferred.await()
+            val myCoursesProgressResult = progressDeferred.await()
+            val myMissionsResult = missionsDeferred.await()
+
+            val allCourses = allCoursesResult.getOrDefault(emptyList())
+            val myCoursesProgress = myCoursesProgressResult.getOrDefault(emptyList())
+
+            updateObjectiveSection(myCoursesProgress, allCourses)
+
+            myMissionsResult.onSuccess { userMissions ->
+                updateMissionsSection(userMissions)
+            }.onFailure { error ->
+                Toast.makeText(requireContext(), "Error misiones: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupUserHeader(firstName: String, streakDays: Int, totalXp: Int) {
+        binding.tvWelcomeTitle.text = "Un paso más, $firstName."
+        binding.tvStreak.text = "$streakDays días de racha"
+        binding.tvXp.text = "$totalXp XP"
+    }
+
+    private fun updateObjectiveSection(
+        progressList: List<CourseProgress>,
+        allCourses: List<Course>
+    ) {
+        val activeProgress = progressList.find {
+            it.status.equals("EN_PROGRESO", ignoreCase = true)
+        } ?: progressList.firstOrNull()
+
+        val course = activeProgress?.course
+            ?: allCourses.find { it.idCourse == activeProgress?.idCourse }
+            ?: allCourses.firstOrNull()
+
+        val currentLevelName = activeProgress?.currentLevel?.name ?: "Básico"
+
         binding.tvObjectiveType.text = "Ruta"
-        binding.tvObjectiveLevel.text = nivelActual
+        binding.tvObjectiveLevel.text = currentLevelName
+        updateLevelIcon(currentLevelName)
 
-// Versión anterior conservada; sustituida por el bloque activo que sigue.
-//         when (nivelActual.lowercase()) {
-//             "básico" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
-//             "intermedio" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
-//             "avanzado" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
-//             else -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_code_purple)
-//         }
+        binding.tvObjectiveCourse.text = course?.name ?: "Explora nuevos cursos"
 
-        when (nivelActual.lowercase()) {
-            "básico" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_low)
-            "intermedio" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_medium)
-            "avanzado" -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_high)
-            else -> binding.ivObjectiveLevelIcon.setImageResource(R.drawable.ic_cell_signal_none)
+        val categoryId = course?.idCategory
+        val totalCategoryCourses = if (categoryId != null) {
+            allCourses.count { it.idCategory == categoryId }.coerceAtLeast(1)
+        } else {
+            allCourses.size.coerceAtLeast(1)
         }
 
-        binding.tvObjectiveCourse.text = "Desarrollo Frontend con JavaScript"
+        val completedCoursesCount = progressList.count {
+            it.status.equals("COMPLETADO", ignoreCase = true)
+        }
 
-        binding.pbObjective.max = 12
-        binding.pbObjective.progress = 5
-        binding.tvObjectiveProgressText.text = "5/12 cursos"
+        binding.pbObjective.max = totalCategoryCourses
+        binding.pbObjective.progress = completedCoursesCount.coerceAtMost(totalCategoryCourses)
+        binding.tvObjectiveProgressText.text = "$completedCoursesCount/$totalCategoryCourses cursos"
+    }
 
-        binding.tvMissionTitle.text = "Tu pequeño logro de hoy"
-        binding.tvMissionSubtitle.text = "Completa una lección más."
+    private fun updateLevelIcon(levelName: String) {
+        val normalized = levelName.lowercase()
+        val iconRes = when {
+            normalized.contains("básico") || normalized.contains("basico") -> R.drawable.ic_cell_signal_low
+            normalized.contains("intermedio") -> R.drawable.ic_cell_signal_medium
+            normalized.contains("avanzado") -> R.drawable.ic_cell_signal_high
+            else -> R.drawable.ic_cell_signal_none
+        }
+        binding.ivObjectiveLevelIcon.setImageResource(iconRes)
+    }
 
-        binding.pbMission.max = 2
-        binding.pbMission.progress = 1
-        binding.tvMissionProgressText.text = "1/2"
+    private fun updateMissionsSection(userMissions: List<UserMission>) {
+        // Misión Diaria
+        val dailyMission = userMissions.find {
+            it.mission?.type?.equals("DIARIA", ignoreCase = true) == true
+        } ?: userMissions.getOrNull(0)
 
-        binding.tvChallengeTitle.text = "Desafío de la semana"
-        binding.tvChallengeSubtitle.text = "Acumula puntos para tu próxima medalla."
+        dailyMission?.let { userMission ->
+            val mission = userMission.mission
+            val goal = (mission?.goal ?: 2).coerceAtLeast(1)
+            val progress = userMission.currentProgress.coerceAtMost(goal)
 
-        binding.pbChallenge.max = 500
-        binding.pbChallenge.progress = 150
-        binding.tvChallengeProgressText.text = "150/500 XP"
+            binding.tvMissionTitle.text = mission?.name
+            binding.tvMissionSubtitle.text = mission?.description
+            binding.pbMission.max = goal
+            binding.pbMission.progress = progress
+            binding.tvMissionProgressText.text = "$progress/$goal"
+        }
+
+        // Desafío Semanal
+        val weeklyChallenge = userMissions.find {
+            it.mission?.type?.equals("SEMANAL", ignoreCase = true) == true
+        } ?: userMissions.getOrNull(1)
+
+        weeklyChallenge?.let { userMission ->
+            val mission = userMission.mission
+            val goal = (mission?.goal ?: 500).coerceAtLeast(1)
+            val progress = userMission.currentProgress.coerceAtMost(goal)
+
+            binding.tvChallengeTitle.text = mission?.name
+            binding.tvChallengeSubtitle.text = mission?.description
+            binding.pbChallenge.max = goal
+            binding.pbChallenge.progress = progress
+            binding.tvChallengeProgressText.text = "$progress/$goal XP"
+        }
     }
 
     override fun onDestroyView() {

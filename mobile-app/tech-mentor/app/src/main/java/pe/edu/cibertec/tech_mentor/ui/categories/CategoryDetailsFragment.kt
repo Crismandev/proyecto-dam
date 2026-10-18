@@ -4,22 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.databinding.FragmentCategoryDetailsBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCourseBinding
-
-// 1. Data Class temporal para los cursos de la ruta
-data class Course(
-    val title: String,
-    val levelAndDuration: String
-)
 
 class CategoryDetailsFragment : Fragment() {
 
     private var _binding: FragmentCategoryDetailsBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var catalogRepository: CatalogRepository
+    private var categoryId: Int = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,31 +33,59 @@ class CategoryDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configuración de la Cabecera de la Ruta (Datos Temporales)
-        setupRouteDetails()
+        categoryId = arguments?.getInt("idCategory", 1) ?: 1
 
-        // Configuración de la Lista de Cursos (Datos Temporales)
-        setupCoursesRecyclerView()
+        setupRepository()
+        loadCategoryDetails(categoryId)
     }
 
-    private fun setupRouteDetails() {
-        // Aquí simulamos que recibimos los datos de la ruta seleccionada
-        binding.tvRouteTitle.text = "Desarrollo Web"
-        binding.tvRouteDescription.text = "Desarrolla aplicaciones web desde cero y haz realidad tu carrera como Web Developer. Sé parte de la industria con los empleos mejor pagados a nivel global."
+    private fun setupRepository() {
+        // MODO PRUEBA
+        catalogRepository = FakeCatalogRepository()
+
+        // Descomentar cuando el backend esté listo:
+        // val context = requireContext()
+        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
     }
 
-    private fun setupCoursesRecyclerView() {
-        // Datos ficticios de los cursos de la ruta
-        val fakeCourses = listOf(
-            Course("Desarrollo web con React", "Intermedio · Lecciones de 5 min"),
-            Course("Bases de datos con MySQL", "Intermedio · Lecciones de 5 min"),
-            Course("Programación orientada a objetos", "Principiante · Lecciones de 5 min"),
-            Course("Desarrollo móvil con Android", "Principiante · Lecciones de 5 min"),
-            Course("Fundamentos de HTML y CSS", "Principiante · Lecciones de 4 min"),
-            Course("Introducción a JavaScript", "Principiante · Lecciones de 5 min")
-        )
+    private fun loadCategoryDetails(idCategory: Int) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val categoriesDeferred = async { catalogRepository.getCategories() }
+            val coursesDeferred = async { catalogRepository.getCourses(idCategory) }
 
-        val adapter = CourseAdapter(fakeCourses)
+            val categoriesResult = categoriesDeferred.await()
+            val coursesResult = coursesDeferred.await()
+
+            categoriesResult.onSuccess { categories ->
+                val selectedCategory = categories.find { it.idCategory == idCategory }
+                    ?: categories.firstOrNull()
+
+                selectedCategory?.let { category ->
+                    binding.tvRouteTitle.text = category.name
+                    binding.tvRouteDescription.text = category.description
+                }
+            }
+
+            coursesResult.onSuccess { courses ->
+                setupCoursesRecyclerView(courses)
+            }.onFailure { error ->
+                Toast.makeText(
+                    requireContext(),
+                    "Error al cargar cursos: ${error.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun setupCoursesRecyclerView(courses: List<Course>) {
+        val adapter = CourseAdapter(courses) { selectedCourse ->
+            Toast.makeText(
+                requireContext(),
+                "Curso seleccionado: ${selectedCourse.name}",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
         binding.rvRouteCourses.layoutManager = LinearLayoutManager(requireContext())
         binding.rvRouteCourses.adapter = adapter
     }
@@ -67,16 +96,23 @@ class CategoryDetailsFragment : Fragment() {
     }
 }
 
-// 2. Adapter temporal creado en el mismo archivo para agilizar pruebas
-class CourseAdapter(private val courses: List<Course>) :
-    RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
+class CourseAdapter(
+    private val courses: List<Course>,
+    private val onCourseClick: (Course) -> Unit
+) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
 
     inner class CourseViewHolder(val binding: ItemCourseBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(course: Course) {
-            binding.tvCourseTitle.text = course.title
-            binding.tvCourseSubtitle.text = course.levelAndDuration
+            binding.tvCourseTitle.text = course.name
+            binding.tvCourseSubtitle.text = course.description.ifEmpty {
+                "+${course.rewardXp} XP al completar"
+            }
+
+            binding.root.setOnClickListener {
+                onCourseClick(course)
+            }
         }
     }
 
