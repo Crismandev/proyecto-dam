@@ -26,10 +26,9 @@ export class CursosFormComponent implements OnInit {
 
   form = this.fb.nonNullable.group({
     idCategoria: [null as number | null, [Validators.required]],
-    nombreCurso: ['', [Validators.required, Validators.maxLength(150)]],
+    nombre: ['', [Validators.required, Validators.maxLength(150)]],
     descripcion: [''],
     icono: ['', [Validators.maxLength(100)]],
-    dificultad: ['PRINCIPIANTE', [Validators.required]],
     xpRequerido: [0, [Validators.required, Validators.min(0)]],
     xpRecompensa: [0, [Validators.required, Validators.min(0)]]
   });
@@ -43,10 +42,9 @@ export class CursosFormComponent implements OnInit {
       this.cursoService.getById(this.cursoId).subscribe(curso => {
         this.form.patchValue({
           idCategoria: curso.idCategoria,
-          nombreCurso: curso.nombreCurso,
+          nombre: curso.nombre,
           descripcion: curso.descripcion,
           icono: curso.icono,
-          dificultad: curso.dificultad,
           xpRequerido: curso.xpRequerido,
           xpRecompensa: curso.xpRecompensa
         });
@@ -56,8 +54,8 @@ export class CursosFormComponent implements OnInit {
 
   loadCategorias() {
     // Unpaginated simplified fetch for dropdown
-    this.http.get<any>(`${environment.apiUrl}/admin/categorias?size=100`).subscribe(res => {
-      this.categorias.set(res.content);
+    this.http.get<CategoriaDTO[]>(`${environment.apiUrl}/catalogo/categorias/todos`).subscribe(res => {
+      this.categorias.set(res);
     });
   }
 

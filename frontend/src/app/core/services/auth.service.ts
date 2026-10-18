@@ -17,12 +17,12 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  login(correo: string, contrasena: string) {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { correo, contrasena }).pipe(
+  login(username: string, password: string) {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }).pipe(
       tap(response => {
         if (response.token) {
           localStorage.setItem('techmentor_token', response.token);
-          const userObj = { correo: response.correo, rol: response.rol };
+          const userObj = { correo: response.username, rol: response.rol };
           localStorage.setItem('techmentor_user', JSON.stringify(userObj));
           
           this.currentUser.set(userObj);

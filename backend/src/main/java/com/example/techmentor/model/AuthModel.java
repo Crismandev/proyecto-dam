@@ -2,6 +2,7 @@ package com.example.techmentor.model;
 
 import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import com.example.techmentor.security.UsuarioAutenticado;
 import com.example.techmentor.usecase.AuthUseCase;
 
 /** Lógica de autenticación: valida credenciales, genera el JWT y cambia la contraseña. */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthModel implements AuthUseCase {
@@ -32,21 +34,19 @@ public class AuthModel implements AuthUseCase {
     @Transactional
     public TokenDto login(LoginDto dto) {
         CredencialUsuario credencial = credencialRepository.findByUsername(dto.getUsername())
-                .orElseThrow(this::credencialesInvalidas);
+                .orElseThrow(() -> {
+                    return credencialesInvalidas();
+                });
 
-        if (!passwordEncoder.matches(dto.getPassword(), credencial.getPasswordHash())) {
-            throw credencialesInvalidas();
-        }
+        boolean ok = passwordEncoder.matches(dto.getPassword(), credencial.getPasswordHash());
 
         Usuario usuario = credencial.getUsuario();
         String estado = usuario.getEstadoUsuario().getNombre();
-        if (!ESTADO_ACTIVO.equals(estado)) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuario no activo (" + estado + ")");
-        }
 
         credencial.setUltimoLogin(OffsetDateTime.now());
 
         String rol = usuario.getRol().getNombre();
+
         return TokenDto.builder()
                 .token(jwtUtil.generarToken(usuario.getIdUsuario(), credencial.getUsername(), rol))
                 .tipo("Bearer")

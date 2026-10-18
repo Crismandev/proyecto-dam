@@ -1,6 +1,6 @@
 export interface LoginResponse {
   token: string;
-  correo: string;
+  username: string;
   rol: string;
 }
 
@@ -35,31 +35,31 @@ export interface TableColumn {
 
 export interface CategoriaDTO {
   idCategoria: number;
-  nombreCategoria: string;
+  nombre: string;
 }
 
 export interface CursoDTO {
   idCurso: number;
   idCategoria: number;
-  nombreCurso: string;
+  nombre: string;
   descripcion: string;
   icono: string;
-  dificultad: string;
   xpRequerido: number;
   xpRecompensa: number;
 }
 
 export interface RolDTO {
   idRol: number;
-  nombreRol: string;
+  nombre: string;
 }
 
 export interface UsuarioDTO {
   idUsuario: number;
   nombres: string;
   apellidos: string;
-  correo: string;
-  rol: RolDTO;
+  idRol: number;
+  nombreRol: string;
+  email: string;
   fechaRegistro: string;
 }
 
