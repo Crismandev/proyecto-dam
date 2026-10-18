@@ -3,7 +3,7 @@ package pe.edu.cibertec.tech_mentor.data.repository
 import pe.edu.cibertec.tech_mentor.data.mapper.toDomain
 import pe.edu.cibertec.tech_mentor.data.remote.ApiResponse
 import pe.edu.cibertec.tech_mentor.data.remote.api.AuthApiService
-import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.CambiarClaveDto
+import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.ChangePasswordRequestDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.LoginRequestDto
 import pe.edu.cibertec.tech_mentor.domain.model.AuthUser
 import pe.edu.cibertec.tech_mentor.domain.repository.AuthRepository
@@ -36,7 +36,7 @@ class AuthRepositoryImpl(
 
     override suspend fun cambiarClave(claveActual: String, nuevaClave: String): ApiResponse<Unit> {
         return try {
-            val response = authApiService.cambiarClave(CambiarClaveDto(claveActual, nuevaClave))
+            val response = authApiService.cambiarClave(ChangePasswordRequestDto(claveActual, nuevaClave))
             if (response.isSuccessful) {
                 ApiResponse.Success(Unit)
             } else {

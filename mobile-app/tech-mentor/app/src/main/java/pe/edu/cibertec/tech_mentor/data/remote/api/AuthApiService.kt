@@ -1,6 +1,6 @@
 package pe.edu.cibertec.tech_mentor.data.remote.api
 
-import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.CambiarClaveDto
+import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.ChangePasswordRequestDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.LoginRequestDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.LoginResponseDto
 import retrofit2.Response
@@ -17,6 +17,6 @@ interface AuthApiService {
 
     @PUT("auth/cambiar-clave")
     suspend fun cambiarClave(
-        @Body request: CambiarClaveDto
+        @Body request: ChangePasswordRequestDto
     ): Response<Unit>
 }

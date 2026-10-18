@@ -9,12 +9,10 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    // Base URL para el emulador Android
     private const val BASE_URL = "http://10.0.2.2:8080/"
 
     fun getClient(sessionManager: SessionManager): Retrofit {
 
-        // Logging para ver las peticiones en el Logcat (útil en desarrollo)
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
