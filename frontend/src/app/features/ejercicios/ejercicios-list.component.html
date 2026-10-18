@@ -1,1 +1,44 @@
-<p>ejercicios-list works!</p>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold text-dark">Gestión de Ejercicios</h2>
+    </div>
+    <button class="btn btn-primary px-4 py-2 shadow-sm" routerLink="nuevo" style="background-color: #6c5ce7; border: none;">
+      Nuevo Ejercicio
+    </button>
+  </div>
+
+  <div class="card border-0 shadow-sm rounded-4">
+    <div class="card-body p-4">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light text-uppercase fs-7 text-secondary">
+            <tr>
+              <th>#ID</th>
+              <th>Enunciado</th>
+              <th>Tipo</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of ejercicios()">
+              <td>{{ item.id }}</td>
+              <td><span class="fw-semibold text-dark">{{ item.enunciado || item.pregunta }}</span></td>
+              <td class="text-muted">{{ item.tipo }}</td>
+              <td class="text-end">
+                <button class="btn btn-sm btn-light text-danger border" (click)="eliminar(item.id)">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="ejercicios().length === 0">
+              <td colspan="4" class="text-center py-5 text-muted">
+                No hay registros.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
