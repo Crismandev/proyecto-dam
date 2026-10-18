@@ -9,7 +9,7 @@ import com.example.techmentor.bean.dto.CategoriaDto;
 import com.example.techmentor.security.*;
 import com.example.techmentor.usecase.CategoriaUseCase;
 
-/** Endpoints REST de categoría (/catalogo/categorias). Los permisos por rol van en cada método. */
+/** Endpoints REST de categoría (/catalogo/categorias). Los permisos por rol en cada método. */
 @RestController
 @RequiredArgsConstructor
 public class CategoriaController {
