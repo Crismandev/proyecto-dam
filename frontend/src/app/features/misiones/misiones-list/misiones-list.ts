@@ -23,11 +23,12 @@ export class MisionesListComponent implements OnInit {
   }
 
   cargarMisiones(page: number = 0): void {
-    this.misionService.getAll(page, 10).subscribe({
+    this.misionService.getAll().subscribe({
       next: (res) => {
-        this.misiones.set(res.content);
-        this.page.set(res.number);
-        this.totalPages.set(res.totalPages);
+        const start = page * 10;
+        this.misiones.set(res.slice(start, start + 10));
+        this.page.set(page);
+        this.totalPages.set(Math.ceil(res.length / 10));
       },
       error: (err) => console.error('Error al cargar misiones', err)
     });

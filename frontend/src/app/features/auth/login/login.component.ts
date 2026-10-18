@@ -17,7 +17,7 @@ export class LoginComponent {
   private router = inject(Router);
 
   loginForm = this.fb.nonNullable.group({
-    correo: ['', [Validators.required, Validators.email]],
+    correo: ['', [Validators.required]],
     contrasena: ['', [Validators.required]]
   });
 
@@ -28,14 +28,14 @@ export class LoginComponent {
     if (this.loginForm.valid) {
       this.isLoading.set(true);
       this.errorMsg.set('');
-      const { correo, contrasena } = this.loginForm.getRawValue();
+      const { correo: username, contrasena: password } = this.loginForm.getRawValue();
       
-      this.authService.login(correo, contrasena).subscribe({
+      this.authService.login(username, password).subscribe({
         next: (res) => {
           this.isLoading.set(false);
           // Redirect to admin if role is ADMIN or ADMINISTRADOR
           if (res.rol === 'ADMIN' || res.rol === 'ADMINISTRADOR') {
-            this.router.navigate(['/admin/dashboard']);
+            this.router.navigate(['/admin/usuarios']);
           } else {
             this.errorMsg.set('Solo administradores pueden acceder al portal.');
             this.authService.logout();

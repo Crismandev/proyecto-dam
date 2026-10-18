@@ -10,6 +10,6 @@ import { environment } from '../../../../environments/environment';
 export class MisionService extends CrudService<MisionDTO, MisionDTO> {
   constructor() {
     const http = inject(HttpClient);
-    super(http, `${environment.apiUrl}/misiones`);
+    super(http, `${environment.apiUrl}/gamificacion/misiones`);
   }
 }

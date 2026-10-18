@@ -1,1 +1,22 @@
-<p>progreso-list works!</p>
+<div class="page-header"><h1>Progreso estudiantil</h1></div>
+<div class="card">
+  <div class="form-group">
+    <label>Estudiante</label>
+    <select class="form-control" [(ngModel)]="usuarioId" (ngModelChange)="cargarProgreso()">
+      <option [ngValue]="null">Seleccione un estudiante</option>
+      <option *ngFor="let usuario of usuarios()" [ngValue]="usuario.idUsuario">{{usuario.nombres}} {{usuario.apellidos}} — {{usuario.email}}</option>
+    </select>
+  </div>
+</div>
+<div class="card" *ngIf="usuarioId">
+  <h2>Cursos</h2>
+  <div class="table-responsive"><table class="table"><thead><tr><th>Curso</th><th>Nivel actual</th><th>Estado</th><th>XP ganado</th><th>Última actividad</th></tr></thead>
+    <tbody><tr *ngIf="cursos().length===0"><td colspan="5" class="text-center empty-state">No hay progreso en cursos.</td></tr>
+      <tr *ngFor="let item of cursos()"><td>{{item.nombreCurso}}</td><td>{{item.nombreNivelActual || '—'}}</td><td>{{item.estado}}</td><td>{{item.xpGanado}}</td><td>{{item.fechaUltimaActividad | date:'mediumDate'}}</td></tr>
+    </tbody></table></div>
+  <h2>Lecciones</h2>
+  <div class="table-responsive"><table class="table"><thead><tr><th>Lección</th><th>Estado</th><th>Puntaje</th><th>Intentos</th><th>XP ganado</th><th>Última actividad</th></tr></thead>
+    <tbody><tr *ngIf="lecciones().length===0"><td colspan="6" class="text-center empty-state">No hay progreso en lecciones.</td></tr>
+      <tr *ngFor="let item of lecciones()"><td>{{item.tituloLeccion}}</td><td>{{item.estado}}</td><td>{{item.puntaje ?? '—'}}</td><td>{{item.intentos}}</td><td>{{item.xpGanado}}</td><td>{{item.fechaUltimaActividad | date:'mediumDate'}}</td></tr>
+    </tbody></table></div>
+</div>

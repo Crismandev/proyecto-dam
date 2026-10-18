@@ -41,14 +41,14 @@
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
-          <label>Correo Electrónico o Usuario</label>
+          <label>Nombre de usuario</label>
           <div class="input-with-icon">
             <i class="ri-mail-send-line input-icon"></i>
-            <input type="email" class="form-control" formControlName="correo" placeholder="admin@techmentor.com"
+            <input type="text" class="form-control" formControlName="correo" placeholder="Tu usuario"
                    [class.is-invalid]="loginForm.controls.correo.invalid && loginForm.controls.correo.touched">
           </div>
           <div class="invalid-feedback" *ngIf="loginForm.controls.correo.invalid && loginForm.controls.correo.touched">
-            <i class="ri-alert-line"></i> Ingrese un correo o usuario válido.
+            <i class="ri-alert-line"></i> Ingrese un nombre de usuario.
           </div>
         </div>
         

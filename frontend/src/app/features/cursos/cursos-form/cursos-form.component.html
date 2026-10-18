@@ -8,8 +8,8 @@
     
     <div class="form-group">
       <label>Nombre del Curso <span class="text-danger">*</span></label>
-      <input type="text" class="form-control" formControlName="nombreCurso"
-             [class.is-invalid]="form.controls.nombreCurso.invalid && form.controls.nombreCurso.touched">
+      <input type="text" class="form-control" formControlName="nombre"
+             [class.is-invalid]="form.controls.nombre.invalid && form.controls.nombre.touched">
     </div>
 
     <div class="form-group">
@@ -17,17 +17,7 @@
       <select class="form-control" formControlName="idCategoria"
               [class.is-invalid]="form.controls.idCategoria.invalid && form.controls.idCategoria.touched">
         <option [ngValue]="null">Seleccione una categoría</option>
-        <option *ngFor="let cat of categorias()" [ngValue]="cat.idCategoria">{{ cat.nombreCategoria }}</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Dificultad <span class="text-danger">*</span></label>
-      <select class="form-control" formControlName="dificultad"
-              [class.is-invalid]="form.controls.dificultad.invalid && form.controls.dificultad.touched">
-        <option value="PRINCIPIANTE">Principiante</option>
-        <option value="INTERMEDIO">Intermedio</option>
-        <option value="AVANZADO">Avanzado</option>
+        <option *ngFor="let cat of categorias()" [ngValue]="cat.idCategoria">{{ cat.nombre }}</option>
       </select>
     </div>
 

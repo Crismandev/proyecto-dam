@@ -10,10 +10,10 @@ import { Observable } from 'rxjs';
 })
 export class UsuarioService extends CrudService<UsuarioDTO, any> {
   constructor(http: HttpClient) {
-    super(http, `${environment.apiUrl}/admin/usuarios`);
+    super(http, `${environment.apiUrl}/usuarios`);
   }
 
   getDetalleAlumno(id: number): Observable<any> {
-    return this.http.get<any>(`${this.url}/${id}/detalle`);
+    return this.http.get<any>(`${this.url}/${id}`);
   }
 }

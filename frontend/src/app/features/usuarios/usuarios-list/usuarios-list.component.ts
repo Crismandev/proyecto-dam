@@ -49,8 +49,8 @@ export class UsuariosListComponent implements OnInit {
     { key: 'idUsuario', header: 'ID' },
     { key: 'nombres', header: 'Nombres' },
     { key: 'apellidos', header: 'Apellidos' },
-    { key: 'correo', header: 'Correo' },
-    { key: 'rol', header: 'Rol', type: 'object', objectKey: 'nombreRol' },
+    { key: 'email', header: 'Correo' },
+    { key: 'nombreRol', header: 'Rol' },
     { key: 'fechaRegistro', header: 'Registro', type: 'date' }
   ];
 
@@ -59,11 +59,13 @@ export class UsuariosListComponent implements OnInit {
   }
 
   loadData(page: number = 0) {
-    this.usuarioService.getAll(page, 10, this.currentSearch()).subscribe(res => {
-      this.data.set(res.content);
-      this.totalElements.set(res.totalElements);
-      this.totalPages.set(res.totalPages);
-      this.currentPage.set(res.number);
+    this.usuarioService.getAll().subscribe(res => {
+      const q = this.currentSearch().toLocaleLowerCase();
+      const filtered = res.filter(item => `${item.nombres} ${item.apellidos} ${item.email}`.toLocaleLowerCase().includes(q));
+      this.totalElements.set(filtered.length);
+      this.totalPages.set(Math.ceil(filtered.length / 10));
+      this.currentPage.set(page);
+      this.data.set(filtered.slice(page * 10, page * 10 + 10));
     });
   }
 
@@ -81,11 +83,7 @@ export class UsuariosListComponent implements OnInit {
   }
 
   onView(row: UsuarioDTO) {
-    if (row.rol.nombreRol === 'ESTUDIANTE') {
-      this.router.navigate(['/admin/usuarios', row.idUsuario, 'detalle']);
-    } else {
-      this.onEdit(row);
-    }
+    this.onEdit(row);
   }
 
   onEdit(row: UsuarioDTO) {
@@ -93,7 +91,7 @@ export class UsuariosListComponent implements OnInit {
   }
 
   onDelete(row: UsuarioDTO) {
-    if (confirm(`¿Seguro que deseas eliminar al usuario: ${row.correo}?`)) {
+    if (confirm(`¿Seguro que deseas eliminar al usuario: ${row.email}?`)) {
       this.usuarioService.delete(row.idUsuario).subscribe(() => {
         this.loadData(this.currentPage());
       });

@@ -47,8 +47,7 @@ export class CursosListComponent implements OnInit {
 
   columns: TableColumn[] = [
     { key: 'idCurso', header: 'ID' },
-    { key: 'nombreCurso', header: 'Nombre' },
-    { key: 'dificultad', header: 'Dificultad' },
+    { key: 'nombre', header: 'Nombre' },
     { key: 'xpRequerido', header: 'XP Requerido' },
     { key: 'xpRecompensa', header: 'XP Recompensa' }
   ];
@@ -58,11 +57,12 @@ export class CursosListComponent implements OnInit {
   }
 
   loadData(page: number = 0) {
-    this.cursoService.getAll(page, 10, this.currentSearch()).subscribe(res => {
-      this.data.set(res.content);
-      this.totalElements.set(res.totalElements);
-      this.totalPages.set(res.totalPages);
-      this.currentPage.set(res.number);
+    this.cursoService.getAll().subscribe(res => {
+      const filtered = res.filter(item => (item.nombre || '').toLowerCase().includes(this.currentSearch().toLowerCase()));
+      this.totalElements.set(filtered.length);
+      this.totalPages.set(Math.ceil(filtered.length / 10));
+      this.currentPage.set(page);
+      this.data.set(filtered.slice(page * 10, page * 10 + 10));
     });
   }
 
@@ -84,7 +84,7 @@ export class CursosListComponent implements OnInit {
   }
 
   onDelete(row: CursoDTO) {
-    if (confirm(`¿Seguro que deseas eliminar el curso: ${row.nombreCurso}?`)) {
+      if (confirm(`¿Seguro que deseas eliminar el curso: ${row.nombre}?`)) {
       this.cursoService.delete(row.idCurso).subscribe(() => {
         this.loadData(this.currentPage());
       });
