@@ -6,6 +6,7 @@ import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
 import pe.edu.cibertec.tech_mentor.domain.model.Category
 import pe.edu.cibertec.tech_mentor.domain.model.Course
 import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepository
+import pe.edu.cibertec.tech_mentor.domain.model.CourseContent
 
 class CatalogRepositoryImpl(
     private val catalogApiService: CatalogApiService
@@ -63,5 +64,13 @@ class CatalogRepositoryImpl(
         } catch (e: Exception) {
             ApiResponse.Exception(e)
         }
+    }
+
+    override suspend fun getCourseContent(idCurso: Long): ApiResponse<CourseContent> {
+        return try {
+            val response = catalogApiService.getCourseContent(idCurso)
+            if (response.isSuccessful && response.body() != null) ApiResponse.Success(response.body()!!.toDomain())
+            else ApiResponse.Error(response.code(), "Error fetching course content")
+        } catch (e: Exception) { ApiResponse.Exception(e) }
     }
 }

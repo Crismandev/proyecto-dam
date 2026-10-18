@@ -1,6 +1,7 @@
 package pe.edu.cibertec.tech_mentor.data.remote.api
 
 import pe.edu.cibertec.tech_mentor.data.remote.dto.catalog.CategoryResponseDto
+import pe.edu.cibertec.tech_mentor.data.remote.dto.catalog.CourseContentResponseDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.catalog.CourseResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
@@ -26,4 +27,9 @@ interface CatalogApiService {
     suspend fun getCourseById(
         @Path("id") id: Long
     ): Response<CourseResponseDto>
+
+    @GET("catalogo/cursos/{idCurso}/contenido")
+    suspend fun getCourseContent(
+        @Path("idCurso") idCurso: Long
+    ): Response<CourseContentResponseDto>
 }
