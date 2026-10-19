@@ -1,145 +1,162 @@
 <div class="dash" *ngIf="data() as d; else loadingTpl">
-  <header class="dash-hero">
-    <div class="hero-left">
-      <span class="hero-kicker">TechMentor</span>
-      <h1>Aprendizaje &amp; Catálogo</h1>
-    </div>
-    <div class="hero-right">
-      <app-scene-orb variant="compact" class="hero-orb"></app-scene-orb>
+  <header class="dash-head">
+    <div>
       <h1>Dashboard</h1>
+      <p>Resumen de la comunidad y el catálogo · actualizado {{ d.actualizado | date:'HH:mm' }}</p>
     </div>
+    <button type="button" class="btn-outline" (click)="refresh()" [disabled]="loading()">
+      <i class="ri-refresh-line" [class.spin]="loading()" aria-hidden="true"></i>
+      Actualizar
+    </button>
   </header>
 
-  <section class="row row-top">
-    <article class="panel line-panel">
-      <h2>Actividad de la plataforma</h2>
-      <p>
-        Altas acumuladas de usuarios en {{ yearNow }}. El trazado sigue el crecimiento real del catálogo
-        y la comunidad.
-      </p>
-      <div class="line-chart" aria-label="Altas de usuarios por mes">
-        <svg viewBox="0 0 100 62" preserveAspectRatio="none">
-          <g class="grid">
-            <line x1="0" y1="14" x2="100" y2="14"></line>
-            <line x1="0" y1="28" x2="100" y2="28"></line>
-            <line x1="0" y1="42" x2="100" y2="42"></line>
-            <line x1="0" y1="56" x2="100" y2="56"></line>
-          </g>
-          <polygon class="line-area" [attr.points]="areaPoints(d.monthSeries, d.monthMax)"></polygon>
-          <polyline class="line-path" [attr.points]="linePoints(d.monthSeries, d.monthMax)"></polyline>
-          <g *ngFor="let point of d.monthSeries; let i = index">
-            <circle
-              [attr.cx]="pointX(i, d.monthSeries.length)"
-              [attr.cy]="pointY(point.value, d.monthMax)"
-              r="1.3"></circle>
-          </g>
-        </svg>
-        <div class="month-labels">
-          <span *ngFor="let point of d.monthSeries">{{ point.label }}</span>
-        </div>
-      </div>
+  <section class="kpis" aria-label="Indicadores principales">
+    <article class="card kpi">
+      <span class="kpi-label"><i class="ri-group-line" aria-hidden="true"></i>Estudiantes</span>
+      <strong>{{ d.estudiantes | number }}</strong>
+      <span class="kpi-sub"><b class="up">+{{ d.nuevosMes }}</b> este mes · {{ d.vip }} VIP</span>
     </article>
-
-    <article class="panel bars-panel">
-      <h2>Cursos por ruta</h2>
-      <p>Distribución del catálogo según las categorías publicadas.</p>
-      <ul class="bars" *ngIf="d.categoryBars.length; else emptyBars">
-        <li *ngFor="let bar of d.categoryBars">
-          <div class="bar-track">
-            <div class="bar-fill" [style.width.%]="bar.percent"></div>
-          </div>
-          <span class="bar-name">{{ bar.name }}</span>
-        </li>
-      </ul>
-      <ng-template #emptyBars>
-        <p class="empty">Aún no hay cursos para graficar.</p>
-      </ng-template>
+    <article class="card kpi">
+      <span class="kpi-label"><i class="ri-pulse-line" aria-hidden="true"></i>Activos · 30 días</span>
+      <strong>{{ d.activos30 | number }}</strong>
+      <span class="kpi-sub"><b>{{ d.activosPct }}%</b> de los estudiantes</span>
+    </article>
+    <article class="card kpi">
+      <span class="kpi-label"><i class="ri-book-open-line" aria-hidden="true"></i>Inscripciones</span>
+      <strong>{{ d.inscripciones | number }}</strong>
+      <span class="kpi-sub"><b>{{ d.tasaFinalizacion }}%</b> finalizadas ({{ d.completadas }})</span>
+    </article>
+    <article class="card kpi">
+      <span class="kpi-label"><i class="ri-flashlight-line" aria-hidden="true"></i>XP acumulada</span>
+      <strong>{{ d.xpTotal | number }}</strong>
+      <span class="kpi-sub"><b>{{ d.xpPromedio | number }}</b> XP promedio</span>
     </article>
   </section>
 
-  <section class="row row-bottom">
-    <article class="panel donut-panel">
-      <div class="donut-wrap">
-        <svg viewBox="0 0 42 42" class="donut" aria-hidden="true">
-          <circle class="donut-hole" cx="21" cy="21" r="15.915"></circle>
-          <circle
-            *ngFor="let slice of d.donut"
-            class="donut-ring"
-            cx="21" cy="21" r="15.915"
-            [attr.stroke]="slice.color"
-            [attr.stroke-dasharray]="slice.dasharray"
-            [attr.stroke-dashoffset]="slice.dashoffset"></circle>
-        </svg>
-      </div>
-      <div class="donut-legend">
-        <h2>Top rutas</h2>
-        <ul>
-          <li *ngFor="let slice of d.donut">
-            <span class="swatch" [style.background]="slice.color"></span>
-            {{ slice.name }}
-          </li>
-        </ul>
-        <p class="muted">
-          {{ d.totalCursos }} cursos en {{ d.donut.length || 0 }} rutas activas del catálogo.
-        </p>
+  <section class="grid grid-main">
+    <article class="card chart-card">
+      <header class="card-head">
+        <h2>Nuevos estudiantes</h2>
+        <span class="card-meta">Últimos 12 meses</span>
+      </header>
+      <div class="cols" role="list" aria-label="Registros de estudiantes por mes">
+        <div class="col" role="listitem" *ngFor="let m of d.meses" [class.current]="m.current"
+             [attr.aria-label]="m.label + ': ' + m.value + ' registros'">
+          <span class="col-value">{{ m.value || '' }}</span>
+          <div class="col-track">
+            <div class="col-fill" [style.height.%]="m.value ? m.percent : 0"></div>
+          </div>
+          <span class="col-label">{{ m.label }}</span>
+        </div>
       </div>
     </article>
 
-    <article class="panel sat-panel">
-      <h2>Racha de alumnos</h2>
-      <p>Nivel de constancia medido por la racha diaria de la comunidad.</p>
-      <ul class="stars">
-        <li *ngFor="let row of d.satisfaction">
-          <div class="star-row" [attr.aria-label]="row.label + ': ' + row.stars + ' de 5'">
-            <i class="ri-star-fill" *ngFor="let s of [1,2,3,4,5]" [class.off]="s > row.stars"></i>
-          </div>
-          <span class="sat-label">{{ row.label }}</span>
-          <span class="sat-pct">{{ row.percent }}%</span>
+    <article class="card">
+      <header class="card-head">
+        <h2>Estado de inscripciones</h2>
+        <span class="card-meta">{{ d.inscripciones }} en total</span>
+      </header>
+      <div class="stack" aria-hidden="true">
+        <div *ngFor="let s of d.estadosInscripcion" class="stack-seg" [class]="'stack-seg seg-' + s.key"
+             [style.width.%]="s.percent"></div>
+      </div>
+      <ul class="legend">
+        <li *ngFor="let s of d.estadosInscripcion">
+          <span class="dot" [class]="'dot seg-' + s.key" aria-hidden="true"></span>
+          <span class="legend-label">{{ s.label }}</span>
+          <span class="legend-value">{{ s.value }}</span>
+          <span class="legend-pct">{{ s.percent }}%</span>
+        </li>
+      </ul>
+
+      <h3 class="sub-title">Cuentas de estudiantes</h3>
+      <ul class="legend">
+        <li *ngFor="let s of d.cuentas">
+          <span class="dot" [class]="'dot acc-' + s.key" aria-hidden="true"></span>
+          <span class="legend-label">{{ s.label }}</span>
+          <span class="legend-value">{{ s.value }}</span>
+          <span class="legend-pct">{{ s.percent }}%</span>
         </li>
       </ul>
     </article>
+  </section>
 
-    <aside class="kpis">
-      <div class="kpi kpi-wide">
-        <span>XP acumulada</span>
-        <strong>{{ d.totalXp | number:'1.0-0' }}</strong>
-      </div>
-      <div class="kpi kpi-wide">
-        <span>Alumnos en plataforma</span>
-        <strong>{{ d.totalAlumnos | number:'1.0-0' }}</strong>
-      </div>
-      <div class="kpi-pair">
-        <div class="kpi">
-          <span>Cursos</span>
-          <strong>{{ d.totalCursos }}</strong>
-        </div>
-        <div class="kpi">
-          <span>Lecciones</span>
-          <strong>{{ d.totalLecciones }}</strong>
-        </div>
-      </div>
-      <div class="kpi-pair">
-        <div class="kpi">
-          <span>Misiones</span>
-          <strong>{{ d.achievement }}%</strong>
-        </div>
-        <div class="kpi">
-          <span>Activas</span>
-          <strong>{{ d.misionesActivas }}/{{ d.totalMisiones }}</strong>
-        </div>
-      </div>
-    </aside>
+  <section class="grid grid-main">
+    <article class="card">
+      <header class="card-head">
+        <h2>Rendimiento por curso</h2>
+        <span class="card-meta">Ordenado por inscritos</span>
+      </header>
+      <table class="table" *ngIf="d.cursos.length; else emptyCursos">
+        <thead>
+          <tr>
+            <th scope="col">Curso</th>
+            <th scope="col" class="num">Inscritos</th>
+            <th scope="col" class="num">Completados</th>
+            <th scope="col" class="rate-col">Finalización</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of d.cursos">
+            <td>
+              <span class="cell-title">{{ c.nombre }}</span>
+              <span class="cell-sub">{{ c.categoria }}</span>
+            </td>
+            <td class="num">{{ c.inscritos }}</td>
+            <td class="num">{{ c.completados }}</td>
+            <td class="rate-col">
+              <div class="rate-wrap">
+                <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="c.tasa"
+                     [attr.aria-label]="'Finalización ' + c.nombre">
+                  <div class="meter-fill" [style.width.%]="c.tasa"></div>
+                </div>
+                <span class="rate">{{ c.tasa }}%</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #emptyCursos><p class="empty">Aún no hay cursos publicados.</p></ng-template>
+    </article>
+
+    <article class="card">
+      <header class="card-head">
+        <h2>Top estudiantes</h2>
+        <span class="card-meta">Por XP</span>
+      </header>
+      <ol class="ranking" *ngIf="d.top.length; else emptyTop">
+        <li *ngFor="let s of d.top; let i = index">
+          <span class="rank">{{ i + 1 }}</span>
+          <span class="avatar" aria-hidden="true">{{ s.iniciales }}</span>
+          <span class="who">
+            <span class="cell-title">{{ s.nombre }} <em class="badge" *ngIf="s.vip">VIP</em></span>
+            <span class="cell-sub"><i class="ri-fire-line" aria-hidden="true"></i> {{ s.racha }} días de racha</span>
+          </span>
+          <span class="xp">{{ s.xp | number }} <small>XP</small></span>
+        </li>
+      </ol>
+      <ng-template #emptyTop><p class="empty">Sin estudiantes todavía.</p></ng-template>
+    </article>
+  </section>
+
+  <section class="card catalog" aria-label="Catálogo">
+    <div><span>Categorías</span><strong>{{ d.catalogo.categorias }}</strong></div>
+    <div><span>Cursos</span><strong>{{ d.catalogo.cursos }}</strong></div>
+    <div><span>Lecciones</span><strong>{{ d.catalogo.lecciones }}</strong></div>
+    <div><span>Ejercicios</span><strong>{{ d.catalogo.ejercicios }}</strong></div>
+    <div><span>Misiones activas</span><strong>{{ d.catalogo.misionesActivas }}</strong></div>
   </section>
 </div>
 
 <ng-template #loadingTpl>
-  <div class="loading-state" *ngIf="loading(); else errorTpl">
-    <div class="spinner"></div>
-    <p>Preparando el dashboard de TechMentor…</p>
+  <div class="state" *ngIf="loading(); else errorTpl" role="status">
+    <div class="spinner" aria-hidden="true"></div>
+    <p>Cargando datos de TechMentor…</p>
   </div>
   <ng-template #errorTpl>
-    <div class="loading-state">
+    <div class="state" role="alert">
       <p>{{ error() || 'Sin datos para mostrar.' }}</p>
+      <button type="button" class="btn-outline" (click)="refresh()">Reintentar</button>
     </div>
   </ng-template>
 </ng-template>

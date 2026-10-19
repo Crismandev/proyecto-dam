@@ -1,39 +1,43 @@
-import {
-  AfterViewChecked,
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  inject,
-  signal
-} from '@angular/core';
-import { DecimalPipe, NgFor, NgIf } from '@angular/common';
+import { Component, ElementRef, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { DatePipe, DecimalPipe, NgFor, NgIf } from '@angular/common';
 import { gsap } from 'gsap';
-import { SceneOrbComponent } from '../../shared/components/scene-orb/scene-orb.component';
 import { DashboardService, DashboardVm } from './dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [DecimalPipe, NgFor, NgIf, SceneOrbComponent],
+  imports: [DatePipe, DecimalPipe, NgFor, NgIf],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
+export class DashboardComponent implements OnInit, OnDestroy {
   private dashboard = inject(DashboardService);
   private host = inject(ElementRef);
   data = signal<DashboardVm | null>(null);
   loading = signal(true);
   error = signal('');
-  readonly yearNow = new Date().getFullYear();
   private ctx?: gsap.Context;
   private animated = false;
 
   ngOnInit(): void {
+    this.refresh();
+  }
+
+  ngOnDestroy(): void {
+    this.ctx?.revert();
+  }
+
+  refresh(): void {
+    this.loading.set(true);
+    this.error.set('');
     this.dashboard.load().subscribe({
       next: (vm) => {
         this.data.set(vm);
         this.loading.set(false);
+        if (!this.animated) {
+          this.animated = true;
+          requestAnimationFrame(() => this.playIntro());
+        }
       },
       error: () => {
         this.error.set('No se pudo cargar el dashboard.');
@@ -42,72 +46,29 @@ export class DashboardComponent implements OnInit, AfterViewChecked, OnDestroy {
     });
   }
 
-  ngAfterViewChecked(): void {
-    if (this.animated || !this.data() || this.loading()) {
-      return;
-    }
-    this.animated = true;
-    this.playIntro();
-  }
-
-  ngOnDestroy(): void {
-    this.ctx?.revert();
-  }
-
-  linePoints(series: DashboardVm['monthSeries'], max: number): string {
-    return this.plotPoints(series, max).join(' ');
-  }
-
-  areaPoints(series: DashboardVm['monthSeries'], max: number): string {
-    const pts = this.plotPoints(series, max);
-    if (!pts.length) {
-      return '';
-    }
-    return `0,56 ${pts.join(' ')} 100,56`;
-  }
-
-  pointY(value: number, max: number): number {
-    return 56 - (value / Math.max(max, 1)) * 50 - 3;
-  }
-
-  pointX(index: number, total: number): number {
-    return total <= 1 ? 50 : (index * 100) / (total - 1);
-  }
-
-  private plotPoints(series: DashboardVm['monthSeries'], max: number): string[] {
-    return series.map((point, i) => `${this.pointX(i, series.length)},${this.pointY(point.value, max)}`);
-  }
-
   private playIntro(): void {
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduce) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       return;
     }
-    const root = this.host.nativeElement;
+    const root = this.host.nativeElement as HTMLElement;
     this.ctx = gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { duration: 0.55, ease: 'power2.out' } });
-      tl.from('.dash-hero', { y: -28, autoAlpha: 0 })
-        .from('.panel', { y: 32, autoAlpha: 0, stagger: 0.08 }, '-=0.3')
-        .from('.kpi', { y: 18, autoAlpha: 0, stagger: 0.07 }, '-=0.35');
-
-      gsap.from('.bar-fill', {
+      gsap.from('.card', { opacity: 0, y: 12, duration: 0.35, ease: 'power1.out', stagger: 0.05 });
+      gsap.from('.col-fill', {
+        scaleY: 0,
+        transformOrigin: 'bottom center',
+        duration: 0.5,
+        ease: 'power1.out',
+        stagger: 0.03,
+        delay: 0.15
+      });
+      gsap.from('.meter-fill, .stack-seg', {
         scaleX: 0,
         transformOrigin: 'left center',
-        duration: 0.85,
-        stagger: 0.1,
-        ease: 'power2.out',
-        delay: 0.45
+        duration: 0.5,
+        ease: 'power1.out',
+        stagger: 0.04,
+        delay: 0.2
       });
-
-      const line = root.querySelector('.line-path') as SVGGeometryElement | null;
-      if (line && 'getTotalLength' in line) {
-        const len = line.getTotalLength();
-        gsap.fromTo(
-          line,
-          { strokeDasharray: len, strokeDashoffset: len },
-          { strokeDashoffset: 0, duration: 1.2, ease: 'power2.inOut', delay: 0.35 }
-        );
-      }
     }, root);
   }
 }
