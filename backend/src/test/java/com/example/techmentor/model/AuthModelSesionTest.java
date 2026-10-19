@@ -18,7 +18,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
-import lombok.extern.slf4j.Slf4j;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
