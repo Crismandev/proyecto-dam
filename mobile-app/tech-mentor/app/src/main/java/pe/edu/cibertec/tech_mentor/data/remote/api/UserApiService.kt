@@ -1,6 +1,7 @@
 package pe.edu.cibertec.tech_mentor.data.remote.api
 
 import pe.edu.cibertec.tech_mentor.data.remote.dto.user.AssignProfessionRequestDto
+import pe.edu.cibertec.tech_mentor.data.remote.dto.user.CreateUserRequestDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UpdateProfileRequestDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UserProfessionResponseDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UserResponseDto
@@ -14,6 +15,10 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface UserApiService {
+    @POST("usuarios")
+    suspend fun createUser(
+        @Body request: CreateUserRequestDto
+    ): Response<UserResponseDto>
 
     @GET("usuarios/me")
     suspend fun getMyProfile(): Response<UserResponseDto>

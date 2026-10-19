@@ -11,6 +11,7 @@ import pe.edu.cibertec.tech_mentor.domain.model.DiagnosticResult
 import pe.edu.cibertec.tech_mentor.domain.model.ExamAnswerSubmission
 import pe.edu.cibertec.tech_mentor.domain.model.ExamToTake
 import pe.edu.cibertec.tech_mentor.domain.repository.DiagnosticRepository
+import pe.edu.cibertec.tech_mentor.domain.model.QuestionCategory
 
 class DiagnosticRepositoryImpl(
     private val diagnosticApiService: DiagnosticApiService
@@ -108,6 +109,33 @@ class DiagnosticRepositoryImpl(
                 ApiResponse.Success(list)
             } else {
                 ApiResponse.Error(response.code(), "Error al obtener las respuestas del examen (${response.code()})")
+            }
+        } catch (e: Exception) {
+            ApiResponse.Exception(e)
+        }
+    }
+
+    override suspend fun getQuestionCategories(): ApiResponse<List<QuestionCategory>> {
+        return try {
+            val response = diagnosticApiService.getQuestionCategories()
+            if (response.isSuccessful && response.body() != null) {
+                val list = response.body()!!.map { it.toDomain() }
+                ApiResponse.Success(list)
+            } else {
+                ApiResponse.Error(response.code(), "Error al obtener las categorías de pregunta (${response.code()})")
+            }
+        } catch (e: Exception) {
+            ApiResponse.Exception(e)
+        }
+    }
+
+    override suspend fun getQuestionCategoryById(id: Long): ApiResponse<QuestionCategory> {
+        return try {
+            val response = diagnosticApiService.getQuestionCategoryById(id)
+            if (response.isSuccessful && response.body() != null) {
+                ApiResponse.Success(response.body()!!.toDomain())
+            } else {
+                ApiResponse.Error(response.code(), "Error al obtener la categoría de pregunta (${response.code()})")
             }
         } catch (e: Exception) {
             ApiResponse.Exception(e)

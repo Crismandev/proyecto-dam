@@ -6,6 +6,7 @@ import pe.edu.cibertec.tech_mentor.domain.model.DiagnosticExam
 import pe.edu.cibertec.tech_mentor.domain.model.DiagnosticResult
 import pe.edu.cibertec.tech_mentor.domain.model.ExamAnswerSubmission
 import pe.edu.cibertec.tech_mentor.domain.model.ExamToTake
+import pe.edu.cibertec.tech_mentor.domain.model.QuestionCategory
 
 interface DiagnosticRepository {
     suspend fun getExamsForMe(): ApiResponse<List<DiagnosticExam>>
@@ -15,4 +16,6 @@ interface DiagnosticRepository {
     suspend fun getMyDiagnosticResults(): ApiResponse<List<DiagnosticResult>>
     suspend fun getDiagnosticResultById(id: Long): ApiResponse<DiagnosticResult>
     suspend fun getAnswersByResult(idResultado: Long): ApiResponse<List<DiagnosticAnswer>>
+    suspend fun getQuestionCategories(): ApiResponse<List<QuestionCategory>>
+    suspend fun getQuestionCategoryById(id: Long): ApiResponse<QuestionCategory>
 }
