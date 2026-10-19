@@ -47,5 +47,18 @@
         android:id="@+id/settingsFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.settings.SettingsFragment"
         android:label="Ajustes"
-        tools:layout="@layout/fragment_settings" />
+        tools:layout="@layout/fragment_settings">
+
+        <!-- Acción para navegar a Editar Perfil desde Ajustes: -->
+        <action
+            android:id="@+id/action_settingsFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
+
+    <!-- Pantalla para Editar Perfil del usuario: -->
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.profile.EditProfileFragment"
+        android:label="Editar Perfil"
+        tools:layout="@layout/fragment_edit_profile" />
 </navigation>
