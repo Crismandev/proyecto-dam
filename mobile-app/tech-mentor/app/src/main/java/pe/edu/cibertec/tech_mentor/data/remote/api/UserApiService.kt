@@ -20,6 +20,13 @@ interface UserApiService {
         @Body request: CreateUserRequestDto
     ): Response<UserResponseDto>
 
+    // Método con token explícito para el flujo de auto-registro / admin
+    @POST("usuarios")
+    suspend fun createUserWithToken(
+        @retrofit2.http.Header("Authorization") token: String,
+        @Body request: CreateUserRequestDto
+    ): Response<UserResponseDto>
+
     @GET("usuarios/me")
     suspend fun getMyProfile(): Response<UserResponseDto>
 

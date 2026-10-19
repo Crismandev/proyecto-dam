@@ -6,12 +6,23 @@ import pe.edu.cibertec.tech_mentor.util.SessionManager
 
 class AuthInterceptor(private val sessionManager: SessionManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        val requestBuilder = chain.request().newBuilder()
+        // --- Versión anterior (comentada): ---
+        // val requestBuilder = chain.request().newBuilder()
+        // val token = sessionManager.getToken()
+        // if (!token.isNullOrEmpty()) {
+        //     requestBuilder.addHeader("Authorization", "Bearer $token")
+        // }
+        // return chain.proceed(requestBuilder.build())
 
-        val token = sessionManager.getToken()
+        // --- Versión adaptada: respeta cabeceras Authorization explícitas (p. ej. token administrativo de registro) ---
+        val originalRequest = chain.request()
+        val requestBuilder = originalRequest.newBuilder()
 
-        if (!token.isNullOrEmpty()) {
-            requestBuilder.addHeader("Authorization", "Bearer $token")
+        if (originalRequest.header("Authorization") == null) {
+            val token = sessionManager.getToken()
+            if (!token.isNullOrEmpty()) {
+                requestBuilder.header("Authorization", "Bearer $token")
+            }
         }
 
         return chain.proceed(requestBuilder.build())

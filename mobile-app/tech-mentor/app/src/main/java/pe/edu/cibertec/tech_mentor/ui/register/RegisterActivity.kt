@@ -19,6 +19,9 @@ import pe.edu.cibertec.tech_mentor.domain.repository.AuthRepository
 import pe.edu.cibertec.tech_mentor.data.repository.AuthRepositoryImpl
 import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
 import pe.edu.cibertec.tech_mentor.data.remote.api.AuthApiService
+import pe.edu.cibertec.tech_mentor.data.remote.api.UserApiService
+import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
+import pe.edu.cibertec.tech_mentor.data.remote.onFailure
 import java.util.Calendar
 
 data class RegisterUserParams(
@@ -61,9 +64,15 @@ class RegisterActivity : AppCompatActivity() {
         // --- Versión anterior simulada (comentada): ---
         // authRepository = FakeAuthRepository(sessionManager)
 
-        // --- Conexión real con el backend mediante Retrofit: ---
-        val authApiService = ApiClient.getClient(sessionManager).create(AuthApiService::class.java)
-        authRepository = AuthRepositoryImpl(authApiService, sessionManager)
+        // --- Versión anterior (comentada): ---
+        // val authApiService = ApiClient.getClient(sessionManager).create(AuthApiService::class.java)
+        // authRepository = AuthRepositoryImpl(authApiService, sessionManager)
+
+        // --- Conexión con AuthApiService y UserApiService para soporte de registro: ---
+        val retrofit = ApiClient.getClient(sessionManager)
+        val authApiService = retrofit.create(AuthApiService::class.java)
+        val userApiService = retrofit.create(UserApiService::class.java)
+        authRepository = AuthRepositoryImpl(authApiService, sessionManager, userApiService)
 
         setupImage()
         setupDatePicker()
@@ -148,14 +157,25 @@ class RegisterActivity : AppCompatActivity() {
             //     Toast.makeText(this@RegisterActivity, error.message, Toast.LENGTH_SHORT).show()
             // }
 
-            // --- Flujo de registro para desarrollo/producción: ---
-            // Nota: En la arquitectura actual de TechMentor, los usuarios son dados de alta por el backend.
-            sessionManager.saveAuthToken("token_demo_${System.currentTimeMillis()}")
-            sessionManager.saveUserDetails(params.email, "ALUMNO")
-            sessionManager.setOnboardingSeen()
+            // --- Versión anterior con token demo simulado (comentada): ---
+            // sessionManager.saveAuthToken("token_demo_${System.currentTimeMillis()}")
+            // sessionManager.saveUserDetails(params.email, "ALUMNO")
+            // sessionManager.setOnboardingSeen()
+            // binding.btnRegister.isEnabled = true
+            // Toast.makeText(this@RegisterActivity, "¡Cuenta creada exitosamente! Bienvenido, ${params.firstName}", Toast.LENGTH_SHORT).show()
+            // navigateToMain()
+
+            // --- Conexión real con el backend mediante authRepository.register(params): ---
+            val result = authRepository.register(params)
             binding.btnRegister.isEnabled = true
-            Toast.makeText(this@RegisterActivity, "¡Cuenta creada exitosamente! Bienvenido, ${params.firstName}", Toast.LENGTH_SHORT).show()
-            navigateToMain()
+
+            result.onSuccess {
+                sessionManager.setOnboardingSeen()
+                Toast.makeText(this@RegisterActivity, "¡Cuenta creada exitosamente! Bienvenido, ${params.firstName}", Toast.LENGTH_SHORT).show()
+                navigateToMain()
+            }.onFailure { error ->
+                Toast.makeText(this@RegisterActivity, "Error al registrarse: ${error.message}", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
