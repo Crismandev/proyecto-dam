@@ -11,5 +11,6 @@ data class HomeUiState(
     val courses: List<Course>? = null,
     val progress: List<CourseProgress>? = null,
     val missions: List<Mission>? = null,
-    val userMissions: List<UserMission>? = null
+    val userMissions: List<UserMission>? = null,
+    val isStaff: Boolean = false
 )

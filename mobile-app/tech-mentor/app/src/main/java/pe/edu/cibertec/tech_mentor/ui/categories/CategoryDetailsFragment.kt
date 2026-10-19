@@ -113,10 +113,12 @@ class CourseAdapter(
     private val onCourseClick: (Course) -> Unit
 ) : RecyclerView.Adapter<CourseAdapter.CourseViewHolder>() {
 
+    private var selectedIndex = RecyclerView.NO_POSITION
+
     inner class CourseViewHolder(val binding: ItemCourseBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(course: Course) {
+        fun bind(course: Course, isSelected: Boolean) {
             // --- Versión anterior con nombres en inglés (comentada): ---
             // binding.tvCourseTitle.text = course.name
             // binding.tvCourseSubtitle.text = course.description.ifEmpty { "+${course.rewardXp} XP al completar" }
@@ -127,7 +129,15 @@ class CourseAdapter(
                 "+${course.xpRecompensa} XP al completar"
             }
 
+            binding.root.isChecked = isSelected
+            binding.root.isSelected = isSelected
             binding.root.setOnClickListener {
+                val position = bindingAdapterPosition
+                if (position == RecyclerView.NO_POSITION) return@setOnClickListener
+                val previous = selectedIndex
+                selectedIndex = position
+                if (previous != RecyclerView.NO_POSITION) notifyItemChanged(previous)
+                notifyItemChanged(selectedIndex)
                 onCourseClick(course)
             }
         }
@@ -141,7 +151,7 @@ class CourseAdapter(
     }
 
     override fun onBindViewHolder(holder: CourseViewHolder, position: Int) {
-        holder.bind(courses[position])
+        holder.bind(courses[position], position == selectedIndex)
     }
 
     override fun getItemCount(): Int = courses.size

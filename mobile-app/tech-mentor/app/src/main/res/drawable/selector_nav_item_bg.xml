@@ -8,5 +8,13 @@
             </shape>
         </inset>
     </item>
+    <item android:state_selected="true">
+        <inset android:insetLeft="8dp" android:insetRight="8dp" android:insetTop="6dp" android:insetBottom="6dp">
+            <shape android:shape="rectangle">
+                <solid android:color="@color/bg_purple" />
+                <corners android:radius="16dp" />
+            </shape>
+        </inset>
+    </item>
     <item android:drawable="@android:color/transparent" />
 </selector>

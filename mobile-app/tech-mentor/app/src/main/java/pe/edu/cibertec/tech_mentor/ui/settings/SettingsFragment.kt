@@ -1,12 +1,18 @@
 package pe.edu.cibertec.tech_mentor.ui.settings
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import pe.edu.cibertec.tech_mentor.BuildConfig
+import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentSettingsBinding
+import pe.edu.cibertec.tech_mentor.ui.login.LoginActivity
+import pe.edu.cibertec.tech_mentor.util.SessionManager
 
 class SettingsFragment : Fragment() {
 
@@ -24,12 +30,13 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.tvAppVersion.text = getString(R.string.label_app_version, BuildConfig.VERSION_NAME)
         setupListeners()
     }
 
     private fun setupListeners() {
         binding.cvEditProfile.setOnClickListener {
-            Toast.makeText(requireContext(), "Editar perfil", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_settingsFragment_to_editProfileFragment)
         }
 
         binding.cvEditCredentials.setOnClickListener {
@@ -40,7 +47,6 @@ class SettingsFragment : Fragment() {
             Toast.makeText(requireContext(), "Opciones avanzadas", Toast.LENGTH_SHORT).show()
         }
 
-        // Listeners Footer
         binding.btnFeedback.setOnClickListener {
             Toast.makeText(requireContext(), "Abrir Feedback", Toast.LENGTH_SHORT).show()
         }
@@ -57,9 +63,14 @@ class SettingsFragment : Fragment() {
             Toast.makeText(requireContext(), "Políticas de Privacidad", Toast.LENGTH_SHORT).show()
         }
 
-        // Logout
         binding.btnLogout.setOnClickListener {
-            Toast.makeText(requireContext(), "Cerrando sesión...", Toast.LENGTH_SHORT).show()
+            SessionManager(requireContext()).clearSession()
+            Toast.makeText(requireContext(), R.string.msg_logout, Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            startActivity(intent)
+            requireActivity().finish()
         }
     }
 

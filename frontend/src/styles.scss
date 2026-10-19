@@ -152,11 +152,69 @@ a {
   }
 }
 
+.actions-col {
+  width: 1%;
+  white-space: nowrap;
+  position: sticky;
+  right: 0;
+  background: #fff;
+  box-shadow: -10px 0 12px -12px rgba(15, 23, 42, 0.18);
+}
+
+.table thead .actions-col {
+  background-color: #F8FAFC;
+}
+
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
 .btn-icon {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
-  border-radius: $radius-sm;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid $border-color;
+  color: $text-muted;
+  box-shadow: none;
+
+  i {
+    font-size: 0.95rem;
+    line-height: 1;
+  }
+
+  &:hover:not(:disabled) {
+    background: #F8FAFC;
+    color: $text-heading;
+    border-color: #CBD5E1;
+    transform: none;
+    box-shadow: none;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+
+  &.btn-view:hover:not(:disabled) {
+    color: #0F766E;
+    background: rgba(13, 148, 136, 0.08);
+    border-color: rgba(13, 148, 136, 0.28);
+  }
+
+  &.btn-edit:hover:not(:disabled) {
+    color: $primary;
+    background: rgba(99, 102, 241, 0.08);
+    border-color: rgba(99, 102, 241, 0.32);
+  }
+
+  &.btn-delete:hover:not(:disabled) {
+    color: #E11D48;
+    background: rgba(244, 63, 94, 0.08);
+    border-color: rgba(225, 29, 72, 0.28);
+  }
 }
 
 // Form Controls System
@@ -259,6 +317,10 @@ a {
         padding: 1rem 1.25rem;
         vertical-align: middle;
         color: $text-main;
+      }
+
+      &:hover .actions-col {
+        background-color: #F8FAFC;
       }
     }
   }

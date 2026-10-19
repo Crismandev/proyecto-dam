@@ -41,7 +41,7 @@ const RESOURCES: Record<string, Resource> = {
     <div class="card" *ngIf="!editing"><div class="form-group"><input class="form-control" placeholder="Buscar..." [(ngModel)]="search" (ngModelChange)="filter()"></div>
       <div class="table-responsive"><table class="table"><thead><tr><th *ngFor="let col of resource.columns">{{col.label}}</th><th>Acciones</th></tr></thead><tbody>
         <tr *ngIf="visibleRows.length===0"><td [attr.colspan]="resource.columns.length+1" class="text-center empty-state">No hay registros para mostrar.</td></tr>
-        <tr *ngFor="let row of visibleRows"><td *ngFor="let col of resource.columns">{{row[col.key]}}</td><td class="actions-col"><button class="btn-icon btn-edit" (click)="edit(row)" title="Editar">✏️</button><button class="btn-icon btn-delete" (click)="remove(row)" title="Eliminar">🗑️</button></td></tr>
+        <tr *ngFor="let row of visibleRows"><td *ngFor="let col of resource.columns">{{row[col.key]}}</td><td class="actions-col"><div class="row-actions"><button type="button" class="btn-icon btn-edit" (click)="edit(row)" title="Editar" aria-label="Editar"><i class="ri-pencil-line"></i></button><button type="button" class="btn-icon btn-delete" (click)="remove(row)" title="Eliminar" aria-label="Eliminar"><i class="ri-delete-bin-line"></i></button></div></td></tr>
       </tbody></table></div>
     </div>`
 })

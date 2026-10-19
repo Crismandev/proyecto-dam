@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -64,6 +65,13 @@ class HomeFragment : Fragment() {
         binding.cvPractice.setOnClickListener {
             navigateToPractice()
         }
+
+        binding.cvManageCourses.setOnClickListener {
+            findNavController().navigate(R.id.categoryFragment)
+        }
+        binding.cvManageMissions.setOnClickListener {
+            findNavController().navigate(R.id.categoryFragment)
+        }
     }
 
     private fun navigateToPractice() {
@@ -75,25 +83,44 @@ class HomeFragment : Fragment() {
     }
 
     private fun render(s: HomeUiState) {
+        binding.llStaffPanel.isVisible = s.isStaff
+        binding.clObjectives.isVisible = !s.isStaff
+        binding.cvDailyMission.isVisible = !s.isStaff
+        binding.cvWeeklyChallenge.isVisible = !s.isStaff
+
         val profile = s.profile
         if (profile != null) {
-            val firstName = profile.nombres.trim().substringBefore(" ").ifEmpty { "Estudiante" }
+            val firstName = profile.nombres.trim().substringBefore(" ").ifEmpty {
+                if (s.isStaff) "Admin" else "Estudiante"
+            }
             setupUserHeader(
                 firstName = firstName,
                 streakDays = profile.rachaActual,
                 totalXp = profile.xpTotal
             )
+            if (s.isStaff) {
+                binding.tvWelcomeSubtitle.text = getString(R.string.desc_staff_home)
+            }
         }
 
-        val courses = s.courses
-        val progress = s.progress
-        if (courses != null && progress != null) {
-            updateObjectiveSection(progress, courses)
+        if (s.isStaff) {
+            val courses = s.courses.orEmpty()
+            val missions = s.missions.orEmpty()
+            binding.tvStaffCourseCount.text = getString(R.string.label_staff_courses_count, courses.size)
+            binding.tvStaffMissionCount.text = getString(R.string.label_staff_missions_count, missions.size)
+            binding.tvStaffMissionPreview.text = missions.take(4).joinToString("\n") { mission ->
+                "• ${mission.nombre} (${mission.tipo})"
+            }.ifBlank { "No hay misiones publicadas todavía." }
+        } else {
+            val courses = s.courses
+            val progress = s.progress
+            if (courses != null && progress != null) {
+                updateObjectiveSection(progress, courses)
+            }
         }
 
-        val userMissions = s.userMissions
-        if (userMissions != null) {
-            updateMissionsSection(userMissions, s.missions.orEmpty())
+        if (s.userMissions != null || s.missions != null) {
+            updateMissionsSection(s.userMissions.orEmpty(), s.missions.orEmpty())
         }
     }
 

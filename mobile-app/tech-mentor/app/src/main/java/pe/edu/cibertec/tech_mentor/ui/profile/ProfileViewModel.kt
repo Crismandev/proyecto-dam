@@ -16,6 +16,7 @@ import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
 import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
 import pe.edu.cibertec.tech_mentor.data.remote.api.ProgressApiService
 import pe.edu.cibertec.tech_mentor.data.remote.api.UserApiService
+import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UpdateProfileRequestDto
 import pe.edu.cibertec.tech_mentor.data.remote.getOrDefault
 import pe.edu.cibertec.tech_mentor.data.remote.isSuccess
 import pe.edu.cibertec.tech_mentor.data.remote.onFailure
@@ -87,6 +88,39 @@ class ProfileViewModel(
             } else {
                 Log.w(TAG, "no se pudo cargar el progreso")
             }
+        }
+    }
+
+    fun updateBiography(text: String, onResult: (Boolean, String?) -> Unit = { _, _ -> }) {
+        viewModelScope.launch {
+            userRepository.updateMyProfile(UpdateProfileRequestDto(biografia = text))
+                .onSuccess { user ->
+                    _ui.update { s -> s.copy(user = user) }
+                    onResult(true, null)
+                }
+                .onFailure { error -> onResult(false, error.message) }
+        }
+    }
+
+    fun updateAvatar(url: String, onResult: (Boolean) -> Unit = {}) {
+        viewModelScope.launch {
+            userRepository.updateMyProfile(UpdateProfileRequestDto(avatarUrl = url))
+                .onSuccess { user ->
+                    _ui.update { s -> s.copy(user = user) }
+                    onResult(true)
+                }
+                .onFailure { onResult(false) }
+        }
+    }
+
+    fun updateProfile(request: UpdateProfileRequestDto, onResult: (Boolean, String?) -> Unit = { _, _ -> }) {
+        viewModelScope.launch {
+            userRepository.updateMyProfile(request)
+                .onSuccess { user ->
+                    _ui.update { s -> s.copy(user = user) }
+                    onResult(true, null)
+                }
+                .onFailure { error -> onResult(false, error.message) }
         }
     }
 

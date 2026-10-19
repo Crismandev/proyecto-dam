@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -16,6 +18,29 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProps = Properties()
+        val localFile = rootProject.file("local.properties")
+        if (localFile.exists()) {
+            localFile.inputStream().use { localProps.load(it) }
+        }
+        val ip = localProps.getProperty("api.ip")?.trim().orEmpty()
+        val port = localProps.getProperty("api.port", "8080").trim()
+        var apiUrl = localProps.getProperty("api.base.url")?.trim().orEmpty()
+        if (apiUrl.isEmpty() && ip.isNotEmpty()) {
+            apiUrl = "http://$ip:$port/"
+        }
+        if (apiUrl.isEmpty()) {
+            apiUrl = "http://10.0.2.2:8080/"
+        }
+        if (!apiUrl.endsWith("/")) {
+            apiUrl += "/"
+        }
+        buildConfigField("String", "API_BASE_URL", "\"$apiUrl\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {

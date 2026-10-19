@@ -1,0 +1,14 @@
+# Copia estas líneas a local.properties (ese archivo NO se sube a git).
+# Cada persona pone la IP de SU PC. No hace falta tocar ApiClient.kt.
+
+# Celular físico, misma Wi-Fi. En Linux: hostname -I   En Windows: ipconfig
+api.ip=192.168.1.12
+
+# Puerto del backend (opcional, por defecto 8080)
+# api.port=8080
+
+# Emulador Android: no pongas api.ip, o usa:
+# api.ip=10.0.2.2
+
+# USB con: adb reverse tcp:8080 tcp:8080
+# api.ip=127.0.0.1

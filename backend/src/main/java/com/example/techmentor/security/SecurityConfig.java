@@ -68,6 +68,7 @@ public class SecurityConfig {
         // Orígenes permitidos: desarrollo local y subdominios de Firebase Hosting
         config.setAllowedOriginPatterns(List.of(
                 "http://localhost:4200",
+                "http://127.0.0.1:4200",
                 "https://*.web.app",
                 "https://*.firebaseapp.com"
         ));

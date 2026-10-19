@@ -33,10 +33,11 @@ class HomeViewModel(
     private val userRepository: UserRepository,
     private val catalogRepository: CatalogRepository,
     private val gamificationRepository: GamificationRepository,
-    private val progressRepository: ProgressRepository
+    private val progressRepository: ProgressRepository,
+    isStaff: Boolean
 ) : ViewModel() {
 
-    private val _ui = MutableStateFlow(HomeUiState())
+    private val _ui = MutableStateFlow(HomeUiState(isStaff = isStaff))
     val ui: StateFlow<HomeUiState> = _ui.asStateFlow()
 
     private var refreshJob: Job? = null
@@ -65,23 +66,32 @@ class HomeViewModel(
 
             missions.await()
                 .onSuccess { list -> _ui.update { s -> s.copy(missions = list) } }
-                .onFailure { error -> Log.w(TAG, "misiones: ${error.message}") }
+                .onFailure { error ->
+                    _ui.update { s -> s.copy(missions = emptyList()) }
+                    Log.w(TAG, "misiones: ${error.message}")
+                }
 
             myMissions.await()
                 .onSuccess { list -> _ui.update { s -> s.copy(userMissions = list) } }
-                .onFailure { error -> Log.w(TAG, "mis misiones: ${error.message}") }
+                .onFailure { error ->
+                    // 403 = cuenta staff (mis-misiones era solo ALUMNO/VIP); el catálogo igual se muestra.
+                    _ui.update { s -> s.copy(userMissions = emptyList()) }
+                    Log.w(TAG, "mis misiones: ${error.message}")
+                }
         }
     }
 
     class Factory(private val appContext: Context) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            val client = ApiClient.getClient(SessionManager(appContext))
+            val session = SessionManager(appContext)
+            val client = ApiClient.getClient(session)
             return HomeViewModel(
                 UserRepositoryImpl(client.create(UserApiService::class.java)),
                 CatalogRepositoryImpl(client.create(CatalogApiService::class.java)),
                 GamificationRepositoryImpl(client.create(GamificationApiService::class.java)),
-                ProgressRepositoryImpl(client.create(ProgressApiService::class.java))
+                ProgressRepositoryImpl(client.create(ProgressApiService::class.java)),
+                session.isStaff()
             ) as T
         }
     }
