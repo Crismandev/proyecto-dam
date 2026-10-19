@@ -7,12 +7,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.MainActivity
 import pe.edu.cibertec.tech_mentor.R
@@ -31,6 +33,9 @@ class HomeFragment : Fragment() {
     private val vm: HomeViewModel by activityViewModels {
         HomeViewModel.Factory(requireContext().applicationContext)
     }
+
+    /** idCurso del curso actualmente en progreso, se actualiza en updateObjectiveSection */
+    private var currentCourseId: Long = -1L
 
     companion object {
         private const val DISCORD_INVITE_URL = "https://discord.gg/techmentor"
@@ -76,6 +81,14 @@ class HomeFragment : Fragment() {
         }
         binding.cvManageMissions.setOnClickListener {
             (activity as? MainActivity)?.selectTab(R.id.categoryFragment)
+        }
+
+        binding.cvCurrentObjective.setOnClickListener {
+            val bundle = bundleOf("idCurso" to currentCourseId)
+            findNavController().navigate(
+                R.id.action_homeFragment_to_courseDetailFragment,
+                bundle
+            )
         }
     }
 
@@ -169,6 +182,9 @@ class HomeFragment : Fragment() {
 
         val course = allCourses.find { it.idCurso == recentProgress?.idCurso }
             ?: allCourses.firstOrNull()
+
+        // Guardamos el id del curso para usarlo en el click de cvCurrentObjective
+        currentCourseId = recentProgress?.idCurso ?: course?.idCurso ?: -1L
 
         val currentLevelName = recentProgress?.nombreNivelActual ?: "Básico"
 

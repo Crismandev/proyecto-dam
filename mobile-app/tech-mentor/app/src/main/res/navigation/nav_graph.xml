@@ -20,7 +20,12 @@
         android:id="@+id/homeFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.home.HomeFragment"
         android:label="@string/tab_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_homeFragment_to_courseDetailFragment"
+            app:destination="@id/courseDetailFragment" />
+    </fragment>
 
     <!-- Versión adaptada: practiceFragment ahora tiene acción para navegar a la lista de exámenes -->
     <fragment
