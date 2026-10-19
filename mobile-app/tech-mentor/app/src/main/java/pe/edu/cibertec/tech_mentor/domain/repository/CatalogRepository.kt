@@ -4,6 +4,8 @@ import pe.edu.cibertec.tech_mentor.data.remote.ApiResponse
 import pe.edu.cibertec.tech_mentor.domain.model.Category
 import pe.edu.cibertec.tech_mentor.domain.model.Course
 import pe.edu.cibertec.tech_mentor.domain.model.CourseContent
+import pe.edu.cibertec.tech_mentor.domain.model.Lesson
+import pe.edu.cibertec.tech_mentor.domain.model.Level
 import pe.edu.cibertec.tech_mentor.domain.model.Profession
 
 interface CatalogRepository {
@@ -14,5 +16,9 @@ interface CatalogRepository {
     suspend fun getCourseContent(idCurso: Long): ApiResponse<CourseContent>
     suspend fun getProfessions(): ApiResponse<List<Profession>>
     suspend fun getProfessionById(id: Long): ApiResponse<Profession>
+    suspend fun getLevels(idCurso: Long? = null): ApiResponse<List<Level>>
+    suspend fun getLevelById(id: Long): ApiResponse<Level>
+    suspend fun getLessons(idNivel: Long? = null): ApiResponse<List<Lesson>>
+    suspend fun getLessonById(id: Long): ApiResponse<Lesson>
 
 }

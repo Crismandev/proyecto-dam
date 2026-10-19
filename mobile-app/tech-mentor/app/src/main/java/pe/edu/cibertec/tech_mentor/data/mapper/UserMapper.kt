@@ -1,7 +1,9 @@
 package pe.edu.cibertec.tech_mentor.data.mapper
 
+import pe.edu.cibertec.tech_mentor.data.remote.dto.user.CreateUserRequestDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UserProfessionResponseDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UserResponseDto
+import pe.edu.cibertec.tech_mentor.domain.model.CreateUserParams
 import pe.edu.cibertec.tech_mentor.domain.model.UserProfession
 import pe.edu.cibertec.tech_mentor.domain.model.UserProfile
 
@@ -39,5 +41,21 @@ fun UserProfessionResponseDto.toDomain(): UserProfession {
         nombreProfesion = this.nombreProfesion,
         principal = this.principal,
         fechaAsignacion = this.fechaAsignacion
+    )
+}
+
+fun CreateUserParams.toDto(): CreateUserRequestDto {
+    return CreateUserRequestDto(
+        idRol = this.idRol,
+        idEstadoUsuario = this.idEstadoUsuario,
+        nombres = this.nombres,
+        apellidos = this.apellidos,
+        email = this.email,
+        username = this.username,
+        password = this.password,
+        fechaNacimiento = this.fechaNacimiento,
+        telefono = this.telefono,
+        pais = this.pais,
+        ciudad = this.ciudad
     )
 }

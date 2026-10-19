@@ -4,6 +4,7 @@ import pe.edu.cibertec.tech_mentor.data.remote.dto.diagnostic.DiagnosticAnswerRe
 import pe.edu.cibertec.tech_mentor.data.remote.dto.diagnostic.DiagnosticExamResponseDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.diagnostic.DiagnosticResultResponseDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.diagnostic.ExamToTakeResponseDto
+import pe.edu.cibertec.tech_mentor.data.remote.dto.diagnostic.QuestionCategoryResponseDto
 import pe.edu.cibertec.tech_mentor.data.remote.dto.diagnostic.SubmitExamRequestDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -46,4 +47,13 @@ interface DiagnosticApiService {
     suspend fun getAnswersByResult(
         @Path("idResultado") idResultado: Long
     ): Response<List<DiagnosticAnswerResponseDto>>
+
+    // Categorías de pregunta
+    @GET("diagnostico/categorias-pregunta")
+    suspend fun getQuestionCategories(): Response<List<QuestionCategoryResponseDto>>
+
+    @GET("diagnostico/categorias-pregunta/{id}")
+    suspend fun getQuestionCategoryById(
+        @Path("id") id: Long
+    ): Response<QuestionCategoryResponseDto>
 }

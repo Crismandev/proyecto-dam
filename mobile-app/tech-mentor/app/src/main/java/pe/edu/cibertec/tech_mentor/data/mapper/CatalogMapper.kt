@@ -121,3 +121,25 @@ fun ProfessionCourseResponseDto.toDomain(): ProfessionCourse {
         obligatorio = this.obligatorio ?: false
     )
 }
+
+fun LevelResponseDto.toDomain(): Level {
+    return Level(
+        idNivel = this.idNivel,
+        idCurso = this.idCurso,
+        nombre = this.nombre,
+        descripcion = this.descripcion.orEmpty(),
+        orden = this.orden ?: 1
+    )
+}
+
+fun LessonResponseDto.toDomain(): Lesson {
+    return Lesson(
+        idLeccion = this.idLeccion,
+        idNivel = this.idNivel,
+        titulo = this.titulo,
+        descripcion = this.descripcion.orEmpty(),
+        contenido = this.contenido.orEmpty(),
+        orden = this.orden ?: 1,
+        xpRecompensa = this.xpRecompensa ?: 0
+    )
+}

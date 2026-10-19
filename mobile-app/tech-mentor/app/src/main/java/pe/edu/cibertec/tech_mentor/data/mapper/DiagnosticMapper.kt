@@ -72,3 +72,11 @@ fun ExamAnswerSubmission.toDto(): ExamAnswerSubmissionDto {
         idOpcionSeleccionada = this.idOpcionSeleccionada
     )
 }
+
+fun QuestionCategoryResponseDto.toDomain(): QuestionCategory {
+    return QuestionCategory(
+        idCategoriaPregunta = this.idCategoriaPregunta,
+        nombre = this.nombre,
+        descripcion = this.descripcion.orEmpty()
+    )
+}
