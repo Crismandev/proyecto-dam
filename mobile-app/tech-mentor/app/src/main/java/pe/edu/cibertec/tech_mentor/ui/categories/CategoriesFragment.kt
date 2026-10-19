@@ -116,19 +116,28 @@ class CourseCategoryAdapter(
     private val onCategoryClick: (Long) -> Unit
 ) : RecyclerView.Adapter<CourseCategoryAdapter.CategoryViewHolder>() {
 
+    private var selectedIndex = RecyclerView.NO_POSITION
+
     inner class CategoryViewHolder(val binding: ItemCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(category: CourseCategory) {
+        fun bind(category: CourseCategory, isSelected: Boolean) {
             binding.tvCategoryTitle.text = category.title
             binding.tvCategorySubtitle.text = "${category.coursesCount} Cursos"
+            binding.root.isChecked = isSelected
+            binding.root.isSelected = isSelected
 
-            binding.root.setOnClickListener {
+            val open = View.OnClickListener {
+                val position = bindingAdapterPosition
+                if (position == RecyclerView.NO_POSITION) return@OnClickListener
+                val previous = selectedIndex
+                selectedIndex = position
+                if (previous != RecyclerView.NO_POSITION) notifyItemChanged(previous)
+                notifyItemChanged(selectedIndex)
                 onCategoryClick(category.idCategory)
             }
-            binding.btnVer.setOnClickListener {
-                onCategoryClick(category.idCategory)
-            }
+            binding.root.setOnClickListener(open)
+            binding.btnVer.setOnClickListener(open)
         }
     }
 
@@ -140,7 +149,7 @@ class CourseCategoryAdapter(
     }
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
-        holder.bind(categories[position])
+        holder.bind(categories[position], position == selectedIndex)
     }
 
     override fun getItemCount(): Int = categories.size

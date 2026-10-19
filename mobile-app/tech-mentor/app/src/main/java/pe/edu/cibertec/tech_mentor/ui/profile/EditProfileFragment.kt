@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+<<<<<<< HEAD
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -18,19 +19,41 @@ import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
 import pe.edu.cibertec.tech_mentor.data.remote.api.UserApiService
 import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UpdateProfileRequestDto
 import pe.edu.cibertec.tech_mentor.databinding.FragmentEditProfileBinding
+=======
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import com.bumptech.glide.Glide
+import kotlinx.coroutines.launch
+import pe.edu.cibertec.tech_mentor.R
+import pe.edu.cibertec.tech_mentor.data.remote.dto.user.UpdateProfileRequestDto
+import pe.edu.cibertec.tech_mentor.databinding.FragmentEditProfileBinding
+import pe.edu.cibertec.tech_mentor.util.AvatarUrls
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
 import pe.edu.cibertec.tech_mentor.util.SessionManager
 import java.util.Calendar
+import kotlin.random.Random
 
 class EditProfileFragment : Fragment() {
 
     private var _binding: FragmentEditProfileBinding? = null
     private val binding get() = _binding!!
 
+<<<<<<< HEAD
     private lateinit var sessionManager: SessionManager
     private lateinit var userApiService: UserApiService
+=======
+    private val vm: ProfileViewModel by activityViewModels {
+        ProfileViewModel.Factory(requireContext().applicationContext)
+    }
+
+    private var currentAvatarUrl: String? = null
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
+            currentAvatarUrl = uri.toString()
             Glide.with(this)
                 .load(uri)
                 .circleCrop()
@@ -49,6 +72,7 @@ class EditProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+<<<<<<< HEAD
         sessionManager = SessionManager(requireContext())
         userApiService = ApiClient.getClient(sessionManager).create(UserApiService::class.java)
 
@@ -58,10 +82,20 @@ class EditProfileFragment : Fragment() {
         // --- Conectar con el backend para sincronizar los datos más recientes: ---
         loadRemoteProfileData()
 
+=======
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         setupDropdowns()
         setupListeners()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.ui.collect { bindProfile(it) }
+            }
+        }
+        vm.refresh()
     }
 
+<<<<<<< HEAD
     /** Carga inmediata desde SessionManager */
     private fun loadCachedData() {
         val nombres = sessionManager.getProfileNombres() ?: sessionManager.getUsername().orEmpty()
@@ -166,6 +200,40 @@ class EditProfileFragment : Fragment() {
         val profesiones = listOf("Desarrollador Web", "Ingeniero de Software", "Diseñador UX/UI", "Data Scientist", "DevOps", "Desarrollador Móvil")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, profesiones)
         binding.actvProfesion.setAdapter(adapter)
+=======
+    private fun bindProfile(state: ProfileUiState) {
+        val user = state.user ?: return
+        if (binding.etNombres.text.isNullOrBlank()) {
+            binding.etNombres.setText(user.nombres)
+            binding.etApellidos.setText(user.apellidos)
+            binding.etFechaNac.setText(toDisplayDate(user.fechaNacimiento))
+            binding.etTelefono.setText(user.telefono.orEmpty())
+            binding.etPais.setText(user.pais.orEmpty())
+            binding.etCiudad.setText(user.ciudad.orEmpty())
+            binding.etBiografia.setText(user.biografia.orEmpty())
+            binding.actvProfesion.setText(state.profession.orEmpty(), false)
+        }
+        currentAvatarUrl = user.avatarUrl
+        val seed = user.nombres.ifBlank { SessionManager(requireContext()).getUsername() ?: "techmentor" }
+        Glide.with(this)
+            .load(AvatarUrls.of(seed, user.avatarUrl))
+            .circleCrop()
+            .placeholder(R.drawable.ic_user)
+            .into(binding.ivAvatarPreview)
+    }
+
+    private fun setupDropdowns() {
+        val profesiones = listOf(
+            "Desarrollador Web",
+            "Ingeniero de Software",
+            "Diseñador UX/UI",
+            "Data Scientist",
+            "DevOps"
+        )
+        binding.actvProfesion.setAdapter(
+            ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, profesiones)
+        )
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
     }
 
     private fun setupListeners() {
@@ -178,16 +246,21 @@ class EditProfileFragment : Fragment() {
             pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
         }
 
-        binding.tilFechaNac.setEndIconOnClickListener {
-            mostrarCalendario()
+        binding.tvCambiarFoto.setOnClickListener {
+            val seed = (SessionManager(requireContext()).getUsername() ?: "techmentor") + "-" + Random.nextInt(100_000)
+            currentAvatarUrl = AvatarUrls.random(seed)
+            Glide.with(this)
+                .load(currentAvatarUrl)
+                .circleCrop()
+                .into(binding.ivAvatarPreview)
         }
 
-        binding.etFechaNac.setOnClickListener {
-            mostrarCalendario()
-        }
+        binding.tilFechaNac.setEndIconOnClickListener { mostrarCalendario() }
+        binding.etFechaNac.setOnClickListener { mostrarCalendario() }
 
         // --- Guardado real en backend (/usuarios/me): ---
         binding.btnSaveProfile.setOnClickListener {
+<<<<<<< HEAD
             saveProfile()
         }
     }
@@ -263,12 +336,34 @@ class EditProfileFragment : Fragment() {
             } catch (e: Exception) {
                 binding.btnSaveProfile.isEnabled = true
                 Toast.makeText(requireContext(), "Error de conexión: ${e.message}", Toast.LENGTH_SHORT).show()
+=======
+            vm.updateProfile(
+                UpdateProfileRequestDto(
+                    nombres = binding.etNombres.text?.toString()?.trim(),
+                    apellidos = binding.etApellidos.text?.toString()?.trim(),
+                    fechaNacimiento = toIsoDate(binding.etFechaNac.text?.toString()),
+                    avatarUrl = currentAvatarUrl,
+                    biografia = binding.etBiografia.text?.toString()?.trim(),
+                    telefono = binding.etTelefono.text?.toString()?.trim(),
+                    pais = binding.etPais.text?.toString()?.trim(),
+                    ciudad = binding.etCiudad.text?.toString()?.trim()
+                )
+            ) { ok, error ->
+                if (!isAdded) return@updateProfile
+                if (ok) {
+                    Toast.makeText(requireContext(), "Perfil actualizado correctamente", Toast.LENGTH_SHORT).show()
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                } else {
+                    Toast.makeText(requireContext(), error ?: "No se pudo guardar", Toast.LENGTH_SHORT).show()
+                }
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
             }
         }
     }
 
     private fun mostrarCalendario() {
         val calendario = Calendar.getInstance()
+<<<<<<< HEAD
         val anio = calendario.get(Calendar.YEAR)
         val mes = calendario.get(Calendar.MONTH)
         val dia = calendario.get(Calendar.DAY_OF_MONTH)
@@ -278,7 +373,36 @@ class EditProfileFragment : Fragment() {
             binding.etFechaNac.setText(fechaSeleccionada)
         }, anio, mes, dia)
 
+=======
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, monthOfYear, dayOfMonth ->
+                binding.etFechaNac.setText(
+                    String.format("%02d/%02d/%04d", dayOfMonth, monthOfYear + 1, year)
+                )
+            },
+            calendario.get(Calendar.YEAR),
+            calendario.get(Calendar.MONTH),
+            calendario.get(Calendar.DAY_OF_MONTH)
+        )
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         datePickerDialog.show()
+    }
+
+    private fun toDisplayDate(iso: String?): String {
+        if (iso.isNullOrBlank()) return ""
+        val parts = iso.split("-")
+        return if (parts.size == 3) "${parts[2]}/${parts[1]}/${parts[0]}" else iso
+    }
+
+    private fun toIsoDate(display: String?): String? {
+        val value = display?.trim().orEmpty()
+        if (value.isEmpty()) return null
+        val parts = value.split("/", "-")
+        if (parts.size == 3 && parts[0].length <= 2) {
+            return "${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}"
+        }
+        return value
     }
 
     override fun onDestroyView() {

@@ -2,6 +2,7 @@ package pe.edu.cibertec.tech_mentor.data.remote
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import pe.edu.cibertec.tech_mentor.BuildConfig
 import pe.edu.cibertec.tech_mentor.util.SessionManager
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -9,6 +10,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
+<<<<<<< HEAD
     // =========================================================================
     // CONFIGURACIÓN GLOBAL DE URL BASE (Retrofit)
     // =========================================================================
@@ -21,6 +23,11 @@ object ApiClient {
     // Opción 3: Backend en Producción / Cloud (Render, Cloud Run, Railway, etc.):
     // private const val BASE_URL = "https://tu-backend-api.onrender.com/"
     // =========================================================================
+=======
+    // Cada integrante define api.ip en local.properties (no se sube a git).
+    // Ver local.properties.example
+    private val BASE_URL: String = BuildConfig.API_BASE_URL
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
 
     fun getClient(sessionManager: SessionManager): Retrofit {
 

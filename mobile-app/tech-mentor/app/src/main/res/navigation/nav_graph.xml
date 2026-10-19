@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_profileFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
     </fragment>
 
     <fragment
@@ -48,17 +51,27 @@
         android:name="pe.edu.cibertec.tech_mentor.ui.settings.SettingsFragment"
         android:label="Ajustes"
         tools:layout="@layout/fragment_settings">
+<<<<<<< HEAD
 
         <!-- Acción para navegar a Editar Perfil desde Ajustes: -->
+=======
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         <action
             android:id="@+id/action_settingsFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
     </fragment>
 
+<<<<<<< HEAD
     <!-- Pantalla para Editar Perfil del usuario: -->
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.profile.EditProfileFragment"
         android:label="Editar Perfil"
+=======
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.profile.EditProfileFragment"
+        android:label="Editar perfil"
+>>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         tools:layout="@layout/fragment_edit_profile" />
 </navigation>

@@ -27,15 +27,17 @@
           </ng-container>
         </td>
         <td *ngIf="!hideActions" class="actions-col">
-          <button class="btn-icon btn-view" (click)="view.emit(row)" title="Ver Detalle">
-            👁️
-          </button>
-          <button class="btn-icon btn-edit" (click)="edit.emit(row)" title="Editar">
-            ✏️
-          </button>
-          <button class="btn-icon btn-delete" (click)="delete.emit(row)" title="Eliminar">
-            🗑️
-          </button>
+          <div class="row-actions">
+            <button type="button" class="btn-icon btn-view" (click)="view.emit(row)" title="Ver detalle" aria-label="Ver detalle">
+              <i class="ri-eye-line"></i>
+            </button>
+            <button type="button" class="btn-icon btn-edit" (click)="edit.emit(row)" title="Editar" aria-label="Editar">
+              <i class="ri-pencil-line"></i>
+            </button>
+            <button type="button" class="btn-icon btn-delete" (click)="delete.emit(row)" title="Eliminar" aria-label="Eliminar">
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>

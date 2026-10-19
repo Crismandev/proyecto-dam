@@ -26,8 +26,7 @@ public class MisionUsuarioController {
         return misionUsuarioUseCase.unirse(idMision, usuario.idUsuario());
     }
 
-    /** Mis misiones y su avance. */
-    @EsEstudiante
+    /** Misiones del usuario autenticado (cualquier rol; vacío si no tiene). */
     @GetMapping("/gamificacion/mis-misiones")
     public List<MisionUsuarioDto> misMisiones(@AuthenticationPrincipal UsuarioAutenticado usuario) {
         return misionUsuarioUseCase.misMisiones(usuario.idUsuario());

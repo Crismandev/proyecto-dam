@@ -71,6 +71,9 @@
                     android:id="@+id/cvAvatar"
                     android:layout_width="76dp"
                     android:layout_height="76dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
                     app:cardBackgroundColor="@color/bg_purple"
                     app:cardCornerRadius="38dp"
                     app:cardElevation="0dp"
@@ -212,16 +215,43 @@
 
                 <!-- BIOGRAFÍA -->
                 <TextView
-                    android:id="@+id/tvBio"
-                    android:layout_width="match_parent"
+                    android:id="@+id/tvBioLabel"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="24dp"
+                    android:fontFamily="@font/plus_jakarta_sans_bold"
+                    android:text="@string/label_biography"
+                    android:textColor="@color/black"
+                    android:textSize="13sp"
+                    app:layout_constraintEnd_toStartOf="@id/btnEditBio"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cvAvatar" />
+
+                <ImageButton
+                    android:id="@+id/btnEditBio"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/action_edit_biography"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_pencil"
+                    app:layout_constraintBottom_toBottomOf="@id/tvBioLabel"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tvBioLabel"
+                    app:tint="@color/purple" />
+
+                <TextView
+                    android:id="@+id/tvBio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
                     android:fontFamily="@font/plus_jakarta_sans_medium"
                     android:lineSpacingExtra="4dp"
                     android:textColor="@color/black"
                     android:textSize="13sp"
-                    app:layout_constraintTop_toBottomOf="@id/cvAvatar"
-                    tools:layout_editor_absoluteX="24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvBioLabel"
                     tools:text="Apasionado por el desarrollo web y móvil. Aprendiendo paso a paso junto a Bit para convertirme en Full Stack Developer." />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

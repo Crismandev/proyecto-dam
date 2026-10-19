@@ -51,6 +51,11 @@ class SessionManager(context: Context) {
     fun getUsername(): String? = prefs.getString(USERNAME, null)
     fun getUserRole(): String? = prefs.getString(USER_ROLE, null)
 
+    fun isStaff(): Boolean {
+        val role = getUserRole()?.uppercase().orEmpty()
+        return role == "ADMINISTRADOR" || role == "MAESTRO" || role == "ADMIN"
+    }
+
     fun setOnboardingSeen() {
         prefs.edit().putBoolean(ONBOARDING_SEEN, true).apply()
     }

@@ -4,6 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -18,7 +21,9 @@ import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentProfileBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCompletedCourseBinding
+import pe.edu.cibertec.tech_mentor.util.AvatarUrls
 import pe.edu.cibertec.tech_mentor.util.SessionManager
+import kotlin.random.Random
 
 class ProfileFragment : Fragment() {
 
@@ -60,6 +65,12 @@ class ProfileFragment : Fragment() {
     private fun setupListeners() {
         binding.ivSettings.setOnClickListener {
             findNavController().navigate(R.id.action_profileFragment_to_settingsFragment)
+        }
+        binding.btnEditBio.setOnClickListener {
+            showEditBiographyDialog()
+        }
+        binding.cvAvatar.setOnClickListener {
+            shuffleAvatar()
         }
     }
 
@@ -112,17 +123,55 @@ class ProfileFragment : Fragment() {
             binding.tvMaxStreak.text = "${user.rachaMaxima} días"
             binding.tvTotalXp.text = "${user.xpTotal} XP"
             binding.tvCoins.text = user.monedas.toString()
-
-            val avatarUrl = user.avatarUrl
-            if (!avatarUrl.isNullOrEmpty()) {
-                Glide.with(this)
-                    .load(avatarUrl)
-                    .into(binding.ivAvatar)
-            }
+            loadAvatar(user.avatarUrl, user.nombres.ifBlank { username })
         }
 
         binding.tvProfession.text = s.profession ?: role
+        if (user == null) {
+            loadAvatar(null, username)
+        }
         showCompleted()
+    }
+
+    private fun loadAvatar(avatarUrl: String?, seed: String) {
+        val url = AvatarUrls.of(seed, avatarUrl)
+        Glide.with(this)
+            .load(url)
+            .placeholder(R.drawable.ic_user)
+            .error(R.drawable.ic_user)
+            .into(binding.ivAvatar)
+    }
+
+    private fun shuffleAvatar() {
+        val seed = (sessionManager.getUsername() ?: "techmentor") + "-" + Random.nextInt(100_000)
+        val url = AvatarUrls.random(seed)
+        Glide.with(this).load(url).into(binding.ivAvatar)
+        vm.updateAvatar(url)
+    }
+
+    private fun showEditBiographyDialog() {
+        val current = state.user?.biografia.orEmpty()
+        val input = EditText(requireContext()).apply {
+            hint = getString(R.string.hint_biography)
+            setText(current)
+            setPadding(48, 32, 48, 32)
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.action_edit_biography)
+            .setView(input)
+            .setNegativeButton(R.string.btn_cancel, null)
+            .setPositiveButton(R.string.action_save) { _, _ ->
+                val text = input.text?.toString()?.trim().orEmpty()
+                vm.updateBiography(text) { ok, error ->
+                    if (!isAdded) return@updateBiography
+                    if (ok) {
+                        Toast.makeText(requireContext(), R.string.msg_biography_updated, Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(requireContext(), error ?: "No se pudo guardar", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            .show()
     }
 
     override fun onDestroyView() {

@@ -2,6 +2,8 @@
 
 Proyecto de aprendizaje tecnológico con portal administrativo y API REST.
 
+**Contexto y arranque (obligatorio):** lee [`GUIA.md`](GUIA.md). Ahí están las credenciales reales, Win/Linux, y cómo poner la IP de la app en `local.properties`.
+
 ## Requisitos
 - Java 17+
 - Maven 3.8+

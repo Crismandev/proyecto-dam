@@ -18,5 +18,13 @@ class MainActivity : AppCompatActivity() {
             .findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         val navController = navHostFragment.navController
         binding.bottomNav.setupWithNavController(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val tabId = when (destination.id) {
+                R.id.categoryDetailsFragment -> R.id.categoryFragment
+                R.id.settingsFragment, R.id.editProfileFragment -> R.id.profileFragment
+                else -> destination.id
+            }
+            binding.bottomNav.menu.findItem(tabId)?.isChecked = true
+        }
     }
 }
