@@ -397,6 +397,7 @@
                     android:textSize="13sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- Versión anterior (comentada): Desplegable de profesión removido del registro ya que no es necesario al crear cuenta de alumno
             <TextView
                 android:id="@+id/tvLabelProfesion"
                 android:layout_width="wrap_content"
@@ -410,7 +411,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tilBiografia" />
 
-            <!-- INPUT: Profesión (Menú Desplegable) -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilProfesion"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
@@ -444,6 +444,7 @@
                     android:textColorHint="@color/text_gray"
                     android:textSize="13sp" />
             </com.google.android.material.textfield.TextInputLayout>
+            -->
 
             <!-- ETIQUETA: País -->
             <TextView
@@ -594,6 +595,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- ETIQUETA: Contraseña -->
+            <!-- Versión anterior (comentada):
             <TextView
                 android:id="@+id/tvLabelPassword"
                 android:layout_width="wrap_content"
@@ -606,6 +608,20 @@
                 android:textSize="11sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tilProfesion" />
+            -->
+            <!-- Versión adaptada: Al quitar profesión, la etiqueta de contraseña se enlaza directamente a tilBiografia -->
+            <TextView
+                android:id="@+id/tvLabelPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/plus_jakarta_sans_semibold"
+                android:text="@string/label_password"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilBiografia" />
 
             <!-- INPUT: Contraseña (Como en login y en la imagen) -->
             <com.google.android.material.textfield.TextInputLayout

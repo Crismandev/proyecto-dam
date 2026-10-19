@@ -156,8 +156,24 @@ class AuthRepositoryImpl(
                 username = (username + "123").take(10)
             }
 
+            // --- Versión anterior (comentada): Se asignaba idRol = 3L (el cual correspondía al rol MAESTRO según techmentor.sql) ---
+            // val userRequestDto = pe.edu.cibertec.tech_mentor.data.remote.dto.user.CreateUserRequestDto(
+            //     idRol = 3L, // ROL_ALUMNO (erróneo: 3 es MAESTRO en BD)
+            //     idEstadoUsuario = 1L, // ESTADO_ACTIVO
+            //     nombres = params.firstName,
+            //     apellidos = params.lastName,
+            //     email = params.email,
+            //     username = username,
+            //     password = params.password,
+            //     fechaNacimiento = formatBirthDate(params.birthDate),
+            //     telefono = params.phone.ifBlank { null },
+            //     pais = params.country.ifBlank { null },
+            //     ciudad = params.city.ifBlank { null }
+            // )
+
+            // --- Versión corregida: Asignar idRol = 1L correspondiente a ALUMNO en la base de datos (1: ALUMNO, 2: ADMINISTRADOR, 3: MAESTRO, 4: USUARIO_VIP) ---
             val userRequestDto = pe.edu.cibertec.tech_mentor.data.remote.dto.user.CreateUserRequestDto(
-                idRol = 3L, // ROL_ALUMNO
+                idRol = 1L, // ROL_ALUMNO: Garantiza la creación como Alumno sin alterar el backend
                 idEstadoUsuario = 1L, // ESTADO_ACTIVO
                 nombres = params.firstName,
                 apellidos = params.lastName,
