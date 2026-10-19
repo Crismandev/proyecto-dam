@@ -9,8 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentPracticeBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemPracticeEvaluationBinding
 
@@ -76,8 +78,12 @@ class PracticeFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = PracticeEvaluationAdapter(emptyList()) { selectedItem ->
-            val action = if (selectedItem.isDraft) "Retomando borrador" else "Revisando resultado"
-            Toast.makeText(requireContext(), "$action: ${selectedItem.courseName}", Toast.LENGTH_SHORT).show()
+            // Versión anterior (comentada): solo mostraba un Toast
+            // val action = if (selectedItem.isDraft) "Retomando borrador" else "Revisando resultado"
+            // Toast.makeText(requireContext(), "$action: ${selectedItem.courseName}", Toast.LENGTH_SHORT).show()
+
+            // Faltaba: navegar a la lista de exámenes al hacer clic en un elemento
+            findNavController().navigate(R.id.action_practiceFragment_to_examListFragment)
         }
         binding.rvEvaluations.layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvaluations.adapter = adapter

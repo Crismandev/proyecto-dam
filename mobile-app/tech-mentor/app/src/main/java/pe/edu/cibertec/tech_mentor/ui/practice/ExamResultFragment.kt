@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentExamResultBinding
 
@@ -70,7 +71,11 @@ class ExamResultFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnExamReturn.setOnClickListener {
-            requireActivity().onBackPressedDispatcher.onBackPressed()
+            // Versión anterior (comentada): usaba onBackPressed que solo retrocede un paso
+            // requireActivity().onBackPressedDispatcher.onBackPressed()
+
+            // Faltaba: retroceder directamente a Práctica (practiceFragment)
+            findNavController().popBackStack(R.id.practiceFragment, false)
         }
     }
 

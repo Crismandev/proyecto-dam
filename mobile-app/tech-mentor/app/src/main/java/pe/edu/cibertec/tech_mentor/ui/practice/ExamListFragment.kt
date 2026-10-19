@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
@@ -114,11 +115,20 @@ class ExamListFragment : Fragment() {
 
     private fun setupRecyclerView() {
         examAdapter = ExamListAdapter(emptyList()) { selectedExam ->
-            Toast.makeText(
-                requireContext(),
-                "Iniciando: ${selectedExam.nombre}",
-                Toast.LENGTH_SHORT
-            ).show()
+            // Versión anterior (comentada): solo mostraba un Toast
+            // Toast.makeText(
+            //     requireContext(),
+            //     "Iniciando: ${selectedExam.nombre}",
+            //     Toast.LENGTH_SHORT
+            // ).show()
+
+            // Faltaba: navegar al examen al seleccionarlo de la lista
+            val bundle = android.os.Bundle().apply {
+                putInt("idExamen", selectedExam.idExamen)
+                putString("examNombre", selectedExam.nombre)
+                putString("courseName", selectedExam.courseName)
+            }
+            findNavController().navigate(R.id.action_examListFragment_to_examFragment, bundle)
         }
         binding.rvExams.layoutManager = LinearLayoutManager(requireContext())
         binding.rvExams.adapter = examAdapter

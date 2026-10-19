@@ -70,28 +70,43 @@ class CategoriesFragment : Fragment() {
             val categoriesResult = categoriesDeferred.await()
             val coursesResult = coursesDeferred.await()
 
-            if (categoriesResult.isSuccess && coursesResult.isSuccess) {
-                val apiCategories = categoriesResult.getOrDefault(emptyList())
-                val apiCourses = coursesResult.getOrDefault(emptyList())
+            // Versión anterior (comentada): condición estricta — si cualquiera fallaba, mostraba error y nada
+            // if (categoriesResult.isSuccess && coursesResult.isSuccess) {
+            //     ...
+            // } else {
+            //     Toast.makeText(requireContext(), "Error al cargar las rutas", Toast.LENGTH_SHORT).show()
+            // }
 
+            // Faltaba: manejar cada resultado por separado con datos de fallback
+            val apiCategories = categoriesResult.getOrDefault(emptyList())
+            val apiCourses = coursesResult.getOrDefault(emptyList())
+
+            if (apiCategories.isNotEmpty()) {
+                // Datos reales de la API
                 val displayCategories = apiCategories.map { category ->
-                    // --- Versión anterior con nombres en inglés (comentada): ---
-                    // val courseCount = apiCourses.count { it.idCategory == category.idCategory }
-                    // CourseCategory(idCategory = category.idCategory, title = category.name, coursesCount = courseCount)
-
-                    // --- Propiedades del modelo de dominio TechMentor (idCategoria, nombre): ---
                     val courseCount = apiCourses.count { it.idCategoria == category.idCategoria }
-
                     CourseCategory(
                         idCategory = category.idCategoria,
                         title = category.nombre,
                         coursesCount = courseCount
                     )
                 }
-
                 setupRecyclerView(displayCategories)
             } else {
-                Toast.makeText(requireContext(), "Error al cargar las rutas", Toast.LENGTH_SHORT).show()
+                // Faltaba: datos de fallback cuando la API no está disponible
+                val fallbackCategories = listOf(
+                    CourseCategory(1L, "Programación Web", 3),
+                    CourseCategory(2L, "Bases de Datos", 2),
+                    CourseCategory(3L, "Fundamentos de APIs", 2),
+                    CourseCategory(4L, "Desarrollo Móvil", 2),
+                    CourseCategory(5L, "Inteligencia Artificial", 1)
+                )
+                setupRecyclerView(fallbackCategories)
+                Toast.makeText(
+                    requireContext(),
+                    "Sin conexión: mostrando datos de ejemplo",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

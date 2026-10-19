@@ -50,7 +50,26 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val tabId = when (destination.id) {
-                R.id.categoryDetailsFragment -> R.id.categoryFragment
+                // --- Versión anterior (comentada): solo categoryDetailsFragment apuntaba a categoryFragment ---
+                // R.id.categoryDetailsFragment -> R.id.categoryFragment
+                // R.id.settingsFragment, R.id.editProfileFragment -> R.id.profileFragment
+
+                // --- Versión adaptada: todos los sub-fragmentos del flujo Categoría→Curso→Nivel→Lección
+                //     mantienen la pestaña de Categorías activa en el BottomNav ---
+                R.id.categoryDetailsFragment,
+                R.id.courseDetailFragment,    // Faltaba: mantener pestaña Categorías al ver detalle de curso
+                R.id.levelDetailFragment,     // Faltaba: mantener pestaña Categorías al ver detalle de nivel
+                R.id.lessonFragment,          // Faltaba: mantener pestaña Categorías al ver una lección
+                R.id.exercisesFragment,       // Faltaba: mantener pestaña Categorías al resolver ejercicios
+                R.id.exerciseResultFragment   // Faltaba: mantener pestaña Categorías al ver resultado de ejercicios
+                    -> R.id.categoryFragment
+
+                // Faltaba: sub-fragmentos del flujo Práctica → Examen → Resultado
+                R.id.examListFragment,        // Faltaba: mantener pestaña Práctica al ver lista de exámenes
+                R.id.examFragment,            // Faltaba: mantener pestaña Práctica al rendir un examen
+                R.id.examResultFragment       // Faltaba: mantener pestaña Práctica al ver resultado del examen
+                    -> R.id.practiceFragment
+
                 R.id.settingsFragment, R.id.editProfileFragment -> R.id.profileFragment
                 in tabIds -> destination.id
                 else -> return@addOnDestinationChangedListener

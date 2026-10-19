@@ -22,11 +22,51 @@
         android:label="@string/tab_home"
         tools:layout="@layout/fragment_home" />
 
+    <!-- Versión adaptada: practiceFragment ahora tiene acción para navegar a la lista de exámenes -->
     <fragment
         android:id="@+id/practiceFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.practice.PracticeFragment"
         android:label="@string/tab_practice"
-        tools:layout="@layout/fragment_practice" />
+        tools:layout="@layout/fragment_practice">
+
+        <!-- Faltaba: acción para navegar a la lista de exámenes de diagnóstico -->
+        <action
+            android:id="@+id/action_practiceFragment_to_examListFragment"
+            app:destination="@id/examListFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla con la lista de exámenes de diagnóstico -->
+    <fragment
+        android:id="@+id/examListFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.practice.ExamListFragment"
+        android:label="Lista de Exámenes"
+        tools:layout="@layout/fragment_exam_list">
+
+        <!-- Faltaba: acción para iniciar un examen al seleccionarlo -->
+        <action
+            android:id="@+id/action_examListFragment_to_examFragment"
+            app:destination="@id/examFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla del Examen (preguntas) -->
+    <fragment
+        android:id="@+id/examFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.practice.ExamFragment"
+        android:label="Examen"
+        tools:layout="@layout/fragment_exam">
+
+        <!-- Faltaba: acción para navegar al resultado del examen al finalizar -->
+        <action
+            android:id="@+id/action_examFragment_to_examResultFragment"
+            app:destination="@id/examResultFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla de Resultado del Examen -->
+    <fragment
+        android:id="@+id/examResultFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.practice.ExamResultFragment"
+        android:label="Resultado Examen"
+        tools:layout="@layout/fragment_exam_result" />
 
     <fragment
         android:id="@+id/profileFragment"
@@ -42,11 +82,86 @@
             app:destination="@id/editProfileFragment" />
     </fragment>
 
+    <!-- Versión anterior (comentada): categoryDetailsFragment sin acción hacia courseDetailFragment -->
+    <!--
     <fragment
         android:id="@+id/categoryDetailsFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.categories.CategoryDetailsFragment"
         android:label="@string/label_category_details"
         tools:layout="@layout/fragment_category_details" />
+    -->
+    <!-- Versión adaptada: categoryDetailsFragment con acción para navegar al detalle del curso -->
+    <fragment
+        android:id="@+id/categoryDetailsFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.categories.CategoryDetailsFragment"
+        android:label="@string/label_category_details"
+        tools:layout="@layout/fragment_category_details">
+
+        <!-- Acción agregada: navegar al detalle del curso al seleccionar un curso -->
+        <action
+            android:id="@+id/action_categoryDetailsFragment_to_courseDetailFragment"
+            app:destination="@id/courseDetailFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla de Detalle del Curso (muestra niveles del curso) -->
+    <fragment
+        android:id="@+id/courseDetailFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.courses.CourseDetailFragment"
+        android:label="Detalle del Curso"
+        tools:layout="@layout/fragment_course_details">
+
+        <!-- Acción agregada: navegar al detalle del nivel al seleccionar un nivel -->
+        <action
+            android:id="@+id/action_courseDetailFragment_to_levelDetailFragment"
+            app:destination="@id/levelDetailFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla de Detalle del Nivel (muestra lecciones del nivel) -->
+    <fragment
+        android:id="@+id/levelDetailFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.levels.LevelDetailFragment"
+        android:label="Detalle del Nivel"
+        tools:layout="@layout/fragment_level_details">
+
+        <!-- Acción agregada: navegar a la lección al seleccionar una lección -->
+        <action
+            android:id="@+id/action_levelDetailFragment_to_lessonFragment"
+            app:destination="@id/lessonFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla de Lección (contenido de la lección) -->
+    <!-- Versión adaptada: lessonFragment ahora tiene acción para navegar a los ejercicios -->
+    <fragment
+        android:id="@+id/lessonFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.lesson.LessonFragment"
+        android:label="Lección"
+        tools:layout="@layout/fragment_lesson">
+
+        <!-- Faltaba: acción para navegar a los ejercicios de la lección -->
+        <action
+            android:id="@+id/action_lessonFragment_to_exercisesFragment"
+            app:destination="@id/exercisesFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla de Ejercicios de la Lección -->
+    <fragment
+        android:id="@+id/exercisesFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.exercises.ExercisesFragment"
+        android:label="Ejercicios"
+        tools:layout="@layout/fragment_exercises">
+
+        <!-- Faltaba: acción para navegar al resultado de ejercicios -->
+        <action
+            android:id="@+id/action_exercisesFragment_to_exerciseResultFragment"
+            app:destination="@id/exerciseResultFragment" />
+    </fragment>
+
+    <!-- Faltaba: Pantalla de Resultado de Ejercicios -->
+    <fragment
+        android:id="@+id/exerciseResultFragment"
+        android:name="pe.edu.cibertec.tech_mentor.ui.exercises.ExerciseResultFragment"
+        android:label="Resultado Ejercicios"
+        tools:layout="@layout/fragment_exercise_result" />
 
     <fragment
         android:id="@+id/settingsFragment"
@@ -66,4 +181,5 @@
         android:name="pe.edu.cibertec.tech_mentor.ui.profile.EditProfileFragment"
         android:label="@string/label_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
+
 </navigation>

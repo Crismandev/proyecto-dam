@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pe.edu.cibertec.tech_mentor.R
@@ -104,7 +105,18 @@ class ExamFragment : Fragment() {
 
                 binding.tvExamFeedbackExplanation.text = explanationDB
             } else {
-                // Aquí avanzarás a la siguiente pregunta o a ExamResultFragment
+                // Versión anterior (comentada): // Aquí avanzarás a la siguiente pregunta o a ExamResultFragment (vacío)
+                // Faltaba: navegar al resultado del examen al terminar
+                val idExamen = arguments?.getInt("idExamen", 0) ?: 0
+                val examNombre = arguments?.getString("examNombre", "") ?: ""
+                val bundle = android.os.Bundle().apply {
+                    putInt("idExamen", idExamen)
+                    putString("examNombre", examNombre)
+                    putInt("correctAnswers", if (fakeOptions.find { it.isSelected }?.isCorrect == true) 1 else 0)
+                    putInt("totalQuestions", 1)
+                    putInt("earnedXp", 50)
+                }
+                findNavController().navigate(R.id.action_examFragment_to_examResultFragment, bundle)
             }
         }
     }

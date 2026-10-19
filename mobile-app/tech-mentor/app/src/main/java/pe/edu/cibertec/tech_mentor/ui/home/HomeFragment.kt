@@ -93,19 +93,26 @@ class HomeFragment : Fragment() {
         binding.cvDailyMission.isVisible = !s.isStaff
         binding.cvWeeklyChallenge.isVisible = !s.isStaff
 
+        // Versión anterior (comentada): solo actualizaba el header si profile != null
+        // → cuando la API falla, profile es null y el nombre nunca se mostraba
+        // val profile = s.profile
+        // if (profile != null) {
+        //     val firstName = profile.nombres.orEmpty()...
+        //     setupUserHeader(firstName, profile.rachaActual, profile.xpTotal)
+        // }
+
+        // Faltaba: actualizar header siempre, con fallback cuando profile es null
         val profile = s.profile
-        if (profile != null) {
-            val firstName = profile.nombres.orEmpty().trim().substringBefore(" ").ifEmpty {
-                if (s.isStaff) "Admin" else "Estudiante"
-            }
-            setupUserHeader(
-                firstName = firstName,
-                streakDays = profile.rachaActual,
-                totalXp = profile.xpTotal
-            )
-            if (s.isStaff) {
-                binding.tvWelcomeSubtitle.text = getString(R.string.desc_staff_home)
-            }
+        val firstName = profile?.nombres.orEmpty().trim().substringBefore(" ").ifEmpty {
+            if (s.isStaff) "Admin" else "Estudiante"
+        }
+        setupUserHeader(
+            firstName = firstName,
+            streakDays = profile?.rachaActual ?: 0,
+            totalXp = profile?.xpTotal ?: 0
+        )
+        if (s.isStaff && profile != null) {
+            binding.tvWelcomeSubtitle.text = getString(R.string.desc_staff_home)
         }
 
         if (s.isStaff) {
@@ -117,16 +124,27 @@ class HomeFragment : Fragment() {
                 "• ${mission.nombre} (${mission.tipo})"
             }.ifBlank { "No hay misiones publicadas todavía." }
         } else {
-            val courses = s.courses
-            val progress = s.progress
-            if (courses != null && progress != null) {
-                updateObjectiveSection(progress, courses)
-            }
+            // Versión anterior (comentada): solo llamaba updateObjectiveSection si ambos != null
+            // → cuando la API falla, progress y courses quedan null y la sección nunca se dibujaba
+            // val courses = s.courses
+            // val progress = s.progress
+            // if (courses != null && progress != null) { updateObjectiveSection(progress, courses) }
+
+            // Faltaba: siempre llamar updateObjectiveSection, usando listas vacías como fallback
+            updateObjectiveSection(
+                progressList = s.progress.orEmpty(),
+                allCourses = s.courses.orEmpty()
+            )
         }
 
-        if (s.userMissions != null || s.missions != null) {
-            updateMissionsSection(s.userMissions.orEmpty(), s.missions.orEmpty())
-        }
+        // Versión anterior (comentada): solo llamaba updateMissionsSection si alguno != null
+        // → si ambos eran null (API caída), la sección de misiones no se renderizaba
+        // if (s.userMissions != null || s.missions != null) {
+        //     updateMissionsSection(s.userMissions.orEmpty(), s.missions.orEmpty())
+        // }
+
+        // Faltaba: siempre renderizar la sección de misiones con fallback vacío
+        updateMissionsSection(s.userMissions.orEmpty(), s.missions.orEmpty())
     }
 
     private fun setupUserHeader(firstName: String, streakDays: Int, totalXp: Int) {

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pe.edu.cibertec.tech_mentor.R
@@ -26,6 +27,8 @@ class ExercisesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var optionsAdapter: ExerciseOptionAdapter
+    // Faltaba: variable de control para distinguir primer clic (verificar) del segundo (navegar)
+    private var isAnswerChecked = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -82,26 +85,45 @@ class ExercisesFragment : Fragment() {
         binding.btnCheckAnswer.setOnClickListener {
             val context = binding.root.context
 
-            binding.tvEncouragement.visibility = View.GONE
-            binding.cvFeedback.visibility = View.VISIBLE
-            binding.btnCheckAnswer.text = "Siguiente pregunta →"
+            if (!isAnswerChecked) {
+                // Faltaba: variable de control para saber si ya se revisó la respuesta
+                isAnswerChecked = true
 
-            val esRespuestaCorrecta = false
-            val explicacionDB = "Una API define cómo un sistema puede pedir información o acciones a otro. Por ejemplo, una app del clima consulta datos a un servicio."
+                binding.tvEncouragement.visibility = View.GONE
+                binding.cvFeedback.visibility = View.VISIBLE
+                // Versión anterior (comentada): botón decía "Siguiente pregunta →"
+                // binding.btnCheckAnswer.text = "Siguiente pregunta →"
+                // Faltaba: cambiar el texto a "Ver resultado"
+                binding.btnCheckAnswer.text = "Ver resultado →"
 
-            if (esRespuestaCorrecta) {
-                binding.cvFeedback.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
-                binding.tvFeedbackTitle.text = context.getString(R.string.feedback_correct_title)
-                binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(context, R.color.green))
-                binding.tvFeedbackExplanation.setTextColor(ContextCompat.getColor(context, R.color.green))
+                val esRespuestaCorrecta = false
+                val explicacionDB = "Una API define cómo un sistema puede pedir información o acciones a otro. Por ejemplo, una app del clima consulta datos a un servicio."
+
+                if (esRespuestaCorrecta) {
+                    binding.cvFeedback.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
+                    binding.tvFeedbackTitle.text = context.getString(R.string.feedback_correct_title)
+                    binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(context, R.color.green))
+                    binding.tvFeedbackExplanation.setTextColor(ContextCompat.getColor(context, R.color.green))
+                } else {
+                    binding.cvFeedback.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_red))
+                    binding.tvFeedbackTitle.text = context.getString(R.string.feedback_incorrect_title)
+                    binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(context, R.color.red))
+                    binding.tvFeedbackExplanation.setTextColor(ContextCompat.getColor(context, R.color.red))
+                }
+
+                binding.tvFeedbackExplanation.text = explicacionDB
             } else {
-                binding.cvFeedback.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_red))
-                binding.tvFeedbackTitle.text = context.getString(R.string.feedback_incorrect_title)
-                binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(context, R.color.red))
-                binding.tvFeedbackExplanation.setTextColor(ContextCompat.getColor(context, R.color.red))
+                // Versión anterior (comentada): // Aquí avanzarás a la siguiente pregunta o a ExamResultFragment (vacío)
+                // Faltaba: navegar al resultado de ejercicios al presionar el botón por segunda vez
+                val idLeccion = arguments?.getLong("idLeccion", 0L) ?: 0L
+                val bundle = android.os.Bundle().apply {
+                    putLong("idLeccion", idLeccion)
+                    putInt("correctAnswers", 1)
+                    putInt("totalQuestions", 1)
+                    putInt("earnedXp", 30)
+                }
+                findNavController().navigate(R.id.action_exercisesFragment_to_exerciseResultFragment, bundle)
             }
-
-            binding.tvFeedbackExplanation.text = explicacionDB
         }
     }
 

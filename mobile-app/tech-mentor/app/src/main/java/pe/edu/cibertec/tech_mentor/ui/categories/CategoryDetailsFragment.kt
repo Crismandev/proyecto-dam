@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentCategoryDetailsBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCourseBinding
 
@@ -91,12 +94,23 @@ class CategoryDetailsFragment : Fragment() {
     }
 
     private fun setupCoursesRecyclerView(courses: List<Course>) {
+        // --- Versión anterior (comentada): Solo mostraba Toast al hacer click en un curso ---
+        // val adapter = CourseAdapter(courses) { selectedCourse ->
+        //     Toast.makeText(
+        //         requireContext(),
+        //         "Curso seleccionado: ${selectedCourse.nombre}",
+        //         Toast.LENGTH_SHORT
+        //     ).show()
+        // }
+
+        // --- Versión adaptada: Navega al detalle del curso al hacer click ---
         val adapter = CourseAdapter(courses) { selectedCourse ->
-            Toast.makeText(
-                requireContext(),
-                "Curso seleccionado: ${selectedCourse.nombre}",
-                Toast.LENGTH_SHORT
-            ).show()
+            // Faltaba: navegación a CourseDetailFragment pasando el id del curso
+            val bundle = bundleOf("idCurso" to selectedCourse.idCurso)
+            findNavController().navigate(
+                R.id.action_categoryDetailsFragment_to_courseDetailFragment,
+                bundle
+            )
         }
         binding.rvRouteCourses.layoutManager = LinearLayoutManager(requireContext())
         binding.rvRouteCourses.adapter = adapter
