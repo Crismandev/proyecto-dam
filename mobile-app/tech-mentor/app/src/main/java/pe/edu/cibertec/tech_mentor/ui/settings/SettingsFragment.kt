@@ -1,10 +1,7 @@
 package pe.edu.cibertec.tech_mentor.ui.settings
 
 import android.content.Intent
-<<<<<<< HEAD
 import android.net.Uri
-=======
->>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.LayoutInflater
@@ -14,7 +11,6 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-<<<<<<< HEAD
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.button.MaterialButton
@@ -22,15 +18,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
+import pe.edu.cibertec.tech_mentor.BuildConfig
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
 import pe.edu.cibertec.tech_mentor.data.remote.api.AuthApiService
 import pe.edu.cibertec.tech_mentor.data.remote.dto.auth.ChangePasswordRequestDto
-=======
-import androidx.navigation.fragment.findNavController
-import pe.edu.cibertec.tech_mentor.BuildConfig
-import pe.edu.cibertec.tech_mentor.R
->>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
 import pe.edu.cibertec.tech_mentor.databinding.FragmentSettingsBinding
 import pe.edu.cibertec.tech_mentor.ui.login.LoginActivity
 import pe.edu.cibertec.tech_mentor.util.SessionManager
@@ -54,20 +46,20 @@ class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-<<<<<<< HEAD
         sessionManager = SessionManager(requireContext())
         authApiService = ApiClient.getClient(sessionManager).create(AuthApiService::class.java)
 
-        // Corregir texto de versión para que muestre el valor real sin caracteres crudos:
-        binding.tvAppVersion.text = "TechMentor v1.0.0 (DAM 2026)"
+        // Versión de la app formateada correctamente:
+        try {
+            binding.tvAppVersion.text = getString(R.string.label_app_version, BuildConfig.VERSION_NAME)
+        } catch (e: Exception) {
+            binding.tvAppVersion.text = "TechMentor v1.0.0 (DAM 2026)"
+        }
 
         // --- Versión anterior con Toast simulados (comentada): ---
         // setupListenersOld()
 
         // --- Versión completa con todas las opciones funcionales de Ajustes: ---
-=======
-        binding.tvAppVersion.text = getString(R.string.label_app_version, BuildConfig.VERSION_NAME)
->>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         setupListeners()
     }
 
@@ -86,15 +78,11 @@ class SettingsFragment : Fragment() {
     private fun setupListeners() {
         // 1. Editar Perfil: Navega a EditProfileFragment
         binding.cvEditProfile.setOnClickListener {
-<<<<<<< HEAD
             try {
                 findNavController().navigate(R.id.action_settingsFragment_to_editProfileFragment)
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Navegando a editar perfil...", Toast.LENGTH_SHORT).show()
             }
-=======
-            findNavController().navigate(R.id.action_settingsFragment_to_editProfileFragment)
->>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         }
 
         // 2. Editar Credenciales: Modal con textos nítidos y conexión a /auth/cambiar-clave
@@ -107,10 +95,7 @@ class SettingsFragment : Fragment() {
             showDeleteAccountStep1()
         }
 
-<<<<<<< HEAD
         // 4. Feedback: Modal con calificación en estrellas y comentarios claros
-=======
->>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         binding.btnFeedback.setOnClickListener {
             showFeedbackDialog()
         }
@@ -130,20 +115,9 @@ class SettingsFragment : Fragment() {
             showPrivacyDialog()
         }
 
-<<<<<<< HEAD
         // 8. Cerrar Sesión: Limpia SessionManager y regresa a LoginActivity
         binding.btnLogout.setOnClickListener {
             showLogoutConfirmDialog()
-=======
-        binding.btnLogout.setOnClickListener {
-            SessionManager(requireContext()).clearSession()
-            Toast.makeText(requireContext(), R.string.msg_logout, Toast.LENGTH_SHORT).show()
-            val intent = Intent(requireContext(), LoginActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            startActivity(intent)
-            requireActivity().finish()
->>>>>>> 63224903ebb83f355b914bb667ff37c818b59021
         }
     }
 
@@ -251,7 +225,7 @@ class SettingsFragment : Fragment() {
             dialog.dismiss()
         }
 
-        // Temporizador de 9 segundos solicitado:
+        // Temporizador de 9 segundos:
         timer = object : CountDownTimer(9000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 val secondsRemaining = (millisUntilFinished / 1000) + 1
