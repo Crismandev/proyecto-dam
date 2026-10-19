@@ -3,24 +3,25 @@ package pe.edu.cibertec.tech_mentor.ui.home
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
+import pe.edu.cibertec.tech_mentor.MainActivity
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentHomeBinding
 import pe.edu.cibertec.tech_mentor.domain.model.Course
 import pe.edu.cibertec.tech_mentor.domain.model.CourseProgress
 import pe.edu.cibertec.tech_mentor.domain.model.Mission
 import pe.edu.cibertec.tech_mentor.domain.model.UserMission
+import pe.edu.cibertec.tech_mentor.util.SessionManager
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -47,10 +48,14 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupClickListeners()
+        showFallbackGreeting()
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.ui.collect { render(it) }
+                vm.ui.collect { state ->
+                    runCatching { render(state) }
+                        .onFailure { error -> Log.e("HomeFragment", "render", error) }
+                }
             }
         }
         vm.refresh()
@@ -63,23 +68,23 @@ class HomeFragment : Fragment() {
         }
 
         binding.cvPractice.setOnClickListener {
-            navigateToPractice()
+            (activity as? MainActivity)?.selectTab(R.id.practiceFragment)
         }
 
         binding.cvManageCourses.setOnClickListener {
-            findNavController().navigate(R.id.categoryFragment)
+            (activity as? MainActivity)?.selectTab(R.id.categoryFragment)
         }
         binding.cvManageMissions.setOnClickListener {
-            findNavController().navigate(R.id.categoryFragment)
+            (activity as? MainActivity)?.selectTab(R.id.categoryFragment)
         }
     }
 
-    private fun navigateToPractice() {
-        runCatching {
-            findNavController().navigate(R.id.practiceFragment)
-        }.onFailure {
-            Toast.makeText(requireContext(), "Verifica el ID de PracticeFragment en tu nav_graph", Toast.LENGTH_SHORT).show()
-        }
+    private fun showFallbackGreeting() {
+        val session = SessionManager(requireContext())
+        val fallback = session.getUsername()
+            ?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            ?: if (session.isStaff()) "Admin" else "Estudiante"
+        binding.tvWelcomeTitle.text = "Un paso más, $fallback."
     }
 
     private fun render(s: HomeUiState) {
@@ -90,7 +95,7 @@ class HomeFragment : Fragment() {
 
         val profile = s.profile
         if (profile != null) {
-            val firstName = profile.nombres.trim().substringBefore(" ").ifEmpty {
+            val firstName = profile.nombres.orEmpty().trim().substringBefore(" ").ifEmpty {
                 if (s.isStaff) "Admin" else "Estudiante"
             }
             setupUserHeader(

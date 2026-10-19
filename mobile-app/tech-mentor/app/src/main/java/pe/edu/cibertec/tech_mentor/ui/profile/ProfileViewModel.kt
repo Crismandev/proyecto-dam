@@ -87,6 +87,7 @@ class ProfileViewModel(
                 }
             } else {
                 Log.w(TAG, "no se pudo cargar el progreso")
+                _ui.update { s -> s.copy(completedCourses = emptyList(), completedRoutes = emptyList()) }
             }
         }
     }

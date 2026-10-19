@@ -218,7 +218,11 @@ api.port=8080
 
 Después de cambiar `api.ip` hay que **Sync / Rebuild** el módulo `app`. Un hot-reload de Kotlin no regenera `BuildConfig`.
 
-**No edites `ApiClient.kt` para cambiar la IP.** Si el Gradle se queja de `Unresolved reference 'util'` al usar `java.util.Properties()`, el archivo ya debe tener `import java.util.Properties` al inicio (en Kotlin DSL `java.util` choca con el plugin Java).
+**No edites `ApiClient.kt` para cambiar la IP.** Tampoco lo envíes por chat: `BuildConfig` lo genera Gradle en `app/build.gradle.kts`. Sin ese archivo (y sin Sync) aparece `Unresolved reference: BuildConfig`.
+
+Si el Gradle se queja de `Unresolved reference 'util'` al usar `java.util.Properties()`, el archivo ya debe tener `import java.util.Properties` al inicio (en Kotlin DSL `java.util` choca con el plugin Java).
+
+Si el build falla en `extractDeepLinksDebug` / XML mal formado: `File → Sync Project with Gradle Files`, luego `Build → Clean Project` y `Rebuild`. No mezclar un `ApiClient.kt` suelto con un `nav_graph.xml` a medias.
 
 ---
 

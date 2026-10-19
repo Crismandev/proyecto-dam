@@ -8,7 +8,7 @@
 
 .login-left {
   flex: 1.2;
-  background: linear-gradient(135deg, #0B132B 0%, #1C2541 50%, #0F172A 100%);
+  background: linear-gradient(160deg, #1E1E38 0%, #2A2150 52%, #1E1E38 100%);
   color: $text-light;
   display: flex;
   align-items: center;
@@ -17,12 +17,20 @@
   overflow: hidden;
   padding: 3rem;
 
+  .login-scene {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.7;
+  }
+
   .glow-orb {
     position: absolute;
     border-radius: 50%;
     filter: blur(80px);
     opacity: 0.25;
     pointer-events: none;
+    z-index: 1;
 
     &.primary-orb {
       width: 400px;
@@ -49,7 +57,7 @@
     .logo-box {
       width: 56px;
       height: 56px;
-      background: linear-gradient(135deg, $primary 0%, $accent-cyan 100%);
+      background: linear-gradient(135deg, $primary 0%, $accent-orange 100%);
       border-radius: $radius-md;
       display: flex;
       align-items: center;
@@ -57,7 +65,7 @@
       font-size: 2rem;
       color: #FFFFFF;
       margin-bottom: 1.5rem;
-      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+      box-shadow: 0 8px 20px rgba(124, 77, 255, 0.4);
     }
 
     h1 {
@@ -90,7 +98,7 @@
         color: rgba(255, 255, 255, 0.85);
 
         i {
-          color: $accent-cyan;
+          color: $accent-orange;
           font-size: 1.2rem;
         }
       }

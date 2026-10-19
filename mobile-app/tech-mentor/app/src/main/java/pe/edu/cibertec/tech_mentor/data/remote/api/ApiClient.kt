@@ -2,7 +2,7 @@ package pe.edu.cibertec.tech_mentor.data.remote
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import pe.edu.cibertec.tech_mentor.BuildConfig
+import pe.edu.cibertec.tech_mentor.util.ApiConfig
 import pe.edu.cibertec.tech_mentor.util.SessionManager
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
-    // Cada integrante define api.ip en local.properties (no se sube a git).
-    // Ver local.properties.example
-    private val BASE_URL: String = BuildConfig.API_BASE_URL
+    // No pongas la IP aquí. Va en local.properties (api.ip) + Sync Gradle.
+    // No envíes solo este archivo: hay que hacer git pull de todo el repo.
+    private val BASE_URL: String = ApiConfig.baseUrl()
 
     fun getClient(sessionManager: SessionManager): Retrofit {
 

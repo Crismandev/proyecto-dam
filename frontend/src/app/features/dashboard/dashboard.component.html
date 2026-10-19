@@ -1,130 +1,145 @@
-<div class="page-header">
-  <div>
-    <h1>Dashboard Administrativo</h1>
-    <p>Bienvenido de nuevo al panel de gestión pedagógica de TechMentor.</p>
-  </div>
-</div>
-
-<div class="dashboard-grid animate-fade-in" *ngIf="data() as d; else loading">
-  <!-- Top Stat Cards Grid -->
-  <div class="stats-cards">
-    <div class="card stat-card color-indigo">
-      <div class="stat-header">
-        <div class="icon-wrapper">
-          <i class="ri-user-heart-line"></i>
-        </div>
-        <span class="trend-badge positive">+100%</span>
-      </div>
-      <div class="stat-body">
-        <div class="stat-value">{{ d.totalAlumnos }}</div>
-        <div class="stat-label">Estudiantes Registrados</div>
-      </div>
+<div class="dash" *ngIf="data() as d; else loadingTpl">
+  <header class="dash-hero">
+    <div class="hero-left">
+      <span class="hero-kicker">TechMentor</span>
+      <h1>Aprendizaje &amp; Catálogo</h1>
     </div>
-
-    <div class="card stat-card color-cyan">
-      <div class="stat-header">
-        <div class="icon-wrapper">
-          <i class="ri-book-open-line"></i>
-        </div>
-        <span class="trend-badge neutral">Activos</span>
-      </div>
-      <div class="stat-body">
-        <div class="stat-value">{{ d.totalCursos }}</div>
-        <div class="stat-label">Cursos en Catálogo</div>
-      </div>
+    <div class="hero-right">
+      <app-scene-orb variant="compact" class="hero-orb"></app-scene-orb>
+      <h1>Dashboard</h1>
     </div>
+  </header>
 
-    <div class="card stat-card color-emerald">
-      <div class="stat-header">
-        <div class="icon-wrapper">
-          <i class="ri-node-tree"></i>
-        </div>
-        <span class="trend-badge positive">Publicados</span>
-      </div>
-      <div class="stat-body">
-        <div class="stat-value">{{ d.totalLecciones }}</div>
-        <div class="stat-label">Lecciones Creadas</div>
-      </div>
-    </div>
-
-    <div class="card stat-card color-amber">
-      <div class="stat-header">
-        <div class="icon-wrapper">
-          <i class="ri-code-box-line"></i>
-        </div>
-        <span class="trend-badge info">Prácticas</span>
-      </div>
-      <div class="stat-body">
-        <div class="stat-value">{{ d.totalEjercicios }}</div>
-        <div class="stat-label">Ejercicios Interactivos</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="main-widgets">
-    <!-- Chart Widget -->
-    <div class="card chart-widget">
-      <div class="widget-header">
-        <div>
-          <h3>Alumnos Inscritos por Curso</h3>
-          <p class="widget-sub">Distribución de estudiantes activos en la plataforma</p>
+  <section class="row row-top">
+    <article class="panel line-panel">
+      <h2>Actividad de la plataforma</h2>
+      <p>
+        Altas acumuladas de usuarios en {{ yearNow }}. El trazado sigue el crecimiento real del catálogo
+        y la comunidad.
+      </p>
+      <div class="line-chart" aria-label="Altas de usuarios por mes">
+        <svg viewBox="0 0 100 62" preserveAspectRatio="none">
+          <g class="grid">
+            <line x1="0" y1="14" x2="100" y2="14"></line>
+            <line x1="0" y1="28" x2="100" y2="28"></line>
+            <line x1="0" y1="42" x2="100" y2="42"></line>
+            <line x1="0" y1="56" x2="100" y2="56"></line>
+          </g>
+          <polygon class="line-area" [attr.points]="areaPoints(d.monthSeries, d.monthMax)"></polygon>
+          <polyline class="line-path" [attr.points]="linePoints(d.monthSeries, d.monthMax)"></polyline>
+          <g *ngFor="let point of d.monthSeries; let i = index">
+            <circle
+              [attr.cx]="pointX(i, d.monthSeries.length)"
+              [attr.cy]="pointY(point.value, d.monthMax)"
+              r="1.3"></circle>
+          </g>
+        </svg>
+        <div class="month-labels">
+          <span *ngFor="let point of d.monthSeries">{{ point.label }}</span>
         </div>
       </div>
-      
-      <div class="bar-chart">
-        <div class="chart-bars" *ngIf="d.alumnosPorCurso.length > 0; else noData">
-          <div class="bar-container" *ngFor="let item of d.alumnosPorCurso">
-            <div class="bar-wrapper">
-              <div class="bar" [style.height]="getBarHeight(item.alumnos, getMaxAlumnos())">
-                <span class="bar-val">{{ item.alumnos }}</span>
-              </div>
-            </div>
-            <div class="bar-label" [title]="item.curso">{{ item.curso }}</div>
+    </article>
+
+    <article class="panel bars-panel">
+      <h2>Cursos por ruta</h2>
+      <p>Distribución del catálogo según las categorías publicadas.</p>
+      <ul class="bars" *ngIf="d.categoryBars.length; else emptyBars">
+        <li *ngFor="let bar of d.categoryBars">
+          <div class="bar-track">
+            <div class="bar-fill" [style.width.%]="bar.percent"></div>
           </div>
-        </div>
-        <ng-template #noData>
-          <div class="empty-state">
-            <i class="ri-bar-chart-2-line empty-icon"></i>
-            <p>No hay datos suficientes para graficar inscripciones.</p>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-
-    <!-- Recent Activity Timeline -->
-    <div class="card activity-widget">
-      <div class="widget-header">
-        <h3>Actividad Reciente</h3>
-        <p class="widget-sub">Últimos eventos del sistema</p>
-      </div>
-      
-      <div class="timeline" *ngIf="d.actividadReciente.length > 0; else noActivity">
-        <div class="timeline-item" *ngFor="let act of d.actividadReciente">
-          <div class="timeline-icon" [class.new-user]="act.tipo === 'NUEVO_ALUMNO'">
-            <i [class]="act.tipo === 'NUEVO_ALUMNO' ? 'ri-user-add-line' : 'ri-check-double-line'"></i>
-          </div>
-          <div class="timeline-content">
-            <div class="act-header">
-              <span class="act-title">{{ act.titulo }}</span>
-              <span class="act-time">{{ act.tiempoRelativo }}</span>
-            </div>
-            <div class="act-desc">{{ act.descripcion }}</div>
-          </div>
-        </div>
-      </div>
-      <ng-template #noActivity>
-        <div class="empty-state">
-          <i class="ri-history-line empty-icon"></i>
-          <p>Sin actividad registrada recientemente.</p>
-        </div>
+          <span class="bar-name">{{ bar.name }}</span>
+        </li>
+      </ul>
+      <ng-template #emptyBars>
+        <p class="empty">Aún no hay cursos para graficar.</p>
       </ng-template>
-    </div>
-  </div>
+    </article>
+  </section>
+
+  <section class="row row-bottom">
+    <article class="panel donut-panel">
+      <div class="donut-wrap">
+        <svg viewBox="0 0 42 42" class="donut" aria-hidden="true">
+          <circle class="donut-hole" cx="21" cy="21" r="15.915"></circle>
+          <circle
+            *ngFor="let slice of d.donut"
+            class="donut-ring"
+            cx="21" cy="21" r="15.915"
+            [attr.stroke]="slice.color"
+            [attr.stroke-dasharray]="slice.dasharray"
+            [attr.stroke-dashoffset]="slice.dashoffset"></circle>
+        </svg>
+      </div>
+      <div class="donut-legend">
+        <h2>Top rutas</h2>
+        <ul>
+          <li *ngFor="let slice of d.donut">
+            <span class="swatch" [style.background]="slice.color"></span>
+            {{ slice.name }}
+          </li>
+        </ul>
+        <p class="muted">
+          {{ d.totalCursos }} cursos en {{ d.donut.length || 0 }} rutas activas del catálogo.
+        </p>
+      </div>
+    </article>
+
+    <article class="panel sat-panel">
+      <h2>Racha de alumnos</h2>
+      <p>Nivel de constancia medido por la racha diaria de la comunidad.</p>
+      <ul class="stars">
+        <li *ngFor="let row of d.satisfaction">
+          <div class="star-row" [attr.aria-label]="row.label + ': ' + row.stars + ' de 5'">
+            <i class="ri-star-fill" *ngFor="let s of [1,2,3,4,5]" [class.off]="s > row.stars"></i>
+          </div>
+          <span class="sat-label">{{ row.label }}</span>
+          <span class="sat-pct">{{ row.percent }}%</span>
+        </li>
+      </ul>
+    </article>
+
+    <aside class="kpis">
+      <div class="kpi kpi-wide">
+        <span>XP acumulada</span>
+        <strong>{{ d.totalXp | number:'1.0-0' }}</strong>
+      </div>
+      <div class="kpi kpi-wide">
+        <span>Alumnos en plataforma</span>
+        <strong>{{ d.totalAlumnos | number:'1.0-0' }}</strong>
+      </div>
+      <div class="kpi-pair">
+        <div class="kpi">
+          <span>Cursos</span>
+          <strong>{{ d.totalCursos }}</strong>
+        </div>
+        <div class="kpi">
+          <span>Lecciones</span>
+          <strong>{{ d.totalLecciones }}</strong>
+        </div>
+      </div>
+      <div class="kpi-pair">
+        <div class="kpi">
+          <span>Misiones</span>
+          <strong>{{ d.achievement }}%</strong>
+        </div>
+        <div class="kpi">
+          <span>Activas</span>
+          <strong>{{ d.misionesActivas }}/{{ d.totalMisiones }}</strong>
+        </div>
+      </div>
+    </aside>
+  </section>
 </div>
 
-<ng-template #loading>
-  <div class="loading-state">
+<ng-template #loadingTpl>
+  <div class="loading-state" *ngIf="loading(); else errorTpl">
     <div class="spinner"></div>
-    <p>Cargando información del dashboard...</p>
+    <p>Preparando el dashboard de TechMentor…</p>
   </div>
+  <ng-template #errorTpl>
+    <div class="loading-state">
+      <p>{{ error() || 'Sin datos para mostrar.' }}</p>
+    </div>
+  </ng-template>
 </ng-template>

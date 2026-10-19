@@ -61,6 +61,8 @@ export interface UsuarioDTO {
   nombreRol: string;
   email: string;
   fechaRegistro: string;
+  xpTotal?: number;
+  rachaActual?: number;
 }
 
 export interface MisionDTO {

@@ -43,7 +43,7 @@
     <fragment
         android:id="@+id/categoryDetailsFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.categories.CategoryDetailsFragment"
-        android:label="Detalle de Categoría"
+        android:label="@string/label_category_details"
         tools:layout="@layout/fragment_category_details" />
 
     <fragment
@@ -59,6 +59,6 @@
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.profile.EditProfileFragment"
-        android:label="Editar perfil"
+        android:label="@string/label_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
 </navigation>

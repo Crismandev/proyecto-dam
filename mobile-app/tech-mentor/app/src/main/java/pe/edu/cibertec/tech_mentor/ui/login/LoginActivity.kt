@@ -80,17 +80,17 @@ class LoginActivity : AppCompatActivity() {
         binding.btnLogin.isEnabled = false
 
         lifecycleScope.launch {
-            // --- Versión anterior (comentada): ---
-            // val result = authRepository.login(email = email, password = password)
-
-            // --- Llamada real con username (acepta username o email según DTO del backend): ---
-            val result = authRepository.login(username = email, password = password)
-            binding.btnLogin.isEnabled = true
-
-            result.onSuccess {
-                navigateToMain()
-            }.onFailure { error ->
-                Toast.makeText(this@LoginActivity, error.message, Toast.LENGTH_SHORT).show()
+            try {
+                val result = authRepository.login(username = email, password = password)
+                result.onSuccess {
+                    navigateToMain()
+                }.onFailure { error ->
+                    Toast.makeText(this@LoginActivity, error.message, Toast.LENGTH_SHORT).show()
+                }
+            } catch (error: Exception) {
+                Toast.makeText(this@LoginActivity, error.message ?: "No se pudo iniciar sesión", Toast.LENGTH_SHORT).show()
+            } finally {
+                binding.btnLogin.isEnabled = true
             }
         }
     }

@@ -7,7 +7,7 @@
 
 .main-content {
   flex: 1;
-  margin-left: 250px; // matches sidebar width
+  margin-left: 260px;
   display: flex;
   flex-direction: column;
   background-color: $bg-body;
@@ -15,6 +15,6 @@
 
 .content-area {
   flex: 1;
-  padding: 2rem;
+  padding: 1.25rem 1.5rem 1.75rem;
   overflow-y: auto;
 }

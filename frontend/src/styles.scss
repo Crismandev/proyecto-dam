@@ -46,11 +46,11 @@ a {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #C9C4E0;
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #7C4DFF;
 }
 
 // Animations Keyframes
@@ -122,10 +122,10 @@ a {
 .btn-primary {
   background: linear-gradient(135deg, $primary 0%, $primary-hover 100%);
   color: $text-light;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+  box-shadow: 0 4px 12px rgba(124, 77, 255, 0.28);
 
   &:hover:not(:disabled) {
-    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+    box-shadow: 0 6px 16px rgba(124, 77, 255, 0.38);
     transform: translateY(-1px);
   }
 }
@@ -162,7 +162,7 @@ a {
 }
 
 .table thead .actions-col {
-  background-color: #F8FAFC;
+  background-color: #F7F6FC;
 }
 
 .row-actions {
@@ -187,7 +187,7 @@ a {
   }
 
   &:hover:not(:disabled) {
-    background: #F8FAFC;
+    background: #F7F6FC;
     color: $text-heading;
     border-color: #CBD5E1;
     transform: none;
@@ -206,8 +206,8 @@ a {
 
   &.btn-edit:hover:not(:disabled) {
     color: $primary;
-    background: rgba(99, 102, 241, 0.08);
-    border-color: rgba(99, 102, 241, 0.32);
+    background: rgba(124, 77, 255, 0.08);
+    border-color: rgba(124, 77, 255, 0.32);
   }
 
   &.btn-delete:hover:not(:disabled) {
@@ -248,7 +248,7 @@ a {
       outline: none;
       background-color: #FFFFFF;
       border-color: $primary;
-      box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+      box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.14);
     }
 
     &.is-invalid {
@@ -286,7 +286,7 @@ a {
   font-size: 0.875rem;
 
   thead {
-    background-color: #F8FAFC;
+    background-color: #F7F6FC;
     border-bottom: 1px solid $border-color;
 
     th {
@@ -302,7 +302,7 @@ a {
 
   tbody {
     tr {
-      border-bottom: 1px solid #F1F5F9;
+      border-bottom: 1px solid #EEE8FC;
       transition: background-color 0.15s ease;
 
       &:last-child {
@@ -310,7 +310,7 @@ a {
       }
 
       &:hover {
-        background-color: #F8FAFC;
+        background-color: #F7F6FC;
       }
 
       td {
@@ -320,7 +320,7 @@ a {
       }
 
       &:hover .actions-col {
-        background-color: #F8FAFC;
+        background-color: #F7F6FC;
       }
     }
   }
@@ -364,9 +364,9 @@ a {
 }
 
 .badge-info {
-  background-color: rgba(99, 102, 241, 0.1);
-  color: #4338CA;
-  &::before { background-color: #6366F1; }
+  background-color: rgba(124, 77, 255, 0.1);
+  color: #5B35D9;
+  &::before { background-color: #7C4DFF; }
 }
 
 // Page Headers
@@ -403,3 +403,11 @@ a {
 .gap-2 { gap: 1rem; }
 .gap-3 { gap: 1.5rem; }
 .w-full { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

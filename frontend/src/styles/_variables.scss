@@ -1,52 +1,52 @@
-// Design Tokens - TechMentor Modern Minimalist Theme
+// Design Tokens — TechMentor (alineado con la app mobile)
 
-// Brand & Accents
-$primary: #6366F1;             // Electric Indigo
-$primary-hover: #4F46E5;
-$primary-light: #EEF2FF;
+// Brand
+$primary: #7C4DFF;
+$primary-hover: #6A3DE8;
+$primary-light: #EEE8FC;
 
-$accent-cyan: #06B6D4;          // Bright Cyan
-$accent-emerald: #10B981;       // Emerald Green
-$accent-purple: #8B5CF6;        // Royal Purple
-$accent-amber: #F59E0B;         // Amber Warm
-$accent-rose: #F43F5E;          // Vivid Rose Red
+$accent-cyan: #2592C5;
+$accent-emerald: #10B981;
+$accent-purple: #7C4DFF;
+$accent-amber: #B66430;
+$accent-rose: #F43F5E;
+$accent-orange: #FF6B35;
 
-// Alias Variables for Backward Compatibility
 $accent-red: $accent-rose;
 $accent-green: $accent-emerald;
 $accent-indigo: $primary;
-$accent-orange: $accent-amber;
 
-// Dark Sidebar & Navbar
-$sidebar-bg: #0B132B;
-$sidebar-card: #1C2541;
-$sidebar-hover: #1E293B;
-$sidebar-active: #334155;
-$sidebar-text: #94A3B8;
+// Dark chrome (sidebar / KPI tiles)
+$sidebar-bg: #1E1E38;
+$sidebar-card: #2A2150;
+$sidebar-hover: #2C2750;
+$sidebar-active: #3A2D6B;
+$sidebar-text: #C9C4E0;
 $sidebar-active-text: #F8FAFC;
+$ink: #1E1E38;
 
-// Light Body & Cards
-$bg-body: #F8FAFC;
+// Surfaces
+$bg-body: #F7F6FC;
 $bg-card: #FFFFFF;
-$bg-subtle: #F1F5F9;
-$border-color: #E2E8F0;
+$bg-subtle: #EEE8FC;
+$border-color: #E4DFF3;
 $card-bg: #FFFFFF;
 
-// Text Hierarchy
-$text-heading: #0F172A;
-$text-main: #334155;
-$text-muted: #64748B;
+// Text
+$text-heading: #1E1E38;
+$text-main: #2E2E4A;
+$text-muted: #8E8E9F;
 $text-light: #FFFFFF;
 
-// Typography
-$font-heading: 'Outfit', sans-serif;
-$font-family: 'Inter', system-ui, -apple-system, sans-serif;
+// Typography — Plus Jakarta Sans (misma familia que mobile)
+$font-heading: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+$font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
 
-// Elevation & Glassmorphism
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-$shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
-$shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
+// Elevation
+$shadow-sm: 0 1px 2px 0 rgba(30, 30, 56, 0.05);
+$shadow-md: 0 8px 20px -8px rgba(124, 77, 255, 0.18);
+$shadow-lg: 0 16px 40px -12px rgba(30, 30, 56, 0.16);
+$shadow-glow: 0 0 24px rgba(124, 77, 255, 0.28);
 
 $radius-sm: 8px;
 $radius-md: 12px;

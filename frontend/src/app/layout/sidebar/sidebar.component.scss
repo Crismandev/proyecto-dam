@@ -2,7 +2,7 @@
 
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #0B132B 0%, #1C2541 100%);
+  background: linear-gradient(180deg, #1E1E38 0%, #2A2150 100%);
   color: $sidebar-text;
   display: flex;
   flex-direction: column;
@@ -25,14 +25,14 @@
   .brand-icon {
     width: 42px;
     height: 42px;
-    background: linear-gradient(135deg, $primary 0%, $accent-cyan 100%);
+    background: linear-gradient(135deg, $primary 0%, $accent-orange 100%);
     border-radius: $radius-md;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #FFFFFF;
     font-size: 1.5rem;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.4);
   }
 
   .brand-text {
@@ -91,16 +91,16 @@
 
       .nav-icon {
         transform: translateX(2px);
-        color: $accent-cyan;
+        color: $accent-orange;
       }
     }
 
     &.active {
-      background: linear-gradient(90deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
+      background: linear-gradient(90deg, rgba(124, 77, 255, 0.28) 0%, rgba(124, 77, 255, 0.05) 100%);
       color: #FFFFFF;
       font-weight: 600;
       border-left: 3px solid $primary;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.15);
+      box-shadow: 0 4px 15px rgba(124, 77, 255, 0.2);
 
       .nav-icon {
         color: $primary;
