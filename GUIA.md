@@ -122,6 +122,14 @@ psql -h localhost -U postgres -d techmentor -f datos_prueba.sql
 
 `datos_prueba.sql` no es migración Flyway. No lo pongas en `db/migration`.
 
+**Opcional — datos demo para el dashboard web** (24 estudiantes con registros en los últimos 12 meses, inscripciones y lecciones completadas). Correr después de `datos_prueba.sql`; es idempotente y solo crea correos `@demo.techmentor.test`:
+
+```bash
+psql -h localhost -U postgres -d techmentor -f datos_demo.sql
+```
+
+Usuario = parte del correo antes de `@` con `_` en vez de punto (ej. `lucia_ramirez`), contraseña `Demo123*`. Para quitarlos: `DELETE FROM usuarios WHERE email LIKE '%@demo.techmentor.test';`
+
 ---
 
 ## 3. Backend
