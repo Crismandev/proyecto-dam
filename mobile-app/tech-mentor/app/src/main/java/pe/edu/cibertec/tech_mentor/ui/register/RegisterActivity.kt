@@ -101,8 +101,15 @@ class RegisterActivity : AppCompatActivity() {
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
 
+        // --- Versión anterior de fecha (comentada): ---
+        // val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+        //     val formattedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+        //     binding.etFechaNac.setText(formattedDate)
+        // }, year, month, day)
+
+        // --- Versión mejorada con formato DD/MM/AAAA de 2 dígitos: ---
         val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-            val formattedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+            val formattedDate = String.format("%02d/%02d/%04d", selectedDay, selectedMonth + 1, selectedYear)
             binding.etFechaNac.setText(formattedDate)
         }, year, month, day)
 
@@ -131,40 +138,105 @@ class RegisterActivity : AppCompatActivity() {
         overridePendingTransition(0, 0)
     }
 
+    // --- Versión anterior sin validación en cliente (comentada): ---
+    // private fun performRegisterOld() {
+    //     val params = RegisterUserParams(
+    //         firstName = binding.etNombres.text?.toString()?.trim().orEmpty().ifEmpty { "Demo" },
+    //         lastName = binding.etApellidos.text?.toString()?.trim().orEmpty().ifEmpty { "User" },
+    //         email = binding.etEmail.text?.toString()?.trim().orEmpty().ifEmpty { "newuser@techmentor.com" },
+    //         birthDate = binding.etFechaNac.text?.toString()?.trim().orEmpty(),
+    //         phone = binding.etTelefono.text?.toString()?.trim().orEmpty(),
+    //         country = binding.etPais.text?.toString()?.trim().orEmpty(),
+    //         city = binding.etCiudad.text?.toString()?.trim().orEmpty(),
+    //         biography = binding.etBiografia.text?.toString()?.trim().orEmpty(),
+    //         avatar = selectedAvatarUri?.toString(),
+    //         password = binding.etPassword.text?.toString()?.trim().orEmpty().ifEmpty { "123456" }
+    //     )
+    // }
+
+    // --- Versión con validación completa según requisitos del backend (nombres, email, clave mín 8 caracteres): ---
     private fun performRegister() {
+        // Limpiar errores visuales previos en los campos
+        binding.tilNombres.error = null
+        binding.tilApellidos.error = null
+        binding.tilEmail.error = null
+        binding.tilPassword.error = null
+
+        val firstName = binding.etNombres.text?.toString()?.trim().orEmpty()
+        val lastName = binding.etApellidos.text?.toString()?.trim().orEmpty()
+        val email = binding.etEmail.text?.toString()?.trim().orEmpty()
+        val password = binding.etPassword.text?.toString()?.trim().orEmpty()
+        val birthDate = binding.etFechaNac.text?.toString()?.trim().orEmpty()
+        val phone = binding.etTelefono.text?.toString()?.trim().orEmpty()
+        val country = binding.etPais.text?.toString()?.trim().orEmpty()
+        val city = binding.etCiudad.text?.toString()?.trim().orEmpty()
+        val biography = binding.etBiografia.text?.toString()?.trim().orEmpty()
+
+        var isValid = true
+
+        // 1. Validar Nombres (Obligatorio, máx 100 caracteres)
+        if (firstName.isBlank()) {
+            binding.tilNombres.error = "Ingresa tus nombres"
+            isValid = false
+        } else if (firstName.length > 100) {
+            binding.tilNombres.error = "Máximo 100 caracteres"
+            isValid = false
+        }
+
+        // 2. Validar Apellidos (Obligatorio, máx 100 caracteres)
+        if (lastName.isBlank()) {
+            binding.tilApellidos.error = "Ingresa tus apellidos"
+            isValid = false
+        } else if (lastName.length > 100) {
+            binding.tilApellidos.error = "Máximo 100 caracteres"
+            isValid = false
+        }
+
+        // 3. Validar Correo Electrónico (Obligatorio, formato email, máx 150 caracteres)
+        if (email.isBlank()) {
+            binding.tilEmail.error = "Ingresa tu correo electrónico"
+            isValid = false
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = "Ingresa un correo electrónico válido (ej: usuario@correo.com)"
+            isValid = false
+        } else if (email.length > 150) {
+            binding.tilEmail.error = "Máximo 150 caracteres"
+            isValid = false
+        }
+
+        // 4. Validar Contraseña (Obligatorio según backend: Mínimo 8 caracteres, máx 100)
+        if (password.isBlank()) {
+            binding.tilPassword.error = "Ingresa una contraseña"
+            isValid = false
+        } else if (password.length < 8) {
+            binding.tilPassword.error = "La contraseña debe tener al menos 8 caracteres"
+            isValid = false
+        } else if (password.length > 100) {
+            binding.tilPassword.error = "Máximo 100 caracteres"
+            isValid = false
+        }
+
+        if (!isValid) {
+            Toast.makeText(this@RegisterActivity, "Por favor completa los campos requeridos correctamente", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val params = RegisterUserParams(
-            firstName = binding.etNombres.text?.toString()?.trim().orEmpty().ifEmpty { "Demo" },
-            lastName = binding.etApellidos.text?.toString()?.trim().orEmpty().ifEmpty { "User" },
-            email = binding.etEmail.text?.toString()?.trim().orEmpty().ifEmpty { "newuser@techmentor.com" },
-            birthDate = binding.etFechaNac.text?.toString()?.trim().orEmpty(),
-            phone = binding.etTelefono.text?.toString()?.trim().orEmpty(),
-            country = binding.etPais.text?.toString()?.trim().orEmpty(),
-            city = binding.etCiudad.text?.toString()?.trim().orEmpty(),
-            biography = binding.etBiografia.text?.toString()?.trim().orEmpty(),
+            firstName = firstName,
+            lastName = lastName,
+            email = email,
+            birthDate = birthDate,
+            phone = phone,
+            country = country,
+            city = city,
+            biography = biography,
             avatar = selectedAvatarUri?.toString(),
-            password = binding.etPassword.text?.toString()?.trim().orEmpty().ifEmpty { "123456" }
+            password = password
         )
 
         binding.btnRegister.isEnabled = false
 
         lifecycleScope.launch {
-            // --- Versión anterior con authRepository.register simulado (comentada): ---
-            // val result = authRepository.register(params)
-            // binding.btnRegister.isEnabled = true
-            // result.onSuccess {
-            //     navigateToMain()
-            // }.onFailure { error ->
-            //     Toast.makeText(this@RegisterActivity, error.message, Toast.LENGTH_SHORT).show()
-            // }
-
-            // --- Versión anterior con token demo simulado (comentada): ---
-            // sessionManager.saveAuthToken("token_demo_${System.currentTimeMillis()}")
-            // sessionManager.saveUserDetails(params.email, "ALUMNO")
-            // sessionManager.setOnboardingSeen()
-            // binding.btnRegister.isEnabled = true
-            // Toast.makeText(this@RegisterActivity, "¡Cuenta creada exitosamente! Bienvenido, ${params.firstName}", Toast.LENGTH_SHORT).show()
-            // navigateToMain()
-
             // --- Conexión real con el backend mediante authRepository.register(params): ---
             val result = authRepository.register(params)
             binding.btnRegister.isEnabled = true
@@ -174,7 +246,14 @@ class RegisterActivity : AppCompatActivity() {
                 Toast.makeText(this@RegisterActivity, "¡Cuenta creada exitosamente! Bienvenido, ${params.firstName}", Toast.LENGTH_SHORT).show()
                 navigateToMain()
             }.onFailure { error ->
-                Toast.makeText(this@RegisterActivity, "Error al registrarse: ${error.message}", Toast.LENGTH_LONG).show()
+                val errorMsg = error.message.orEmpty()
+                if (errorMsg.contains("correo", ignoreCase = true) || errorMsg.contains("email", ignoreCase = true)) {
+                    binding.tilEmail.error = errorMsg
+                }
+                if (errorMsg.contains("contraseña", ignoreCase = true) || errorMsg.contains("password", ignoreCase = true)) {
+                    binding.tilPassword.error = errorMsg
+                }
+                Toast.makeText(this@RegisterActivity, "Error al registrarse:\n$errorMsg", Toast.LENGTH_LONG).show()
             }
         }
     }

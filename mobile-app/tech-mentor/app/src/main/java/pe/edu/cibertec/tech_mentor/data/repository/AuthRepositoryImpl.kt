@@ -64,10 +64,97 @@ class AuthRepositoryImpl(
         }
     }
 
-    // --- Implementación del registro de alumno adaptado al backend ---
+    // --- Versión previa básica de register (comentada): ---
+    // override suspend fun register(params: pe.edu.cibertec.tech_mentor.ui.register.RegisterUserParams): ApiResponse<AuthUser> {
+    //     return try {
+    //         val username = if (params.email.contains("@")) params.email.substringBefore("@") else params.email
+    //         val userRequestDto = pe.edu.cibertec.tech_mentor.data.remote.dto.user.CreateUserRequestDto(...)
+    //         ...
+    //     } catch (e: Exception) { ApiResponse.Exception(e) }
+    // }
+
+    // --- Funciones auxiliares para formato y validación de campos según el backend: ---
+    private fun formatBirthDate(birthDate: String): String? {
+        val clean = birthDate.trim()
+        if (clean.isBlank()) return null
+        // Descartar si contiene letras de plantillas como "DD", "MM", "AAAA":
+        if (clean.any { it.isLetter() }) return null
+
+        // Si ya viene en formato ISO yyyy-MM-dd:
+        if (clean.matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))) {
+            return clean
+        }
+
+        // Si viene en formato DD/MM/AAAA o D/M/YYYY:
+        val parts = clean.split("/", "-")
+        if (parts.size == 3) {
+            return try {
+                val day = parts[0].padStart(2, '0')
+                val month = parts[1].padStart(2, '0')
+                val year = parts[2]
+                if (year.length == 4 && day.toInt() in 1..31 && month.toInt() in 1..12) {
+                    "$year-$month-$day"
+                } else if (parts[0].length == 4) {
+                    "${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}"
+                } else {
+                    null
+                }
+            } catch (e: Exception) {
+                null
+            }
+        }
+        return null
+    }
+
+    private fun parseValidationErrors(jsonString: String?): String {
+        if (jsonString.isNullOrBlank()) {
+            return "Verifica los datos ingresados: la contraseña debe tener al menos 8 caracteres y los campos obligatorios deben estar completos."
+        }
+        return try {
+            val json = org.json.JSONObject(jsonString)
+            val messages = mutableListOf<String>()
+            val keys = json.keys()
+            while (keys.hasNext()) {
+                val key = keys.next()
+                val value = json.optString(key)
+                if (key == "mensaje" || key == "message") {
+                    messages.add(value)
+                } else if (key !in listOf("timestamp", "status", "error", "path")) {
+                    val fieldFriendly = when (key) {
+                        "nombres" -> "Nombres"
+                        "apellidos" -> "Apellidos"
+                        "email" -> "Correo electrónico"
+                        "username" -> "Nombre de usuario"
+                        "password" -> "Contraseña"
+                        "fechaNacimiento" -> "Fecha de nacimiento"
+                        "telefono" -> "Teléfono"
+                        "pais" -> "País"
+                        "ciudad" -> "Ciudad"
+                        else -> key
+                    }
+                    messages.add("$fieldFriendly: $value")
+                }
+            }
+            if (messages.isNotEmpty()) messages.joinToString("\n")
+            else "Verifica los datos ingresados: la contraseña debe tener al menos 8 caracteres y los campos obligatorios deben estar completos."
+        } catch (e: Exception) {
+            "Verifica los datos ingresados: la contraseña debe tener al menos 8 caracteres y los campos obligatorios deben estar completos."
+        }
+    }
+
+    // --- Implementación adaptada del registro con validación estricta y formato compatible con backend ---
     override suspend fun register(params: pe.edu.cibertec.tech_mentor.ui.register.RegisterUserParams): ApiResponse<AuthUser> {
         return try {
-            val username = if (params.email.contains("@")) params.email.substringBefore("@") else params.email
+            // Asegurar un username válido de mínimo 3 caracteres para el backend:
+            var username = if (params.email.contains("@")) params.email.substringBefore("@") else params.email
+            username = username.filter { it.isLetterOrDigit() || it == '_' || it == '.' }
+            if (username.length < 3) {
+                val cleanFirst = params.firstName.filter { it.isLetterOrDigit() }
+                username = (username + cleanFirst).take(20)
+            }
+            if (username.length < 3) {
+                username = (username + "123").take(10)
+            }
 
             val userRequestDto = pe.edu.cibertec.tech_mentor.data.remote.dto.user.CreateUserRequestDto(
                 idRol = 3L, // ROL_ALUMNO
@@ -77,7 +164,7 @@ class AuthRepositoryImpl(
                 email = params.email,
                 username = username,
                 password = params.password,
-                fechaNacimiento = params.birthDate.ifBlank { null },
+                fechaNacimiento = formatBirthDate(params.birthDate),
                 telefono = params.phone.ifBlank { null },
                 pais = params.country.ifBlank { null },
                 ciudad = params.city.ifBlank { null }
@@ -113,9 +200,15 @@ class AuthRepositoryImpl(
                     return login(username, params.password)
                 } else {
                     val code = createResp.code()
+                    val errorBody = try {
+                        createResp.errorBody()?.string()
+                    } catch (e: Exception) {
+                        null
+                    }
+
                     val errorMsg = when (code) {
                         409 -> "El correo electrónico o nombre de usuario ya está registrado"
-                        400 -> "Verifica los datos ingresados para el registro"
+                        400 -> parseValidationErrors(errorBody)
                         else -> "No se pudo registrar en el servidor ($code)"
                     }
                     return ApiResponse.Error(code, errorMsg)
