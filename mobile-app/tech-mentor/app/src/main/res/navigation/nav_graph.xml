@@ -21,11 +21,13 @@
         android:name="pe.edu.cibertec.tech_mentor.ui.home.HomeFragment"
         android:label="@string/tab_home"
         tools:layout="@layout/fragment_home" />
+
     <fragment
         android:id="@+id/practiceFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.practice.PracticeFragment"
         android:label="@string/tab_practice"
         tools:layout="@layout/fragment_practice" />
+
     <fragment
         android:id="@+id/profileFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.profile.ProfileFragment"
@@ -51,11 +53,14 @@
         android:name="pe.edu.cibertec.tech_mentor.ui.settings.SettingsFragment"
         android:label="Ajustes"
         tools:layout="@layout/fragment_settings">
+
+        <!-- Acción para navegar a Editar Perfil desde Ajustes: -->
         <action
             android:id="@+id/action_settingsFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
     </fragment>
 
+    <!-- Pantalla para Editar Perfil del usuario: -->
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="pe.edu.cibertec.tech_mentor.ui.profile.EditProfileFragment"

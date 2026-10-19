@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 object ApiClient {
 
     // No pongas la IP aquí. Va en local.properties (api.ip) + Sync Gradle.
-    // No envíes solo este archivo: hay que hacer git pull de todo el repo.
+    // Cada integrante usa local.properties.example como plantilla; ese archivo no se sube.
     private val BASE_URL: String = ApiConfig.baseUrl()
 
     fun getClient(sessionManager: SessionManager): Retrofit {

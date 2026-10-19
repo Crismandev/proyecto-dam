@@ -182,6 +182,17 @@ class AuthRepositoryImpl(
                 sessionManager.saveAuthToken(body.token)
                 sessionManager.saveUserId(body.idUsuario)
                 sessionManager.saveUserDetails(body.username, body.rol)
+                sessionManager.saveUserProfile(
+                    nombres = params.firstName,
+                    apellidos = params.lastName,
+                    email = params.email,
+                    telefono = params.phone.ifBlank { null },
+                    pais = params.country.ifBlank { null },
+                    ciudad = params.city.ifBlank { null },
+                    fechaNacimiento = params.birthDate.ifBlank { null },
+                    biografia = params.biography.ifBlank { null },
+                    avatarUrl = params.avatar
+                )
                 sessionManager.setOnboardingSeen()
                 return ApiResponse.Success(body.toDomain())
             }
@@ -195,7 +206,18 @@ class AuthRepositoryImpl(
             if (adminToken != null && userApiService != null) {
                 val createResp = userApiService.createUserWithToken("Bearer $adminToken", userRequestDto)
                 if (createResp.isSuccessful && createResp.body() != null) {
-                    // Usuario registrado exitosamente en la base de datos real!
+                    // Guardar perfil en caché de sesión para disponibilidad inmediata:
+                    sessionManager.saveUserProfile(
+                        nombres = params.firstName,
+                        apellidos = params.lastName,
+                        email = params.email,
+                        telefono = params.phone.ifBlank { null },
+                        pais = params.country.ifBlank { null },
+                        ciudad = params.city.ifBlank { null },
+                        fechaNacimiento = params.birthDate.ifBlank { null },
+                        biografia = params.biography.ifBlank { null },
+                        avatarUrl = params.avatar
+                    )
                     // Iniciar sesión con sus credenciales de alumno para generar su JWT legítimo:
                     return login(username, params.password)
                 } else {
