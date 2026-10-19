@@ -1,4 +1,4 @@
-package pe.edu.cibertec.tech_mentor.ui.practice
+﻿package pe.edu.cibertec.tech_mentor.ui.practice
 
 import android.graphics.Color
 import android.os.Bundle
@@ -72,8 +72,21 @@ class PracticeFragment : Fragment() {
         setupSearchInput()
         setupFilterButtons()
         setupDemoSyncCard()
+        // Faltaba: listener del botón flotante "Nueva práctica" para iniciar el flujo de examen
+        setupFabNewPractice()
 
         applyFilters()
+    }
+
+    // Faltaba: función que conecta el FAB "Nueva práctica" al flujo ExamList → Exam → ExamResult
+    private fun setupFabNewPractice() {
+        binding.fabNewPractice.setOnClickListener {
+            // Versión anterior (comentada): el FAB no tenía listener — no hacía nada al presionarlo
+            // (no existía setOnClickListener para fabNewPractice)
+
+            // Faltaba: navegar a la lista de exámenes de diagnóstico al presionar "Nueva práctica"
+            findNavController().navigate(R.id.action_practiceFragment_to_examListFragment)
+        }
     }
 
     private fun setupRecyclerView() {
