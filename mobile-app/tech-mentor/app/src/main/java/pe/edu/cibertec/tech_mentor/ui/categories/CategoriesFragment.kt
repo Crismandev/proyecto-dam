@@ -16,9 +16,16 @@ import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentCategoriesBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCategoryBinding
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepository
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepositoryImpl
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
+import pe.edu.cibertec.tech_mentor.util.SessionManager
+import pe.edu.cibertec.tech_mentor.data.remote.isSuccess
+import pe.edu.cibertec.tech_mentor.data.remote.getOrDefault
 
 data class CourseCategory(
-    val idCategory: Int,
+    val idCategory: Long,
     val title: String,
     val coursesCount: Int
 )
@@ -46,12 +53,13 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun setupRepository() {
-        // MODO PRUEBA
-        catalogRepository = FakeCatalogRepository()
+        // --- Versión anterior simulada (comentada): ---
+        // catalogRepository = FakeCatalogRepository()
 
-        // Descomentar cuando el backend esté listo
-        // val context = requireContext()
-        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
+        // --- Versión real conectada a la API de TechMentor: ---
+        val sessionManager = SessionManager(requireContext())
+        val catalogApi = ApiClient.getClient(sessionManager).create(CatalogApiService::class.java)
+        catalogRepository = CatalogRepositoryImpl(catalogApi)
     }
 
     private fun loadCategories() {
@@ -67,11 +75,16 @@ class CategoriesFragment : Fragment() {
                 val apiCourses = coursesResult.getOrDefault(emptyList())
 
                 val displayCategories = apiCategories.map { category ->
-                    val courseCount = apiCourses.count { it.idCategory == category.idCategory }
+                    // --- Versión anterior con nombres en inglés (comentada): ---
+                    // val courseCount = apiCourses.count { it.idCategory == category.idCategory }
+                    // CourseCategory(idCategory = category.idCategory, title = category.name, coursesCount = courseCount)
+
+                    // --- Propiedades del modelo de dominio TechMentor (idCategoria, nombre): ---
+                    val courseCount = apiCourses.count { it.idCategoria == category.idCategoria }
 
                     CourseCategory(
-                        idCategory = category.idCategory,
-                        title = category.name,
+                        idCategory = category.idCategoria,
+                        title = category.nombre,
                         coursesCount = courseCount
                     )
                 }
@@ -100,7 +113,7 @@ class CategoriesFragment : Fragment() {
 
 class CourseCategoryAdapter(
     private val categories: List<CourseCategory>,
-    private val onCategoryClick: (Int) -> Unit
+    private val onCategoryClick: (Long) -> Unit
 ) : RecyclerView.Adapter<CourseCategoryAdapter.CategoryViewHolder>() {
 
     inner class CategoryViewHolder(val binding: ItemCategoryBinding) :

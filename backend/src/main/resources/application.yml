@@ -6,13 +6,25 @@ spring:
   application:
     name: TechMentor
 
-  # ---- Base de datos PostgreSQL (la base "techmentor" debe existir y estar vacía la primera vez) ----
-  datasource:
-    url: jdbc:postgresql://localhost:5432/techmentor
-    username: postgres
-    password: root            # <-- cámbiala
+  # ---- Base de datos PostgreSQL ----
+  # --- Versión anterior (fija local): ---
+  # datasource:
+  #   url: jdbc:postgresql://localhost:5432/techmentor
+  #   username: postgres
+  #   password: root            # <-- cámbiala
 
-  # ---- JPA: el esquema lo crea Flyway, Hibernate NO debe tocarlo ----
+  # --- Nueva versión con variables globales (Local por defecto o Supabase con variables de entorno): ---
+  datasource:
+    # Local: jdbc:postgresql://localhost:5432/techmentor
+    # Supabase (ejemplo Pooler): jdbc:postgresql://aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/techmentor}
+    # Local: postgres | Supabase: postgres.[TU_PROJECT_REF]
+    username: ${DB_USERNAME:postgres}
+    # Local: root     | Supabase: [TU_PASSWORD_DE_SUPABASE]
+    password: ${DB_PASSWORD:root}
+    driver-class-name: org.postgresql.Driver
+
+  # ---- JPA: el esquema lo crea el script SQL, Hibernate NO debe tocarlo ----
   jpa:
     hibernate:
       ddl-auto: none
@@ -53,8 +65,11 @@ spring:
   #           client-secret: TU_CLIENT_SECRET
   #           scope: read:user,user:email
 
+# ---- Puerto del servidor (Dinámico para Cloud Run / Render / Local) ----
+# server:
+#   port: 8080
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 # ---- JWT: clave en Base64 (mínimo 256 bits). En producción define la variable de entorno JWT_SECRET ----
 jwt:

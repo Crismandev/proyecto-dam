@@ -3,10 +3,18 @@
 -- Total: 31 tablas.
 -- ============================================================
 
-DROP DATABASE IF EXISTS techmentor;
-CREATE DATABASE techmentor;
-
-\c techmentor
+-- =========================================================================
+-- NOTA IMPORTANTE PARA SUPABASE O POSTGRESQL EN LA NUBE:
+-- En Supabase la base de datos ya existe ('postgres') y no se debe recrear.
+-- Las líneas de DROP/CREATE DATABASE están comentadas para que puedas
+-- copiar y pegar todo este script directamente en el SQL Editor de Supabase.
+--
+-- Si estás en PostgreSQL local puro y quieres recrear la BD desde cero,
+-- puedes descomentar estas líneas:
+-- DROP DATABASE IF EXISTS techmentor;
+-- CREATE DATABASE techmentor;
+-- \c techmentor
+-- =========================================================================
 
 -- ============================================================
 -- FUNCIONES Y TRIGGERS GLOBALES

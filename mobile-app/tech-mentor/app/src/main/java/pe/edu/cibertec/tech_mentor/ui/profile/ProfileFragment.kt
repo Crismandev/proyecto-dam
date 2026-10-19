@@ -17,6 +17,20 @@ import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentProfileBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCompletedCourseBinding
+import pe.edu.cibertec.tech_mentor.util.SessionManager
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepository
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepositoryImpl
+import pe.edu.cibertec.tech_mentor.domain.repository.ProgressRepository
+import pe.edu.cibertec.tech_mentor.data.repository.ProgressRepositoryImpl
+import pe.edu.cibertec.tech_mentor.domain.repository.UserRepository
+import pe.edu.cibertec.tech_mentor.data.repository.UserRepositoryImpl
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
+import pe.edu.cibertec.tech_mentor.data.remote.api.ProgressApiService
+import pe.edu.cibertec.tech_mentor.data.remote.api.UserApiService
+import pe.edu.cibertec.tech_mentor.data.remote.isSuccess
+import pe.edu.cibertec.tech_mentor.data.remote.getOrDefault
+import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
 
 class ProfileFragment : Fragment() {
 
@@ -26,6 +40,7 @@ class ProfileFragment : Fragment() {
     private lateinit var sessionManager: SessionManager
     private lateinit var progressRepository: ProgressRepository
     private lateinit var catalogRepository: CatalogRepository
+    private lateinit var userRepository: UserRepository
 
     private var completedCourses = listOf<String>()
     private var completedRoutes = listOf<String>()
@@ -49,14 +64,15 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupRepositories() {
-        // MODO PRUEBA (Datos desde los FakeRepository)
-        progressRepository = FakeProgressRepository()
-        catalogRepository = FakeCatalogRepository()
+        // --- Versión anterior simulada (comentada): ---
+        // progressRepository = FakeProgressRepository()
+        // catalogRepository = FakeCatalogRepository()
 
-        // MODO REAL (Descomentar cuando el backend esté listo):
-        // val context = requireContext()
-        // progressRepository = ProgressRepositoryImpl(RetrofitClient.getProgressApi(context))
-        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
+        // --- Versión real conectada a la API de TechMentor: ---
+        val client = ApiClient.getClient(sessionManager)
+        progressRepository = ProgressRepositoryImpl(client.create(ProgressApiService::class.java))
+        catalogRepository = CatalogRepositoryImpl(client.create(CatalogApiService::class.java))
+        userRepository = UserRepositoryImpl(client.create(UserApiService::class.java))
     }
 
     private fun setupListeners() {
@@ -66,26 +82,38 @@ class ProfileFragment : Fragment() {
     }
 
     private fun loadUserProfile() {
-        val user = sessionManager.getUser() ?: return
+        val username = sessionManager.getUsername() ?: "Estudiante"
+        val role = sessionManager.getUserRole() ?: "ALUMNO"
 
-        binding.tvFullName.text = "${user.firstName} ${user.lastName.orEmpty()}".trim()
-        binding.tvEmail.text = user.email
-        binding.tvBio.text = user.biography.orEmpty()
-        binding.tvPhone.text = user.phone.orEmpty()
-        binding.tvCity.text = user.city.orEmpty()
-        binding.tvProfession.text = user.profession.orEmpty()
-        binding.tvUserLevel.text = "Nvl. ${user.level}"
+        binding.tvFullName.text = username
+        binding.tvEmail.text = if (username.contains("@")) username else "$username@techmentor.com"
+        binding.tvProfession.text = role
+        binding.tvUserLevel.text = "Nvl. 1"
+        binding.tvCurrentStreak.text = "7 días"
+        binding.tvMaxStreak.text = "14 días"
+        binding.tvTotalXp.text = "240 XP"
+        binding.tvCoins.text = "50"
 
-        binding.tvCurrentStreak.text = "${user.currentStreak} días"
-        binding.tvMaxStreak.text = "${user.maxStreak} días"
-        binding.tvTotalXp.text = "${user.totalXp} XP"
-        binding.tvCoins.text = user.coins.toString()
+        viewLifecycleOwner.lifecycleScope.launch {
+            userRepository.getMyProfile().onSuccess { user ->
+                binding.tvFullName.text = "${user.nombres} ${user.apellidos}".trim()
+                binding.tvEmail.text = user.email
+                binding.tvBio.text = user.biografia.orEmpty()
+                binding.tvPhone.text = user.telefono.orEmpty()
+                binding.tvCity.text = user.ciudad.orEmpty()
+                binding.tvUserLevel.text = "Nvl. ${user.nivelUsuario}"
+                binding.tvCurrentStreak.text = "${user.rachaActual} días"
+                binding.tvMaxStreak.text = "${user.rachaMaxima} días"
+                binding.tvTotalXp.text = "${user.xpTotal} XP"
+                binding.tvCoins.text = user.monedas.toString()
 
-        val avatarUrl = user.avatar
-        if (!avatarUrl.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(avatarUrl)
-                .into(binding.ivAvatar)
+                val avatarUrl = user.avatarUrl
+                if (!avatarUrl.isNullOrEmpty()) {
+                    Glide.with(this@ProfileFragment)
+                        .load(avatarUrl)
+                        .into(binding.ivAvatar)
+                }
+            }
         }
     }
 
@@ -103,18 +131,20 @@ class ProfileFragment : Fragment() {
                 val allCourses = coursesResult.getOrDefault(emptyList())
                 val allCategories = categoriesResult.getOrDefault(emptyList())
                 val completedProgress = progressResult.getOrDefault(emptyList())
-                    .filter { it.status.equals("COMPLETADO", ignoreCase = true) }
+                    .filter { it.estado.equals("COMPLETADO", ignoreCase = true) }
 
-                val completedCourseIds = completedProgress.map { it.idCourse }.toSet()
+                val completedCourseIds = completedProgress.map { it.idCurso }.toSet()
 
-                completedCourses = completedProgress.mapNotNull { progress ->
-                    progress.course?.name ?: allCourses.find { it.idCourse == progress.idCourse }?.name
+                completedCourses = completedProgress.map { progress ->
+                    progress.nombreCurso.ifEmpty {
+                        allCourses.find { it.idCurso == progress.idCurso }?.nombre ?: "Curso completado"
+                    }
                 }
 
                 completedRoutes = allCategories.filter { category ->
-                    val categoryCourses = allCourses.filter { it.idCategory == category.idCategory }
-                    categoryCourses.isNotEmpty() && categoryCourses.all { it.idCourse in completedCourseIds }
-                }.map { it.name }
+                    val categoryCourses = allCourses.filter { it.idCategoria == category.idCategoria }
+                    categoryCourses.isNotEmpty() && categoryCourses.all { it.idCurso in completedCourseIds }
+                }.map { it.nombre }
 
                 setupCertificatesSection()
             } else {

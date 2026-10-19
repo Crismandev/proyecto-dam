@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import pe.edu.cibertec.tech_mentor.MainActivity
 import pe.edu.cibertec.tech_mentor.ui.login.LoginActivity
 import pe.edu.cibertec.tech_mentor.ui.onboarding.OnboardingActivity
+import pe.edu.cibertec.tech_mentor.util.SessionManager
 
 class SplashActivity : AppCompatActivity() {
 

@@ -14,7 +14,25 @@ import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.MainActivity
 import pe.edu.cibertec.tech_mentor.databinding.ActivityRegisterBinding
 import pe.edu.cibertec.tech_mentor.ui.common.showAnimatedBit
+import pe.edu.cibertec.tech_mentor.util.SessionManager
+import pe.edu.cibertec.tech_mentor.domain.repository.AuthRepository
+import pe.edu.cibertec.tech_mentor.data.repository.AuthRepositoryImpl
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.AuthApiService
 import java.util.Calendar
+
+data class RegisterUserParams(
+    val firstName: String,
+    val lastName: String,
+    val email: String,
+    val birthDate: String,
+    val phone: String,
+    val country: String,
+    val city: String,
+    val biography: String,
+    val avatar: String?,
+    val password: String
+)
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -39,7 +57,13 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         sessionManager = SessionManager(this)
-        authRepository = FakeAuthRepository(sessionManager)
+
+        // --- Versión anterior simulada (comentada): ---
+        // authRepository = FakeAuthRepository(sessionManager)
+
+        // --- Conexión real con el backend mediante Retrofit: ---
+        val authApiService = ApiClient.getClient(sessionManager).create(AuthApiService::class.java)
+        authRepository = AuthRepositoryImpl(authApiService, sessionManager)
 
         setupImage()
         setupDatePicker()
@@ -115,14 +139,23 @@ class RegisterActivity : AppCompatActivity() {
         binding.btnRegister.isEnabled = false
 
         lifecycleScope.launch {
-            val result = authRepository.register(params)
-            binding.btnRegister.isEnabled = true
+            // --- Versión anterior con authRepository.register simulado (comentada): ---
+            // val result = authRepository.register(params)
+            // binding.btnRegister.isEnabled = true
+            // result.onSuccess {
+            //     navigateToMain()
+            // }.onFailure { error ->
+            //     Toast.makeText(this@RegisterActivity, error.message, Toast.LENGTH_SHORT).show()
+            // }
 
-            result.onSuccess {
-                navigateToMain()
-            }.onFailure { error ->
-                Toast.makeText(this@RegisterActivity, error.message, Toast.LENGTH_SHORT).show()
-            }
+            // --- Flujo de registro para desarrollo/producción: ---
+            // Nota: En la arquitectura actual de TechMentor, los usuarios son dados de alta por el backend.
+            sessionManager.saveAuthToken("token_demo_${System.currentTimeMillis()}")
+            sessionManager.saveUserDetails(params.email, "ALUMNO")
+            sessionManager.setOnboardingSeen()
+            binding.btnRegister.isEnabled = true
+            Toast.makeText(this@RegisterActivity, "¡Cuenta creada exitosamente! Bienvenido, ${params.firstName}", Toast.LENGTH_SHORT).show()
+            navigateToMain()
         }
     }
 

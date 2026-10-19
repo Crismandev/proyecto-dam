@@ -11,6 +11,24 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentHomeBinding
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepository
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepositoryImpl
+import pe.edu.cibertec.tech_mentor.domain.repository.GamificationRepository
+import pe.edu.cibertec.tech_mentor.data.repository.GamificationRepositoryImpl
+import pe.edu.cibertec.tech_mentor.domain.repository.ProgressRepository
+import pe.edu.cibertec.tech_mentor.data.repository.ProgressRepositoryImpl
+import pe.edu.cibertec.tech_mentor.domain.model.Course
+import pe.edu.cibertec.tech_mentor.domain.model.CourseProgress
+import pe.edu.cibertec.tech_mentor.domain.model.UserMission
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
+import pe.edu.cibertec.tech_mentor.data.remote.api.GamificationApiService
+import pe.edu.cibertec.tech_mentor.data.remote.api.ProgressApiService
+import pe.edu.cibertec.tech_mentor.util.SessionManager
+import pe.edu.cibertec.tech_mentor.data.remote.isSuccess
+import pe.edu.cibertec.tech_mentor.data.remote.getOrDefault
+import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
+import pe.edu.cibertec.tech_mentor.data.remote.onFailure
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -36,16 +54,17 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRepositories() {
-        // Datos simulados
-        catalogRepository = FakeCatalogRepository()
-        gamificationRepository = FakeGamificationRepository()
-        progressRepository = FakeProgressRepository()
+        // --- Versión anterior simulada (comentada): ---
+        // catalogRepository = FakeCatalogRepository()
+        // gamificationRepository = FakeGamificationRepository()
+        // progressRepository = FakeProgressRepository()
 
-        // Descomentar cuando el backend esté listo
-        // val context = requireContext()
-        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
-        // gamificationRepository = GamificationRepositoryImpl(RetrofitClient.getGamificationApi(context))
-        // progressRepository = ProgressRepositoryImpl(RetrofitClient.getProgressApi(context))
+        // --- Versión real conectada a la API de TechMentor: ---
+        val sessionManager = SessionManager(requireContext())
+        val client = ApiClient.getClient(sessionManager)
+        catalogRepository = CatalogRepositoryImpl(client.create(CatalogApiService::class.java))
+        gamificationRepository = GamificationRepositoryImpl(client.create(GamificationApiService::class.java))
+        progressRepository = ProgressRepositoryImpl(client.create(ProgressApiService::class.java))
     }
 
     private fun loadHomeData() {
@@ -88,30 +107,29 @@ class HomeFragment : Fragment() {
         allCourses: List<Course>
     ) {
         val activeProgress = progressList.find {
-            it.status.equals("EN_PROGRESO", ignoreCase = true)
+            it.estado.equals("EN_PROGRESO", ignoreCase = true)
         } ?: progressList.firstOrNull()
 
-        val course = activeProgress?.course
-            ?: allCourses.find { it.idCourse == activeProgress?.idCourse }
+        val course = allCourses.find { it.idCurso == activeProgress?.idCurso }
             ?: allCourses.firstOrNull()
 
-        val currentLevelName = activeProgress?.currentLevel?.name ?: "Básico"
+        val currentLevelName = activeProgress?.nombreNivelActual ?: "Básico"
 
         binding.tvObjectiveType.text = "Ruta"
         binding.tvObjectiveLevel.text = currentLevelName
         updateLevelIcon(currentLevelName)
 
-        binding.tvObjectiveCourse.text = course?.name ?: "Explora nuevos cursos"
+        binding.tvObjectiveCourse.text = course?.nombre ?: "Explora nuevos cursos"
 
-        val categoryId = course?.idCategory
+        val categoryId = course?.idCategoria
         val totalCategoryCourses = if (categoryId != null) {
-            allCourses.count { it.idCategory == categoryId }.coerceAtLeast(1)
+            allCourses.count { it.idCategoria == categoryId }.coerceAtLeast(1)
         } else {
             allCourses.size.coerceAtLeast(1)
         }
 
         val completedCoursesCount = progressList.count {
-            it.status.equals("COMPLETADO", ignoreCase = true)
+            it.estado.equals("COMPLETADO", ignoreCase = true)
         }
 
         binding.pbObjective.max = totalCategoryCourses
@@ -132,34 +150,26 @@ class HomeFragment : Fragment() {
 
     private fun updateMissionsSection(userMissions: List<UserMission>) {
         // Misión Diaria
-        val dailyMission = userMissions.find {
-            it.mission?.type?.equals("DIARIA", ignoreCase = true) == true
-        } ?: userMissions.getOrNull(0)
-
+        val dailyMission = userMissions.getOrNull(0)
         dailyMission?.let { userMission ->
-            val mission = userMission.mission
-            val goal = (mission?.goal ?: 2).coerceAtLeast(1)
-            val progress = userMission.currentProgress.coerceAtMost(goal)
+            val goal = userMission.meta.coerceAtLeast(1)
+            val progress = userMission.progresoActual.coerceAtMost(goal)
 
-            binding.tvMissionTitle.text = mission?.name
-            binding.tvMissionSubtitle.text = mission?.description
+            binding.tvMissionTitle.text = userMission.nombreMision
+            binding.tvMissionSubtitle.text = "Completa tus lecciones del día"
             binding.pbMission.max = goal
             binding.pbMission.progress = progress
             binding.tvMissionProgressText.text = "$progress/$goal"
         }
 
         // Desafío Semanal
-        val weeklyChallenge = userMissions.find {
-            it.mission?.type?.equals("SEMANAL", ignoreCase = true) == true
-        } ?: userMissions.getOrNull(1)
-
+        val weeklyChallenge = userMissions.getOrNull(1)
         weeklyChallenge?.let { userMission ->
-            val mission = userMission.mission
-            val goal = (mission?.goal ?: 500).coerceAtLeast(1)
-            val progress = userMission.currentProgress.coerceAtMost(goal)
+            val goal = userMission.meta.coerceAtLeast(1)
+            val progress = userMission.progresoActual.coerceAtMost(goal)
 
-            binding.tvChallengeTitle.text = mission?.name
-            binding.tvChallengeSubtitle.text = mission?.description
+            binding.tvChallengeTitle.text = userMission.nombreMision
+            binding.tvChallengeSubtitle.text = "Gana experiencia acumulada"
             binding.pbChallenge.max = goal
             binding.pbChallenge.progress = progress
             binding.tvChallengeProgressText.text = "$progress/$goal XP"

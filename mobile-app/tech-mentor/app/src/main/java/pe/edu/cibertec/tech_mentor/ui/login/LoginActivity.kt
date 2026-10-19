@@ -11,6 +11,13 @@ import pe.edu.cibertec.tech_mentor.databinding.ActivityLoginBinding
 import pe.edu.cibertec.tech_mentor.ui.common.showAnimatedBit
 import pe.edu.cibertec.tech_mentor.ui.forgotpassword.ForgotPasswordActivity
 import pe.edu.cibertec.tech_mentor.ui.register.RegisterActivity
+import pe.edu.cibertec.tech_mentor.util.SessionManager
+import pe.edu.cibertec.tech_mentor.domain.repository.AuthRepository
+import pe.edu.cibertec.tech_mentor.data.repository.AuthRepositoryImpl
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.AuthApiService
+import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
+import pe.edu.cibertec.tech_mentor.data.remote.onFailure
 
 class LoginActivity : AppCompatActivity() {
 
@@ -24,7 +31,13 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         sessionManager = SessionManager(this)
-        authRepository = FakeAuthRepository(sessionManager)
+
+        // --- Versión anterior simulada (comentada): ---
+        // authRepository = FakeAuthRepository(sessionManager)
+
+        // --- Conexión real con el backend mediante Retrofit: ---
+        val authApiService = ApiClient.getClient(sessionManager).create(AuthApiService::class.java)
+        authRepository = AuthRepositoryImpl(authApiService, sessionManager)
 
         setupImage()
         setupAuthTabs()
@@ -67,7 +80,11 @@ class LoginActivity : AppCompatActivity() {
         binding.btnLogin.isEnabled = false
 
         lifecycleScope.launch {
-            val result = authRepository.login(email = email, password = password)
+            // --- Versión anterior (comentada): ---
+            // val result = authRepository.login(email = email, password = password)
+
+            // --- Llamada real con username (acepta username o email según DTO del backend): ---
+            val result = authRepository.login(username = email, password = password)
             binding.btnLogin.isEnabled = true
 
             result.onSuccess {

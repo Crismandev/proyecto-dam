@@ -14,13 +14,23 @@ import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.databinding.FragmentCategoryDetailsBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemCourseBinding
 
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepository
+import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepositoryImpl
+import pe.edu.cibertec.tech_mentor.domain.model.Category
+import pe.edu.cibertec.tech_mentor.domain.model.Course
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
+import pe.edu.cibertec.tech_mentor.util.SessionManager
+import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
+import pe.edu.cibertec.tech_mentor.data.remote.onFailure
+
 class CategoryDetailsFragment : Fragment() {
 
     private var _binding: FragmentCategoryDetailsBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var catalogRepository: CatalogRepository
-    private var categoryId: Int = 1
+    private var categoryId: Long = 1L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,22 +43,24 @@ class CategoryDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        categoryId = arguments?.getInt("idCategory", 1) ?: 1
+        categoryId = arguments?.getLong("idCategory", 1L)
+            ?: (arguments?.getInt("idCategory", 1)?.toLong() ?: 1L)
 
         setupRepository()
         loadCategoryDetails(categoryId)
     }
 
     private fun setupRepository() {
-        // MODO PRUEBA
-        catalogRepository = FakeCatalogRepository()
+        // --- Versión anterior simulada (comentada): ---
+        // catalogRepository = FakeCatalogRepository()
 
-        // Descomentar cuando el backend esté listo:
-        // val context = requireContext()
-        // catalogRepository = CatalogRepositoryImpl(RetrofitClient.getCatalogApi(context))
+        // --- Versión real conectada a la API de TechMentor: ---
+        val sessionManager = SessionManager(requireContext())
+        val catalogApi = ApiClient.getClient(sessionManager).create(CatalogApiService::class.java)
+        catalogRepository = CatalogRepositoryImpl(catalogApi)
     }
 
-    private fun loadCategoryDetails(idCategory: Int) {
+    private fun loadCategoryDetails(idCategory: Long) {
         viewLifecycleOwner.lifecycleScope.launch {
             val categoriesDeferred = async { catalogRepository.getCategories() }
             val coursesDeferred = async { catalogRepository.getCourses(idCategory) }
@@ -57,12 +69,12 @@ class CategoryDetailsFragment : Fragment() {
             val coursesResult = coursesDeferred.await()
 
             categoriesResult.onSuccess { categories ->
-                val selectedCategory = categories.find { it.idCategory == idCategory }
+                val selectedCategory = categories.find { it.idCategoria == idCategory }
                     ?: categories.firstOrNull()
 
                 selectedCategory?.let { category ->
-                    binding.tvRouteTitle.text = category.name
-                    binding.tvRouteDescription.text = category.description
+                    binding.tvRouteTitle.text = category.nombre
+                    binding.tvRouteDescription.text = category.descripcion
                 }
             }
 
@@ -82,7 +94,7 @@ class CategoryDetailsFragment : Fragment() {
         val adapter = CourseAdapter(courses) { selectedCourse ->
             Toast.makeText(
                 requireContext(),
-                "Curso seleccionado: ${selectedCourse.name}",
+                "Curso seleccionado: ${selectedCourse.nombre}",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -105,9 +117,14 @@ class CourseAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(course: Course) {
-            binding.tvCourseTitle.text = course.name
-            binding.tvCourseSubtitle.text = course.description.ifEmpty {
-                "+${course.rewardXp} XP al completar"
+            // --- Versión anterior con nombres en inglés (comentada): ---
+            // binding.tvCourseTitle.text = course.name
+            // binding.tvCourseSubtitle.text = course.description.ifEmpty { "+${course.rewardXp} XP al completar" }
+
+            // --- Propiedades del modelo de dominio TechMentor (nombre, descripcion, xpRecompensa): ---
+            binding.tvCourseTitle.text = course.nombre
+            binding.tvCourseSubtitle.text = course.descripcion.ifEmpty {
+                "+${course.xpRecompensa} XP al completar"
             }
 
             binding.root.setOnClickListener {

@@ -1,5 +1,6 @@
 package pe.edu.cibertec.tech_mentor.domain.usecase.catalog
 
+import pe.edu.cibertec.tech_mentor.domain.model.LessonAnswer
 import pe.edu.cibertec.tech_mentor.domain.repository.ProgressRepository
 
 class CompleteLessonUseCase {

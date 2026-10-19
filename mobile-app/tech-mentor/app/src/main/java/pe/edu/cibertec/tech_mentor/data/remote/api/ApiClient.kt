@@ -9,7 +9,18 @@ import java.util.concurrent.TimeUnit
 
 object ApiClient {
 
+    // =========================================================================
+    // CONFIGURACIÓN GLOBAL DE URL BASE (Retrofit)
+    // =========================================================================
+    // Opción 1: Emulador Android (conectando al backend local de tu PC) [ACTIVA]
     private const val BASE_URL = "http://10.0.2.2:8080/"
+
+    // Opción 2: Celular Físico en la misma red Wi-Fi (reemplaza XX por la IP de tu PC):
+    // private const val BASE_URL = "http://192.168.1.XX:8080/"
+
+    // Opción 3: Backend en Producción / Cloud (Render, Cloud Run, Railway, etc.):
+    // private const val BASE_URL = "https://tu-backend-api.onrender.com/"
+    // =========================================================================
 
     fun getClient(sessionManager: SessionManager): Retrofit {
 

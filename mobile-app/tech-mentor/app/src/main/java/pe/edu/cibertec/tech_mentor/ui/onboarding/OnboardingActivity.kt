@@ -16,6 +16,7 @@ import androidx.viewpager2.widget.ViewPager2
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.ActivityOnboardingBinding
 import pe.edu.cibertec.tech_mentor.ui.login.LoginActivity
+import pe.edu.cibertec.tech_mentor.util.SessionManager
 
 class OnboardingActivity : AppCompatActivity() {
 
