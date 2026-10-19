@@ -97,3 +97,83 @@ SELECT e.id_ejercicio, o.texto, o.ok, o.orden
 FROM ejercicios e
 JOIN (VALUES ('Opción correcta', TRUE, 1), ('Opción incorrecta A', FALSE, 2), ('Opción incorrecta B', FALSE, 3))
      AS o(texto, ok, orden) ON TRUE;
+
+-- ---------- 7. Actualización de perfil del Alumno de prueba ----------
+UPDATE usuarios
+SET xp_total = 240,
+    monedas = 50,
+    racha_actual = 7,
+    racha_maxima = 14,
+    biografia = 'Estudiante apasionado de desarrollo backend y bases de datos.',
+    telefono = '+51 987 654 321',
+    pais = 'Perú',
+    ciudad = 'Lima'
+WHERE email = 'alumno@techmentor.test';
+
+-- ---------- 8. Misiones (Gamificación) ----------
+INSERT INTO misiones (nombre, descripcion, tipo, meta, xp_recompensa, activa) VALUES
+('Completa 2 lecciones', 'Avanza en tus cursos completando 2 lecciones hoy', 'DIARIA', 2, 50, TRUE),
+('Gana 100 XP esta semana', 'Participa activamente en tus cursos y acumula experiencia', 'SEMANAL', 100, 120, TRUE),
+('Primer Examen de Diagnóstico', 'Mide tus habilidades técnicas iniciales', 'ESPECIAL', 1, 150, TRUE)
+ON CONFLICT (nombre) DO NOTHING;
+
+-- Asignación de misiones al alumno
+INSERT INTO misiones_usuario (id_usuario, id_mision, progreso_actual, completada, fecha_asignacion)
+SELECT u.id_usuario, m.id_mision, v.progreso, v.completada, CURRENT_TIMESTAMP
+FROM (VALUES
+    ('Completa 2 lecciones', 1, FALSE),
+    ('Gana 100 XP esta semana', 60, FALSE),
+    ('Primer Examen de Diagnóstico', 1, TRUE)
+) AS v(nombre_mision, progreso, completada)
+JOIN misiones m ON m.nombre = v.nombre_mision
+CROSS JOIN (SELECT id_usuario FROM usuarios WHERE email = 'alumno@techmentor.test') u
+ON CONFLICT (id_usuario, id_mision) DO NOTHING;
+
+-- ---------- 9. Progreso de Cursos para el Alumno ----------
+-- Curso 1: 'Java desde cero' (EN_CURSO)
+INSERT INTO progreso_curso (id_usuario, id_curso, id_nivel_actual, fecha_inicio, fecha_ultima_actividad, estado, xp_ganado)
+SELECT u.id_usuario, c.id_curso,
+       (SELECT id_nivel FROM niveles WHERE id_curso = c.id_curso ORDER BY orden ASC LIMIT 1),
+       CURRENT_TIMESTAMP - INTERVAL '3 days',
+       CURRENT_TIMESTAMP,
+       'EN_CURSO',
+       40
+FROM cursos c
+CROSS JOIN (SELECT id_usuario FROM usuarios WHERE email = 'alumno@techmentor.test') u
+WHERE c.nombre = 'Java desde cero'
+ON CONFLICT (id_usuario, id_curso) DO UPDATE
+SET estado = EXCLUDED.estado, xp_ganado = EXCLUDED.xp_ganado;
+
+-- Curso 2: 'SQL y PostgreSQL' (COMPLETADO)
+INSERT INTO progreso_curso (id_usuario, id_curso, id_nivel_actual, fecha_inicio, fecha_ultima_actividad, fecha_completado, estado, xp_ganado)
+SELECT u.id_usuario, c.id_curso,
+       (SELECT id_nivel FROM niveles WHERE id_curso = c.id_curso ORDER BY orden DESC LIMIT 1),
+       CURRENT_TIMESTAMP - INTERVAL '10 days',
+       CURRENT_TIMESTAMP - INTERVAL '1 day',
+       CURRENT_TIMESTAMP - INTERVAL '1 day',
+       'COMPLETADO',
+       120
+FROM cursos c
+CROSS JOIN (SELECT id_usuario FROM usuarios WHERE email = 'alumno@techmentor.test') u
+WHERE c.nombre = 'SQL y PostgreSQL'
+ON CONFLICT (id_usuario, id_curso) DO UPDATE
+SET estado = EXCLUDED.estado, xp_ganado = EXCLUDED.xp_ganado;
+
+-- ---------- 10. Progreso de Lecciones para el Alumno ----------
+INSERT INTO progreso_leccion (id_usuario, id_leccion, estado, puntaje, intentos, fecha_inicio, fecha_completado, xp_ganado)
+SELECT u.id_usuario, l.id_leccion, 'COMPLETADO', 20, 1,
+       CURRENT_TIMESTAMP - INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '2 days', 20
+FROM lecciones l
+JOIN niveles n ON n.id_nivel = l.id_nivel
+JOIN cursos c ON c.id_curso = n.id_curso
+CROSS JOIN (SELECT id_usuario FROM usuarios WHERE email = 'alumno@techmentor.test') u
+WHERE c.nombre = 'Java desde cero' AND l.orden = 1
+ON CONFLICT (id_usuario, id_leccion) DO NOTHING;
+
+-- ---------- 11. Recompensas del Alumno ----------
+INSERT INTO recompensas_usuario (id_usuario, id_recompensa, reclamada)
+SELECT u.id_usuario, r.id_recompensa, TRUE
+FROM recompensas r
+CROSS JOIN (SELECT id_usuario FROM usuarios WHERE email = 'alumno@techmentor.test') u
+WHERE r.nombre IN ('XP Básica', 'Recompensa Día 1')
+ON CONFLICT DO NOTHING;

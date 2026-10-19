@@ -1,42 +1,38 @@
 package pe.edu.cibertec.tech_mentor.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.async
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
 import pe.edu.cibertec.tech_mentor.databinding.FragmentHomeBinding
-import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepository
-import pe.edu.cibertec.tech_mentor.domain.repository.CatalogRepositoryImpl
-import pe.edu.cibertec.tech_mentor.domain.repository.GamificationRepository
-import pe.edu.cibertec.tech_mentor.data.repository.GamificationRepositoryImpl
-import pe.edu.cibertec.tech_mentor.domain.repository.ProgressRepository
-import pe.edu.cibertec.tech_mentor.data.repository.ProgressRepositoryImpl
 import pe.edu.cibertec.tech_mentor.domain.model.Course
 import pe.edu.cibertec.tech_mentor.domain.model.CourseProgress
+import pe.edu.cibertec.tech_mentor.domain.model.Mission
 import pe.edu.cibertec.tech_mentor.domain.model.UserMission
-import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
-import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
-import pe.edu.cibertec.tech_mentor.data.remote.api.GamificationApiService
-import pe.edu.cibertec.tech_mentor.data.remote.api.ProgressApiService
-import pe.edu.cibertec.tech_mentor.util.SessionManager
-import pe.edu.cibertec.tech_mentor.data.remote.isSuccess
-import pe.edu.cibertec.tech_mentor.data.remote.getOrDefault
-import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
-import pe.edu.cibertec.tech_mentor.data.remote.onFailure
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var catalogRepository: CatalogRepository
-    private lateinit var gamificationRepository: GamificationRepository
-    private lateinit var progressRepository: ProgressRepository
+    // Vive en MainActivity: sobrevive al cambio de pestaña
+    private val vm: HomeViewModel by activityViewModels {
+        HomeViewModel.Factory(requireContext().applicationContext)
+    }
+
+    companion object {
+        private const val DISCORD_INVITE_URL = "https://discord.gg/techmentor"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,50 +45,55 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupRepositories()
-        loadHomeData()
-    }
-
-    private fun setupRepositories() {
-        // --- Versión anterior simulada (comentada): ---
-        // catalogRepository = FakeCatalogRepository()
-        // gamificationRepository = FakeGamificationRepository()
-        // progressRepository = FakeProgressRepository()
-
-        // --- Versión real conectada a la API de TechMentor: ---
-        val sessionManager = SessionManager(requireContext())
-        val client = ApiClient.getClient(sessionManager)
-        catalogRepository = CatalogRepositoryImpl(client.create(CatalogApiService::class.java))
-        gamificationRepository = GamificationRepositoryImpl(client.create(GamificationApiService::class.java))
-        progressRepository = ProgressRepositoryImpl(client.create(ProgressApiService::class.java))
-    }
-
-    private fun loadHomeData() {
-        setupUserHeader(
-            firstName = "Luis",
-            streakDays = 7,
-            totalXp = 240
-        )
+        setupClickListeners()
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val coursesDeferred = async { catalogRepository.getCourses() }
-            val progressDeferred = async { progressRepository.getMyCoursesProgress() }
-            val missionsDeferred = async { gamificationRepository.getMyMissions() }
-
-            val allCoursesResult = coursesDeferred.await()
-            val myCoursesProgressResult = progressDeferred.await()
-            val myMissionsResult = missionsDeferred.await()
-
-            val allCourses = allCoursesResult.getOrDefault(emptyList())
-            val myCoursesProgress = myCoursesProgressResult.getOrDefault(emptyList())
-
-            updateObjectiveSection(myCoursesProgress, allCourses)
-
-            myMissionsResult.onSuccess { userMissions ->
-                updateMissionsSection(userMissions)
-            }.onFailure { error ->
-                Toast.makeText(requireContext(), "Error misiones: ${error.message}", Toast.LENGTH_SHORT).show()
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.ui.collect { render(it) }
             }
+        }
+        vm.refresh()
+    }
+
+    private fun setupClickListeners() {
+        binding.cvCommunity.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(DISCORD_INVITE_URL))
+            startActivity(intent)
+        }
+
+        binding.cvPractice.setOnClickListener {
+            navigateToPractice()
+        }
+    }
+
+    private fun navigateToPractice() {
+        runCatching {
+            findNavController().navigate(R.id.practiceFragment)
+        }.onFailure {
+            Toast.makeText(requireContext(), "Verifica el ID de PracticeFragment en tu nav_graph", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun render(s: HomeUiState) {
+        val profile = s.profile
+        if (profile != null) {
+            val firstName = profile.nombres.trim().substringBefore(" ").ifEmpty { "Estudiante" }
+            setupUserHeader(
+                firstName = firstName,
+                streakDays = profile.rachaActual,
+                totalXp = profile.xpTotal
+            )
+        }
+
+        val courses = s.courses
+        val progress = s.progress
+        if (courses != null && progress != null) {
+            updateObjectiveSection(progress, courses)
+        }
+
+        val userMissions = s.userMissions
+        if (userMissions != null) {
+            updateMissionsSection(userMissions, s.missions.orEmpty())
         }
     }
 
@@ -106,20 +107,28 @@ class HomeFragment : Fragment() {
         progressList: List<CourseProgress>,
         allCourses: List<Course>
     ) {
-        val activeProgress = progressList.find {
-            it.estado.equals("EN_PROGRESO", ignoreCase = true)
-        } ?: progressList.firstOrNull()
+        val sortedProgress = progressList.sortedWith(
+            compareByDescending<CourseProgress> { it.fechaUltimaActividad ?: it.fechaInicio ?: "" }
+                .thenByDescending { it.idProgreso }
+        )
 
-        val course = allCourses.find { it.idCurso == activeProgress?.idCurso }
+        val recentProgress = sortedProgress.find {
+            it.estado.equals("EN_CURSO", ignoreCase = true) ||
+                    it.estado.equals("EN_PROGRESO", ignoreCase = true)
+        } ?: sortedProgress.firstOrNull()
+
+        val course = allCourses.find { it.idCurso == recentProgress?.idCurso }
             ?: allCourses.firstOrNull()
 
-        val currentLevelName = activeProgress?.nombreNivelActual ?: "Básico"
+        val currentLevelName = recentProgress?.nombreNivelActual ?: "Básico"
 
         binding.tvObjectiveType.text = "Ruta"
         binding.tvObjectiveLevel.text = currentLevelName
         updateLevelIcon(currentLevelName)
 
-        binding.tvObjectiveCourse.text = course?.nombre ?: "Explora nuevos cursos"
+        binding.tvObjectiveCourse.text = recentProgress?.nombreCurso?.takeIf { it.isNotBlank() }
+            ?: course?.nombre
+                    ?: "Explora nuevos cursos"
 
         val categoryId = course?.idCategoria
         val totalCategoryCourses = if (categoryId != null) {
@@ -128,8 +137,13 @@ class HomeFragment : Fragment() {
             allCourses.size.coerceAtLeast(1)
         }
 
-        val completedCoursesCount = progressList.count {
-            it.estado.equals("COMPLETADO", ignoreCase = true)
+        val completedCoursesCount = if (categoryId != null) {
+            progressList.count { progress ->
+                progress.estado.equals("COMPLETADO", ignoreCase = true) &&
+                        allCourses.any { c -> c.idCurso == progress.idCurso && c.idCategoria == categoryId }
+            }
+        } else {
+            progressList.count { it.estado.equals("COMPLETADO", ignoreCase = true) }
         }
 
         binding.pbObjective.max = totalCategoryCourses
@@ -148,31 +162,64 @@ class HomeFragment : Fragment() {
         binding.ivObjectiveLevelIcon.setImageResource(iconRes)
     }
 
-    private fun updateMissionsSection(userMissions: List<UserMission>) {
-        // Misión Diaria
-        val dailyMission = userMissions.getOrNull(0)
-        dailyMission?.let { userMission ->
-            val goal = userMission.meta.coerceAtLeast(1)
-            val progress = userMission.progresoActual.coerceAtMost(goal)
+    private fun updateMissionsSection(
+        userMissions: List<UserMission>,
+        catalogMissions: List<Mission>
+    ) {
+        val missionsById = catalogMissions.associateBy { it.idMision }
 
-            binding.tvMissionTitle.text = userMission.nombreMision
-            binding.tvMissionSubtitle.text = "Completa tus lecciones del día"
+        val dailyUserMission = userMissions.find {
+            missionsById[it.idMision]?.tipo?.contains("DIARIA", ignoreCase = true) == true
+        } ?: userMissions.firstOrNull { it.nombreMision.contains("diaria", ignoreCase = true) }
+
+        val dailyCatalogMission = catalogMissions.find { it.tipo.contains("DIARIA", ignoreCase = true) }
+
+        if (dailyUserMission != null) {
+            val missionInfo = missionsById[dailyUserMission.idMision]
+            val goal = dailyUserMission.meta.coerceAtLeast(1)
+            val progress = dailyUserMission.progresoActual.coerceAtMost(goal)
+
+            binding.tvMissionTitle.text = dailyUserMission.nombreMision.ifBlank {
+                missionInfo?.nombre ?: "Tu pequeño logro de hoy"
+            }
+            binding.tvMissionSubtitle.text = missionInfo?.descripcion ?: "Completa tus lecciones"
             binding.pbMission.max = goal
             binding.pbMission.progress = progress
             binding.tvMissionProgressText.text = "$progress/$goal"
+        } else if (dailyCatalogMission != null) {
+            val goal = dailyCatalogMission.meta.coerceAtLeast(1)
+            binding.tvMissionTitle.text = dailyCatalogMission.nombre
+            binding.tvMissionSubtitle.text = dailyCatalogMission.descripcion
+            binding.pbMission.max = goal
+            binding.pbMission.progress = 0
+            binding.tvMissionProgressText.text = "0/$goal"
         }
 
-        // Desafío Semanal
-        val weeklyChallenge = userMissions.getOrNull(1)
-        weeklyChallenge?.let { userMission ->
-            val goal = userMission.meta.coerceAtLeast(1)
-            val progress = userMission.progresoActual.coerceAtMost(goal)
+        val weeklyUserMission = userMissions.find {
+            it.idMisionUsuario != dailyUserMission?.idMisionUsuario &&
+                    missionsById[it.idMision]?.tipo?.contains("SEMANAL", ignoreCase = true) == true
+        }
+        val weeklyCatalogMission = catalogMissions.find { it.tipo.contains("SEMANAL", ignoreCase = true) }
 
-            binding.tvChallengeTitle.text = userMission.nombreMision
-            binding.tvChallengeSubtitle.text = "Gana experiencia acumulada"
+        if (weeklyUserMission != null) {
+            val missionInfo = missionsById[weeklyUserMission.idMision]
+            val goal = weeklyUserMission.meta.coerceAtLeast(1)
+            val progress = weeklyUserMission.progresoActual.coerceAtMost(goal)
+
+            binding.tvChallengeTitle.text = weeklyUserMission.nombreMision.ifBlank {
+                missionInfo?.nombre ?: "Desafío de la semana"
+            }
+            binding.tvChallengeSubtitle.text = missionInfo?.descripcion ?: "Gana experiencia"
             binding.pbChallenge.max = goal
             binding.pbChallenge.progress = progress
             binding.tvChallengeProgressText.text = "$progress/$goal XP"
+        } else if (weeklyCatalogMission != null) {
+            val goal = weeklyCatalogMission.meta.coerceAtLeast(1)
+            binding.tvChallengeTitle.text = weeklyCatalogMission.nombre
+            binding.tvChallengeSubtitle.text = weeklyCatalogMission.descripcion
+            binding.pbChallenge.max = goal
+            binding.pbChallenge.progress = 0
+            binding.tvChallengeProgressText.text = "0/$goal XP"
         }
     }
 
