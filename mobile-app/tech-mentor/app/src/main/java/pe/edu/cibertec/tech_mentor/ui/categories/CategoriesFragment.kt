@@ -23,6 +23,8 @@ import pe.edu.cibertec.tech_mentor.data.remote.api.CatalogApiService
 import pe.edu.cibertec.tech_mentor.util.SessionManager
 import pe.edu.cibertec.tech_mentor.data.remote.isSuccess
 import pe.edu.cibertec.tech_mentor.data.remote.getOrDefault
+// Faltaba: import del helper SQLite para persistencia local de categorías
+import pe.edu.cibertec.tech_mentor.data.local.TechMentorDbHelper
 
 data class CourseCategory(
     val idCategory: Long,
@@ -37,6 +39,8 @@ class CategoriesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var catalogRepository: CatalogRepository
+    // Faltaba: instancia de SQLite para persistencia offline
+    private lateinit var dbHelper: TechMentorDbHelper
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +61,8 @@ class CategoriesFragment : Fragment() {
         val sessionManager = SessionManager(requireContext())
         val catalogApi = ApiClient.getClient(sessionManager).create(CatalogApiService::class.java)
         catalogRepository = CatalogRepositoryImpl(catalogApi)
+        // Faltaba: inicializar dbHelper de SQLite
+        dbHelper = TechMentorDbHelper(requireContext().applicationContext)
     }
 
     private fun loadCategories() {
@@ -70,6 +76,8 @@ class CategoriesFragment : Fragment() {
             val apiCategories = categoriesResult.getOrDefault(emptyList())
             val apiCourses = coursesResult.getOrDefault(emptyList())
 
+            /*
+            // Versión anterior (comentada): no tenía persistencia SQLite
             if (apiCategories.isNotEmpty()) {
                 // Datos reales de la API
                 val displayCategories = apiCategories.map { category ->
@@ -96,6 +104,45 @@ class CategoriesFragment : Fragment() {
                     "Sin conexión: mostrando datos de ejemplo",
                     Toast.LENGTH_SHORT
                 ).show()
+            }
+            */
+
+            // Faltaba: Persistencia SQLite para Categorías (guardar al recibir de API y recuperar si falla la conexión)
+            if (apiCategories.isNotEmpty()) {
+                // Datos reales de la API
+                val displayCategories = apiCategories.map { category ->
+                    val courseCount = apiCourses.count { it.idCategoria == category.idCategoria }
+                    CourseCategory(
+                        idCategory = category.idCategoria,
+                        title = category.nombre,
+                        coursesCount = courseCount,
+                        description = category.descripcion,
+                    )
+                }
+                // Faltaba: Guardar categorías en SQLite local para disponibilidad offline
+                dbHelper.saveCategories(displayCategories)
+                setupRecyclerView(displayCategories)
+            } else {
+                // Faltaba: Intentar recuperar categorías previamente persistidas en SQLite
+                val localCategories = dbHelper.getCategories()
+                if (localCategories.isNotEmpty()) {
+                    setupRecyclerView(localCategories)
+                } else {
+                    // Si tampoco hay en SQLite, usar fallback predeterminado
+                    val fallbackCategories = listOf(
+                        CourseCategory(1L, "Programación Web", "Aprende el desarrollo de aplicaciones web desde cero.", 3),
+                        CourseCategory(2L, "Bases de Datos", "Diseño y administración de bases de datos relacionales y NoSQL.", 2),
+                        CourseCategory(3L, "Fundamentos de APIs", "Aprende a diseñar y consumir APIs RESTful modernas.", 2),
+                        CourseCategory(4L, "Desarrollo Móvil", "Crea aplicaciones nativas para Android e iOS.", 2),
+                        CourseCategory(5L, "Inteligencia Artificial", "Fundamentos de modelos de machine learning e IA generativa.", 1)
+                    )
+                    setupRecyclerView(fallbackCategories)
+                    Toast.makeText(
+                        requireContext(),
+                        "Sin conexión: mostrando datos de ejemplo",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }

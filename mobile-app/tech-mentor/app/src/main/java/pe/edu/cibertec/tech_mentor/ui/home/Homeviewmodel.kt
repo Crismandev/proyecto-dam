@@ -30,19 +30,50 @@ import pe.edu.cibertec.tech_mentor.domain.repository.GamificationRepository
 import pe.edu.cibertec.tech_mentor.domain.repository.ProgressRepository
 import pe.edu.cibertec.tech_mentor.domain.repository.UserRepository
 import pe.edu.cibertec.tech_mentor.util.SessionManager
+// Faltaba: import de TechMentorDbHelper para persistencia SQLite de inicio
+import pe.edu.cibertec.tech_mentor.data.local.TechMentorDbHelper
 
+// Versión anterior (comentada): no recibía dbHelper para persistencia local
+/*
 class HomeViewModel(
     private val userRepository: UserRepository,
     private val catalogRepository: CatalogRepository,
     private val gamificationRepository: GamificationRepository,
     private val progressRepository: ProgressRepository,
     isStaff: Boolean
+) : ViewModel()
+*/
+
+// Faltaba: soporte de persistencia local en SQLite para Inicio (cursos y perfil de usuario)
+class HomeViewModel(
+    private val userRepository: UserRepository,
+    private val catalogRepository: CatalogRepository,
+    private val gamificationRepository: GamificationRepository,
+    private val progressRepository: ProgressRepository,
+    isStaff: Boolean,
+    private val dbHelper: TechMentorDbHelper? = null
 ) : ViewModel() {
 
     private val _ui = MutableStateFlow(HomeUiState(isStaff = isStaff))
     val ui: StateFlow<HomeUiState> = _ui.asStateFlow()
 
     private var refreshJob: Job? = null
+
+    init {
+        // Faltaba: precargar datos de inicio persistidos en SQLite para respuesta instantánea offline
+        dbHelper?.let { db ->
+            val cachedProfile = db.getProfile()
+            val cachedCourses = db.getCourses()
+            if (cachedProfile != null || cachedCourses.isNotEmpty()) {
+                _ui.update { s ->
+                    s.copy(
+                        profile = cachedProfile ?: s.profile,
+                        courses = if (cachedCourses.isNotEmpty()) cachedCourses else s.courses
+                    )
+                }
+            }
+        }
+    }
 
     fun refresh() {
         if (refreshJob?.isActive == true) return
@@ -63,14 +94,31 @@ class HomeViewModel(
                 }
 
                 profile.await()
-                    .onSuccess { p -> _ui.update { s -> s.copy(profile = p) } }
-                    .onFailure { error -> Log.w(TAG, "perfil: ${error.message}") }
+                    .onSuccess { p ->
+                        // Faltaba: guardar perfil actualizado en SQLite
+                        dbHelper?.saveProfile(p)
+                        _ui.update { s -> s.copy(profile = p) }
+                    }
+                    .onFailure { error ->
+                        Log.w(TAG, "perfil: ${error.message}")
+                        // Faltaba: fallback a SQLite si la red falla
+                        val cachedProfile = dbHelper?.getProfile()
+                        if (cachedProfile != null && _ui.value.profile == null) {
+                            _ui.update { s -> s.copy(profile = cachedProfile) }
+                        }
+                    }
 
                 courses.await()
-                    .onSuccess { list -> _ui.update { s -> s.copy(courses = list) } }
+                    .onSuccess { list ->
+                        // Faltaba: guardar cursos en SQLite para persistencia local de inicio
+                        dbHelper?.saveCourses(list)
+                        _ui.update { s -> s.copy(courses = list) }
+                    }
                     .onFailure { error ->
-                        _ui.update { s -> s.copy(courses = emptyList()) }
                         Log.w(TAG, "cursos: ${error.message}")
+                        // Faltaba: fallback a cursos de SQLite si la API no responde
+                        val cachedCourses = dbHelper?.getCourses().orEmpty()
+                        _ui.update { s -> s.copy(courses = if (cachedCourses.isNotEmpty()) cachedCourses else emptyList()) }
                     }
 
                 progress.await()
@@ -102,12 +150,15 @@ class HomeViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             val session = SessionManager(appContext)
             val client = ApiClient.getClient(session)
+            // Faltaba: inyectar TechMentorDbHelper a la fábrica de HomeViewModel
+            val dbHelper = TechMentorDbHelper(appContext)
             return HomeViewModel(
                 UserRepositoryImpl(client.create(UserApiService::class.java)),
                 CatalogRepositoryImpl(client.create(CatalogApiService::class.java)),
                 GamificationRepositoryImpl(client.create(GamificationApiService::class.java)),
                 ProgressRepositoryImpl(client.create(ProgressApiService::class.java)),
-                session.isStaff()
+                session.isStaff(),
+                dbHelper
             ) as T
         }
     }
