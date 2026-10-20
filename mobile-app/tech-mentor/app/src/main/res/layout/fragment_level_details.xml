@@ -94,7 +94,6 @@
                 android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/tvLessonsHeader"
-                app:layout_constraintBottom_toBottomOf="parent"
                 tools:listitem="@layout/item_lesson"
                 tools:itemCount="5" />
 

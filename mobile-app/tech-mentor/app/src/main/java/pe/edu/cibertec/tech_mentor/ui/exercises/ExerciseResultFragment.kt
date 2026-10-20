@@ -6,14 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.ProgressApiService
+import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
+import pe.edu.cibertec.tech_mentor.data.repository.ProgressRepositoryImpl
 import pe.edu.cibertec.tech_mentor.databinding.FragmentExerciseResultBinding
+import pe.edu.cibertec.tech_mentor.domain.repository.ProgressRepository
+import pe.edu.cibertec.tech_mentor.util.SessionManager
 
 class ExerciseResultFragment : Fragment() {
 
     private var _binding: FragmentExerciseResultBinding? = null
     private val binding get() = _binding!!
+
+    private lateinit var progressRepository: ProgressRepository
+    private var idLeccion: Long = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,21 +37,60 @@ class ExerciseResultFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupResultData()
+        idLeccion = arguments?.getLong("idLeccion", 0L) ?: 0L
+        val correctAnswers = arguments?.getInt("correctAnswers", -1) ?: -1
+        val totalQuestions = arguments?.getInt("totalQuestions", -1) ?: -1
+        val earnedXp = arguments?.getInt("earnedXp", -1) ?: -1
+        val lessonTitle = arguments?.getString("lessonTitle", "") ?: ""
+
+        setupRepository()
+
+        if (correctAnswers >= 0 && totalQuestions >= 0 && earnedXp >= 0) {
+            // Mostrar datos reales recibidos desde ExercisesFragment tras completar la lección en la API
+            displayResult(correctAnswers, totalQuestions, earnedXp, lessonTitle)
+        } else if (idLeccion != 0L) {
+            // Fallback: consultar el avance real de la lección desde la API
+            loadResultFromApi()
+        }
+
         setupListeners()
     }
 
-    private fun setupResultData() {
-        val context = binding.root.context
+    private fun setupRepository() {
+        val sessionManager = SessionManager(requireContext())
+        val progressApi = ApiClient.getClient(sessionManager).create(ProgressApiService::class.java)
+        progressRepository = ProgressRepositoryImpl(progressApi)
+    }
 
-        val correctAnswers = 8
-        val totalQuestions = 10
-        val earnedXp = 30
+    private fun loadResultFromApi() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val result = progressRepository.getMyLessonsProgress()
+            result.onSuccess { progressList ->
+                val progress = progressList.find { it.idLeccion == idLeccion }
+                if (progress != null) {
+                    displayResult(
+                        correctAnswers = progress.puntaje,
+                        totalQuestions = progress.puntaje,
+                        earnedXp = progress.xpGanado,
+                        lessonTitle = progress.tituloLeccion
+                    )
+                }
+            }
+        }
+    }
+
+    private fun displayResult(
+        correctAnswers: Int,
+        totalQuestions: Int,
+        earnedXp: Int,
+        lessonTitle: String
+    ) {
+        val context = binding.root.context
 
         binding.tvCorrectAnswers.text = "$correctAnswers/$totalQuestions"
         binding.tvEarnedXp.text = earnedXp.toString()
 
-        val isSuccess = correctAnswers > (totalQuestions / 2)
+        val isSuccess = if (totalQuestions > 0) correctAnswers >= (totalQuestions / 2.0) else true
 
         if (isSuccess) {
             binding.cvResultIconBg.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
@@ -49,7 +99,11 @@ class ExerciseResultFragment : Fragment() {
 
             binding.tvResultSubtitle.text = "UN PASO MÁS EN TU RUTA"
             binding.tvResultTitle.text = "¡Lección completada!"
-            binding.tvResultDescription.text = "Entendiste lo esencial. Ahora toca seguir construyendo."
+            binding.tvResultDescription.text = if (lessonTitle.isNotBlank()) {
+                "Completaste \"$lessonTitle\" exitosamente."
+            } else {
+                "Entendiste lo esencial. Ahora toca seguir construyendo."
+            }
 
             binding.cvNextStepBg.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
             binding.tvNextStepTitle.setTextColor(ContextCompat.getColor(context, R.color.green))
@@ -63,7 +117,11 @@ class ExerciseResultFragment : Fragment() {
 
             binding.tvResultSubtitle.text = "NO TE DESANIMES"
             binding.tvResultTitle.text = "¡Sigue practicando!"
-            binding.tvResultDescription.text = "Los errores son parte del aprendizaje. Repasa la teoría y vuelve a intentarlo."
+            binding.tvResultDescription.text = if (totalQuestions > 0) {
+                "Obtuviste $correctAnswers de $totalQuestions aciertos. Repasa la teoría y vuelve a intentarlo."
+            } else {
+                "Los errores son parte del aprendizaje. Repasa la teoría y vuelve a intentarlo."
+            }
 
             binding.cvNextStepBg.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_red))
             binding.tvNextStepTitle.setTextColor(ContextCompat.getColor(context, R.color.red))
@@ -74,10 +132,7 @@ class ExerciseResultFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnReturn.setOnClickListener {
-            // Versión anterior (comentada): usaba onBackPressed que solo retrocede un paso
-            // requireActivity().onBackPressedDispatcher.onBackPressed()
-
-            // Faltaba: retroceder directamente a la lista de lecciones (levelDetailFragment)
+            // Retroceder directamente a la lista de lecciones (levelDetailFragment)
             findNavController().popBackStack(R.id.levelDetailFragment, false)
         }
     }

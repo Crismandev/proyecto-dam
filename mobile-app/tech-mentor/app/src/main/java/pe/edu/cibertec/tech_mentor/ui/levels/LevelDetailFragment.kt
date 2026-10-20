@@ -94,7 +94,8 @@ class LevelDetailFragment : Fragment() {
             // Faltaba: cargar lecciones del nivel
             val lessonsResult = catalogRepository.getLessons(idNivel)
             lessonsResult.onSuccess { lessons ->
-                setupLessonsRecyclerView(lessons)
+                val filteredLessons = lessons.filter { it.idNivel == idNivel }.sortedBy { it.orden }
+                setupLessonsRecyclerView(filteredLessons)
             }.onFailure { error ->
                 Toast.makeText(
                     requireContext(),
@@ -121,6 +122,7 @@ class LevelDetailFragment : Fragment() {
             val bundle = bundleOf(
                 "idLeccion" to selectedLesson.idLeccion,
                 "idNivel" to idNivel,
+                "idCurso" to idCurso,
                 "titulo" to selectedLesson.titulo,
                 "descripcion" to selectedLesson.descripcion,
                 "contenido" to selectedLesson.contenido,

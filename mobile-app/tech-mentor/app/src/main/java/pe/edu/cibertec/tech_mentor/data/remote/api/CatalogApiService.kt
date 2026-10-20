@@ -45,10 +45,15 @@ interface CatalogApiService {
         @Path("id") id: Long
     ): Response<ProfessionResponseDto>
 
-    // Niveles (Lectura individual)
+    // Niveles (Lectura individual y por curso)
     @GET("catalogo/niveles")
     suspend fun getLevels(
         @Query("idCurso") idCurso: Long? = null
+    ): Response<List<LevelResponseDto>>
+
+    @GET("catalogo/cursos/{idCurso}/niveles")
+    suspend fun getLevelsByCourse(
+        @Path("idCurso") idCurso: Long
     ): Response<List<LevelResponseDto>>
 
     @GET("catalogo/niveles/{id}")
@@ -56,10 +61,15 @@ interface CatalogApiService {
         @Path("id") id: Long
     ): Response<LevelResponseDto>
 
-    // Lecciones (Lectura individual)
+    // Lecciones (Lectura individual y por nivel)
     @GET("catalogo/lecciones")
     suspend fun getLessons(
         @Query("idNivel") idNivel: Long? = null
+    ): Response<List<LessonResponseDto>>
+
+    @GET("catalogo/niveles/{idNivel}/lecciones")
+    suspend fun getLessonsByLevel(
+        @Path("idNivel") idNivel: Long
     ): Response<List<LessonResponseDto>>
 
     @GET("catalogo/lecciones/{id}")

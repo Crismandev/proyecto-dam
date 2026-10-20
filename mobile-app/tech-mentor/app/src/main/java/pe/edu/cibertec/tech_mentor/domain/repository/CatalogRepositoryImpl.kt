@@ -105,9 +105,16 @@ class CatalogRepositoryImpl(
 
     override suspend fun getLevels(idCurso: Long?): ApiResponse<List<Level>> {
         return try {
-            val response = catalogApiService.getLevels(idCurso)
+            val response = if (idCurso != null && idCurso > 0L) {
+                catalogApiService.getLevelsByCourse(idCurso)
+            } else {
+                catalogApiService.getLevels()
+            }
             if (response.isSuccessful && response.body() != null) {
-                val list = response.body()!!.map { it.toDomain() }
+                var list = response.body()!!.map { it.toDomain() }
+                if (idCurso != null && idCurso > 0L) {
+                    list = list.filter { it.idCurso == idCurso }
+                }
                 ApiResponse.Success(list)
             } else {
                 ApiResponse.Error(response.code(), "Error al obtener los niveles (${response.code()})")
@@ -132,9 +139,16 @@ class CatalogRepositoryImpl(
 
     override suspend fun getLessons(idNivel: Long?): ApiResponse<List<Lesson>> {
         return try {
-            val response = catalogApiService.getLessons(idNivel)
+            val response = if (idNivel != null && idNivel > 0L) {
+                catalogApiService.getLessonsByLevel(idNivel)
+            } else {
+                catalogApiService.getLessons()
+            }
             if (response.isSuccessful && response.body() != null) {
-                val list = response.body()!!.map { it.toDomain() }
+                var list = response.body()!!.map { it.toDomain() }
+                if (idNivel != null && idNivel > 0L) {
+                    list = list.filter { it.idNivel == idNivel }
+                }
                 ApiResponse.Success(list)
             } else {
                 ApiResponse.Error(response.code(), "Error al obtener las lecciones (${response.code()})")

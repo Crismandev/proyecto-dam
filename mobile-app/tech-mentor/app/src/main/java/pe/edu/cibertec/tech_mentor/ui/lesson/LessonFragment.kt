@@ -27,6 +27,9 @@ class LessonFragment : Fragment() {
     // Faltaba: repositorio y parámetros para cargar datos reales
     private lateinit var catalogRepository: CatalogRepository
     private var idLeccion: Long = 0L
+    private var idCurso: Long = 0L
+    private var idNivel: Long = 0L
+    private var lessonTitulo: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,7 +44,10 @@ class LessonFragment : Fragment() {
 
         // Faltaba: leer los argumentos del bundle pasado desde LevelDetailFragment
         idLeccion = arguments?.getLong("idLeccion", 0L) ?: 0L
+        idCurso = arguments?.getLong("idCurso", 0L) ?: 0L
+        idNivel = arguments?.getLong("idNivel", 0L) ?: 0L
         val titulo = arguments?.getString("titulo", "") ?: ""
+        lessonTitulo = titulo
         val descripcion = arguments?.getString("descripcion", "") ?: ""
         val contenido = arguments?.getString("contenido", "") ?: ""
         val orden = arguments?.getInt("orden", 0) ?: 0
@@ -96,6 +102,8 @@ class LessonFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val result = catalogRepository.getLessonById(idLeccion)
             result.onSuccess { lesson ->
+                lessonTitulo = lesson.titulo
+                idNivel = lesson.idNivel
                 setupLessonDataFromArgs(
                     titulo = lesson.titulo,
                     descripcion = lesson.descripcion,
@@ -120,6 +128,9 @@ class LessonFragment : Fragment() {
             // Faltaba: navegar a los ejercicios de la lección
             val bundle = android.os.Bundle().apply {
                 putLong("idLeccion", idLeccion)
+                putLong("idCurso", idCurso)
+                putLong("idNivel", idNivel)
+                putString("titulo", lessonTitulo)
             }
             findNavController().navigate(R.id.action_lessonFragment_to_exercisesFragment, bundle)
         }
