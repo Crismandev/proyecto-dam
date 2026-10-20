@@ -9,6 +9,7 @@ import pe.edu.cibertec.tech_mentor.domain.model.ExamToTake
 import pe.edu.cibertec.tech_mentor.domain.model.QuestionCategory
 
 interface DiagnosticRepository {
+    suspend fun getExams(): ApiResponse<List<DiagnosticExam>>
     suspend fun getExamsForMe(): ApiResponse<List<DiagnosticExam>>
     suspend fun getExamById(id: Long): ApiResponse<DiagnosticExam>
     suspend fun getExamToTake(id: Long): ApiResponse<ExamToTake>

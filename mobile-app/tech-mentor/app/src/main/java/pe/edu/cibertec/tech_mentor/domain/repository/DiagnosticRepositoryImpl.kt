@@ -17,6 +17,20 @@ class DiagnosticRepositoryImpl(
     private val diagnosticApiService: DiagnosticApiService
 ) : DiagnosticRepository {
 
+    override suspend fun getExams(): ApiResponse<List<DiagnosticExam>> {
+        return try {
+            val response = diagnosticApiService.getExams()
+            if (response.isSuccessful && response.body() != null) {
+                val list = response.body()!!.map { it.toDomain() }
+                ApiResponse.Success(list)
+            } else {
+                ApiResponse.Error(response.code(), "Error al obtener los exámenes (${response.code()})")
+            }
+        } catch (e: Exception) {
+            ApiResponse.Exception(e)
+        }
+    }
+
     override suspend fun getExamsForMe(): ApiResponse<List<DiagnosticExam>> {
         return try {
             val response = diagnosticApiService.getExamsForMe()

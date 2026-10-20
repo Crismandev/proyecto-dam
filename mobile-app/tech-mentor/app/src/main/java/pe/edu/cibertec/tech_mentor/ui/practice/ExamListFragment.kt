@@ -14,13 +14,21 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.R
+import pe.edu.cibertec.tech_mentor.data.remote.ApiClient
+import pe.edu.cibertec.tech_mentor.data.remote.api.DiagnosticApiService
+import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
+import pe.edu.cibertec.tech_mentor.data.repository.DiagnosticRepositoryImpl
 import pe.edu.cibertec.tech_mentor.databinding.FragmentExamListBinding
 import pe.edu.cibertec.tech_mentor.databinding.ItemExamBinding
+import pe.edu.cibertec.tech_mentor.domain.repository.DiagnosticRepository
+import pe.edu.cibertec.tech_mentor.util.SessionManager
 
 data class DiagnosticExamItem(
     val idExamen: Int,
@@ -36,6 +44,7 @@ class ExamListFragment : Fragment() {
     private var _binding: FragmentExamListBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var diagnosticRepository: DiagnosticRepository
     private lateinit var examAdapter: ExamListAdapter
     private var selectedCourseId: Int? = null
     private var currentSearchQuery: String = ""
@@ -91,9 +100,7 @@ class ExamListFragment : Fragment() {
         )
     )
 
-    private val activeExams: List<DiagnosticExamItem> by lazy {
-        rawExamsFromDb.filter { it.activo }
-    }
+    private var activeExams: List<DiagnosticExamItem> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -106,25 +113,53 @@ class ExamListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val sessionManager = SessionManager(requireContext())
+        val diagnosticApi = ApiClient.getClient(sessionManager).create(DiagnosticApiService::class.java)
+        diagnosticRepository = DiagnosticRepositoryImpl(diagnosticApi)
+        activeExams = rawExamsFromDb.filter { it.activo }
+
         setupRecyclerView()
         setupCourseFilterPills()
         setupSearchInput()
-
         applyFilters()
+
+        loadExamsFromApi()
+    }
+
+    private fun loadExamsFromApi() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            diagnosticRepository.getExams().onSuccess { apiExams ->
+                if (apiExams.isNotEmpty()) {
+                    val mapped = apiExams.filter { it.activo != false }.map { dto ->
+                        val cName = when (dto.idCurso) {
+                            1L -> "Desarrollo Web"
+                            2L -> "Programación"
+                            else -> "Curso General"
+                        }
+                        DiagnosticExamItem(
+                            idExamen = dto.idExamen.toInt(),
+                            idCurso = (dto.idCurso ?: 1L).toInt(),
+                            courseName = cName,
+                            nombre = dto.nombre,
+                            descripcion = dto.descripcion ?: "Evaluación diagnóstica para ubicar tu nivel de partida.",
+                            activo = dto.activo ?: true
+                        )
+                    }
+                    if (mapped.isNotEmpty()) {
+                        activeExams = mapped
+                        setupCourseFilterPills()
+                        applyFilters()
+                    }
+                }
+            }
+        }
     }
 
     private fun setupRecyclerView() {
         examAdapter = ExamListAdapter(emptyList()) { selectedExam ->
-            // Versión anterior (comentada): solo mostraba un Toast
-            // Toast.makeText(
-            //     requireContext(),
-            //     "Iniciando: ${selectedExam.nombre}",
-            //     Toast.LENGTH_SHORT
-            // ).show()
-
-            // Faltaba: navegar al examen al seleccionarlo de la lista
             val bundle = android.os.Bundle().apply {
                 putInt("idExamen", selectedExam.idExamen)
+                putLong("idExamenLong", selectedExam.idExamen.toLong())
                 putString("examNombre", selectedExam.nombre)
                 putString("courseName", selectedExam.courseName)
             }

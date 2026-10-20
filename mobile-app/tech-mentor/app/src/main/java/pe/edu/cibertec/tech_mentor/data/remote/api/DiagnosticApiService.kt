@@ -14,6 +14,9 @@ import retrofit2.http.Path
 
 interface DiagnosticApiService {
     // Exámenes
+    @GET("diagnostico/examenes")
+    suspend fun getExams(): Response<List<DiagnosticExamResponseDto>>
+
     @GET("diagnostico/examenes/para-mi")
     suspend fun getExamsForMe(): Response<List<DiagnosticExamResponseDto>>
 
