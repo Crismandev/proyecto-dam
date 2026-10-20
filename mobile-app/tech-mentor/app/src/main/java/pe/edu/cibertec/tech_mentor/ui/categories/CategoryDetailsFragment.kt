@@ -49,15 +49,21 @@ class CategoryDetailsFragment : Fragment() {
         categoryId = arguments?.getLong("idCategory", 1L)
             ?: (arguments?.getInt("idCategory", 1)?.toLong() ?: 1L)
 
+        val initialName = arguments?.getString("categoryName", "") ?: ""
+        val initialDesc = arguments?.getString("categoryDescription", "") ?: ""
+
+        if (initialName.isNotBlank()) {
+            binding.tvRouteTitle.text = initialName
+        }
+        if (initialDesc.isNotBlank()) {
+            binding.tvRouteDescription.text = initialDesc
+        }
+
         setupRepository()
         loadCategoryDetails(categoryId)
     }
 
     private fun setupRepository() {
-        // --- Versión anterior simulada (comentada): ---
-        // catalogRepository = FakeCatalogRepository()
-
-        // --- Versión real conectada a la API de TechMentor: ---
         val sessionManager = SessionManager(requireContext())
         val catalogApi = ApiClient.getClient(sessionManager).create(CatalogApiService::class.java)
         catalogRepository = CatalogRepositoryImpl(catalogApi)
@@ -65,19 +71,28 @@ class CategoryDetailsFragment : Fragment() {
 
     private fun loadCategoryDetails(idCategory: Long) {
         viewLifecycleOwner.lifecycleScope.launch {
-            val categoriesDeferred = async { catalogRepository.getCategories() }
+            val categoryDeferred = async { catalogRepository.getCategoryById(idCategory) }
             val coursesDeferred = async { catalogRepository.getCourses(idCategory) }
 
-            val categoriesResult = categoriesDeferred.await()
+            val categoryResult = categoryDeferred.await()
             val coursesResult = coursesDeferred.await()
 
-            categoriesResult.onSuccess { categories ->
-                val selectedCategory = categories.find { it.idCategoria == idCategory }
-                    ?: categories.firstOrNull()
+            categoryResult.onSuccess { category ->
+                binding.tvRouteTitle.text = category.nombre
+                binding.tvRouteDescription.text = category.descripcion.ifBlank {
+                    "Explora los cursos de esta ruta formativa para potenciar tus habilidades profesionales."
+                }
+            }.onFailure {
+                catalogRepository.getCategories().onSuccess { categories ->
+                    val selectedCategory = categories.find { it.idCategoria == idCategory }
+                        ?: categories.firstOrNull()
 
-                selectedCategory?.let { category ->
-                    binding.tvRouteTitle.text = category.nombre
-                    binding.tvRouteDescription.text = category.descripcion
+                    selectedCategory?.let { category ->
+                        binding.tvRouteTitle.text = category.nombre
+                        binding.tvRouteDescription.text = category.descripcion.ifBlank {
+                            "Explora los cursos de esta ruta formativa para potenciar tus habilidades profesionales."
+                        }
+                    }
                 }
             }
 

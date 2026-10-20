@@ -27,6 +27,7 @@ import pe.edu.cibertec.tech_mentor.data.remote.getOrDefault
 data class CourseCategory(
     val idCategory: Long,
     val title: String,
+    val description: String = "",
     val coursesCount: Int
 )
 
@@ -53,10 +54,6 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun setupRepository() {
-        // --- Versión anterior simulada (comentada): ---
-        // catalogRepository = FakeCatalogRepository()
-
-        // --- Versión real conectada a la API de TechMentor: ---
         val sessionManager = SessionManager(requireContext())
         val catalogApi = ApiClient.getClient(sessionManager).create(CatalogApiService::class.java)
         catalogRepository = CatalogRepositoryImpl(catalogApi)
@@ -70,14 +67,6 @@ class CategoriesFragment : Fragment() {
             val categoriesResult = categoriesDeferred.await()
             val coursesResult = coursesDeferred.await()
 
-            // Versión anterior (comentada): condición estricta — si cualquiera fallaba, mostraba error y nada
-            // if (categoriesResult.isSuccess && coursesResult.isSuccess) {
-            //     ...
-            // } else {
-            //     Toast.makeText(requireContext(), "Error al cargar las rutas", Toast.LENGTH_SHORT).show()
-            // }
-
-            // Faltaba: manejar cada resultado por separado con datos de fallback
             val apiCategories = categoriesResult.getOrDefault(emptyList())
             val apiCourses = coursesResult.getOrDefault(emptyList())
 
@@ -88,18 +77,18 @@ class CategoriesFragment : Fragment() {
                     CourseCategory(
                         idCategory = category.idCategoria,
                         title = category.nombre,
-                        coursesCount = courseCount
+                        coursesCount = courseCount,
+                        description = category.descripcion,
                     )
                 }
                 setupRecyclerView(displayCategories)
             } else {
-                // Faltaba: datos de fallback cuando la API no está disponible
                 val fallbackCategories = listOf(
-                    CourseCategory(1L, "Programación Web", 3),
-                    CourseCategory(2L, "Bases de Datos", 2),
-                    CourseCategory(3L, "Fundamentos de APIs", 2),
-                    CourseCategory(4L, "Desarrollo Móvil", 2),
-                    CourseCategory(5L, "Inteligencia Artificial", 1)
+                    CourseCategory(1L, "Programación Web", "Aprende el desarrollo de aplicaciones web desde cero.", 3),
+                    CourseCategory(2L, "Bases de Datos", "Diseño y administración de bases de datos relacionales y NoSQL.", 2),
+                    CourseCategory(3L, "Fundamentos de APIs", "Aprende a diseñar y consumir APIs RESTful modernas.", 2),
+                    CourseCategory(4L, "Desarrollo Móvil", "Crea aplicaciones nativas para Android e iOS.", 2),
+                    CourseCategory(5L, "Inteligencia Artificial", "Fundamentos de modelos de machine learning e IA generativa.", 1)
                 )
                 setupRecyclerView(fallbackCategories)
                 Toast.makeText(
@@ -112,9 +101,12 @@ class CategoriesFragment : Fragment() {
     }
 
     private fun setupRecyclerView(categories: List<CourseCategory>) {
-        val adapter = CourseCategoryAdapter(categories) { selectedCategoryId ->
-
-            val bundle = bundleOf("idCategory" to selectedCategoryId)
+        val adapter = CourseCategoryAdapter(categories) { selectedCategory ->
+            val bundle = bundleOf(
+                "idCategory" to selectedCategory.idCategory,
+                "categoryName" to selectedCategory.title,
+                "categoryDescription" to selectedCategory.description
+            )
 
             findNavController().navigate(
                 R.id.action_categoryFragment_to_categoryDetailsFragment,
@@ -128,7 +120,7 @@ class CategoriesFragment : Fragment() {
 
 class CourseCategoryAdapter(
     private val categories: List<CourseCategory>,
-    private val onCategoryClick: (Long) -> Unit
+    private val onCategoryClick: (CourseCategory) -> Unit
 ) : RecyclerView.Adapter<CourseCategoryAdapter.CategoryViewHolder>() {
 
     private var selectedIndex = RecyclerView.NO_POSITION
@@ -149,7 +141,7 @@ class CourseCategoryAdapter(
                 selectedIndex = position
                 if (previous != RecyclerView.NO_POSITION) notifyItemChanged(previous)
                 notifyItemChanged(selectedIndex)
-                onCategoryClick(category.idCategory)
+                onCategoryClick(category)
             }
             binding.root.setOnClickListener(open)
             binding.btnVer.setOnClickListener(open)
