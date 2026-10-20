@@ -485,12 +485,6 @@ INSERT INTO roles (nombre) VALUES
 INSERT INTO estados_usuario (nombre) VALUES
 ('ACTIVO'), ('INACTIVO'), ('BLOQUEADO'), ('SUSPENDIDO');
 
-INSERT INTO categorias (nombre, descripcion) VALUES
-('Backend', 'Desarrollo de aplicaciones del lado servidor'),
-('Frontend', 'Desarrollo de interfaces web'),
-('Base de Datos', 'Diseño y administración de bases de datos'),
-('Inglés', 'Aprendizaje del idioma inglés');
-
 INSERT INTO recompensas
     (nombre, descripcion, tipo, cantidad, costo_monedas, dia_secuencia_requerido)
 VALUES
