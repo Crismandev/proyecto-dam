@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -30,14 +30,21 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-        <!-- Versión anterior:
+        <!-- Versión anterior (comentada): sin windowSoftInputMode, el teclado tapaba los campos
         <activity
             android:name=".ui.login.LoginActivity"
             android:exported="false" />
         -->
+        <!-- Versión anterior (comentada): adjustResize no empujaba el contenido correctamente en Android 10+
         <activity
             android:name=".ui.login.LoginActivity"
             android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
+        -->
+        <!-- Faltaba: adjustPan|stateVisible empuja todo el contenido hacia arriba al aparecer el teclado -->
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:windowSoftInputMode="adjustPan|stateVisible"
             android:exported="false" />
         <!-- Versión anterior:
         <activity
@@ -46,7 +53,7 @@
         -->
         <activity
             android:name=".ui.register.RegisterActivity"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan|stateVisible"
             android:exported="false" />
         <!-- Versión anterior:
         <activity
@@ -55,7 +62,7 @@
         -->
         <activity
             android:name=".ui.forgotpassword.ForgotPasswordActivity"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan|stateVisible"
             android:exported="false" />
 
         <meta-data

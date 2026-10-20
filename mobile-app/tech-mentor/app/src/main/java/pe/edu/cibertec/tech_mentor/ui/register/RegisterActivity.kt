@@ -1,4 +1,4 @@
-package pe.edu.cibertec.tech_mentor.ui.register
+﻿package pe.edu.cibertec.tech_mentor.ui.register
 
 import android.app.DatePickerDialog
 import android.content.Intent
@@ -23,6 +23,10 @@ import pe.edu.cibertec.tech_mentor.data.remote.api.UserApiService
 import pe.edu.cibertec.tech_mentor.data.remote.onSuccess
 import pe.edu.cibertec.tech_mentor.data.remote.onFailure
 import java.util.Calendar
+// Faltaba: import para detectar teclado visible/oculto y ocultar imagen del robot
+import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 
 data class RegisterUserParams(
     val firstName: String,
@@ -79,6 +83,21 @@ class RegisterActivity : AppCompatActivity() {
         setupPhotoPicker()
         setupListeners()
         setupDateFormatter()
+        // Faltaba: detectar teclado para ocultar la imagen del robot y liberar espacio
+        setupKeyboardVisibilityListener()
+    }
+
+    // Faltaba: ocultar ivRobotRegister al abrir el teclado para que los campos queden visibles
+    private fun setupKeyboardVisibilityListener() {
+        // Versión anterior (comentada): no había listener — la imagen ocupaba espacio y los campos quedaban tapados
+        // (no existía ningún mecanismo para ocultar ivRobotRegister al abrir el teclado)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            // Faltaba: ocultar imagen cuando el teclado está abierto y mostrarla cuando se cierra
+            binding.ivRobotRegister.visibility = if (imeVisible) View.GONE else View.VISIBLE
+            insets
+        }
     }
 
     private fun setupImage() {

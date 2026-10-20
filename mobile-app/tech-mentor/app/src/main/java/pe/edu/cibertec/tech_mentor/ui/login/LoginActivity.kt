@@ -2,9 +2,13 @@ package pe.edu.cibertec.tech_mentor.ui.login
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+// Faltaba: import para detectar cambios de tamaño del viewport (teclado visible/oculto)
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import kotlinx.coroutines.launch
 import pe.edu.cibertec.tech_mentor.MainActivity
 import pe.edu.cibertec.tech_mentor.databinding.ActivityLoginBinding
@@ -43,6 +47,8 @@ class LoginActivity : AppCompatActivity() {
         setupAuthTabs()
         setupForgotPassword()
         setupListeners()
+        // Faltaba: detectar teclado para ocultar la imagen del robot y liberar espacio
+        setupKeyboardVisibilityListener()
     }
 
     private fun setupImage() {
@@ -70,6 +76,19 @@ class LoginActivity : AppCompatActivity() {
     private fun setupListeners() {
         binding.btnLogin.setOnClickListener {
             performLogin()
+        }
+    }
+
+    // Faltaba: ocultar la imagen del robot cuando el teclado aparece para que los campos queden visibles
+    private fun setupKeyboardVisibilityListener() {
+        // Versión anterior (comentada): no había listener — la imagen ocupaba espacio y tapaba los campos
+        // (no existía ningún mecanismo para ocultar ivRobotLogin al abrir el teclado)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+            // Faltaba: ocultar imagen cuando el teclado está abierto y mostrarla cuando se cierra
+            binding.ivRobotLogin.visibility = if (imeVisible) View.GONE else View.VISIBLE
+            insets
         }
     }
 
