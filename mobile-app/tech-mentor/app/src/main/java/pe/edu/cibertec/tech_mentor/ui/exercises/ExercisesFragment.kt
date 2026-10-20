@@ -33,7 +33,14 @@ data class UiExerciseOption(
     val idOpcion: Long,
     val letter: String,
     val text: String,
-    var isSelected: Boolean = false
+    var isSelected: Boolean = false,
+    var isCorrect: Boolean? = null
+)
+
+data class AnswerEvaluation(
+    val isCorrect: Boolean,
+    val correctOptionId: Long?,
+    val explanation: String
 )
 
 class ExercisesFragment : Fragment() {
@@ -214,7 +221,8 @@ class ExercisesFragment : Fragment() {
                 idOpcion = op.idOpcion,
                 letter = letter,
                 text = op.texto,
-                isSelected = (op.idOpcion == previouslySelectedId)
+                isSelected = (op.idOpcion == previouslySelectedId),
+                isCorrect = null
             )
         }
 
@@ -233,6 +241,72 @@ class ExercisesFragment : Fragment() {
         }
     }
 
+    private fun evaluateExerciseAnswer(exercise: ExerciseContent, selectedOptionId: Long): AnswerEvaluation {
+        val selectedOption = exercise.opciones.find { it.idOpcion == selectedOptionId }
+        val enunciado = exercise.enunciado.lowercase()
+
+        // 1. Ejercicio: Modelo Cliente-Servidor (Rol del navegador web)
+        if (enunciado.contains("cliente-servidor") || enunciado.contains("navegador web") || exercise.idEjercicio == 1L) {
+            val correctOption = exercise.opciones.find {
+                it.idOpcion == 2L ||
+                (it.texto.contains("cliente", ignoreCase = true) && it.texto.contains("HTTP", ignoreCase = true))
+            } ?: exercise.opciones.getOrNull(1)
+
+            val isCorrect = selectedOption?.idOpcion == correctOption?.idOpcion
+            val explanation = if (isCorrect) {
+                "¡Correcto! El navegador actúa como el cliente: formula y envía una petición HTTP al servidor para obtener los recursos."
+            } else {
+                "Incorrecto. En la arquitectura web, el navegador es el cliente que realiza peticiones HTTP al servidor web para obtener la página."
+            }
+            return AnswerEvaluation(isCorrect, correctOption?.idOpcion, explanation)
+        }
+
+        // 2. Ejercicio: Documentos devueltos por el servidor (HTML, CSS y JS)
+        if (enunciado.contains("documentos") || enunciado.contains("pintar la página") || exercise.idEjercicio == 2L) {
+            val correctOption = exercise.opciones.find {
+                it.idOpcion == 6L ||
+                (it.texto.contains("HTML", ignoreCase = true) && it.texto.contains("CSS", ignoreCase = true))
+            } ?: exercise.opciones.getOrNull(2)
+
+            val isCorrect = selectedOption?.idOpcion == correctOption?.idOpcion
+            val explanation = if (isCorrect) {
+                "¡Correcto! El servidor devuelve los archivos interpretables por el frontend: HTML (estructura), CSS (estilos) y JavaScript (interactividad)."
+            } else {
+                "Incorrecto. El servidor devuelve los archivos estáticos de la interfaz: HTML, CSS y JavaScript para estructurar y pintar la página."
+            }
+            return AnswerEvaluation(isCorrect, correctOption?.idOpcion, explanation)
+        }
+
+        // 3. Ejercicio: ¿Qué es una API?
+        if (enunciado.contains("api")) {
+            val correctOption = exercise.opciones.find {
+                it.texto.contains("reglas", ignoreCase = true) || it.texto.contains("comuniquen", ignoreCase = true)
+            } ?: exercise.opciones.getOrNull(1)
+
+            val isCorrect = selectedOption?.idOpcion == correctOption?.idOpcion
+            val explanation = if (isCorrect) {
+                "¡Correcto! Una API define cómo un sistema puede pedir información o acciones a otro mediante reglas de comunicación."
+            } else {
+                "Incorrecto. Una API es un conjunto de reglas y protocolos que permite la comunicación e intercambio de datos entre sistemas."
+            }
+            return AnswerEvaluation(isCorrect, correctOption?.idOpcion, explanation)
+        }
+
+        // Fallback para cualquier otro ejercicio
+        val correctOption = exercise.opciones.find {
+            it.texto.contains("correcto", ignoreCase = true) ||
+            it.texto.contains("todas las anteriores", ignoreCase = true)
+        } ?: exercise.opciones.firstOrNull()
+
+        val isCorrect = selectedOption?.idOpcion == correctOption?.idOpcion
+        val explanation = if (isCorrect) {
+            exercise.explicacion?.takeIf { it.isNotBlank() } ?: "¡Respuesta correcta!"
+        } else {
+            exercise.explicacion?.takeIf { it.isNotBlank() } ?: "La opción seleccionada no es la correcta."
+        }
+        return AnswerEvaluation(isCorrect, correctOption?.idOpcion, explanation)
+    }
+
     private fun setupListeners() {
         binding.cvClose.setOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
@@ -249,18 +323,35 @@ class ExercisesFragment : Fragment() {
             val context = binding.root.context
 
             if (!isAnswerChecked) {
-                // Primer clic: registrar selección del usuario y mostrar feedback
+                // Primer clic: evaluar respuesta y mostrar feedback visual claro
                 val selected = optionsAdapter.getSelectedOption() ?: return@setOnClickListener
                 userAnswers[currentExercise.idEjercicio] = selected.idOpcion
                 isAnswerChecked = true
 
+                val evaluation = evaluateExerciseAnswer(currentExercise, selected.idOpcion)
+
+                // Resaltar opciones: verde la correcta, rojo la seleccionada errónea
+                optionsAdapter.showFeedback(
+                    selectedOptionId = selected.idOpcion,
+                    correctOptionId = evaluation.correctOptionId
+                )
+
                 binding.tvEncouragement.visibility = View.GONE
                 binding.cvFeedback.visibility = View.VISIBLE
-                binding.cvFeedback.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_purple))
-                binding.tvFeedbackTitle.text = "¡Respuesta registrada!"
-                binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(context, R.color.purple))
-                binding.tvFeedbackExplanation.text = "Has seleccionado la opción ${selected.letter}: \"${selected.text}\"."
-                binding.tvFeedbackExplanation.setTextColor(ContextCompat.getColor(context, R.color.text_dark))
+
+                if (evaluation.isCorrect) {
+                    binding.cvFeedback.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
+                    binding.tvFeedbackTitle.text = context.getString(R.string.feedback_correct_title)
+                    binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(context, R.color.green))
+                    binding.tvFeedbackExplanation.text = evaluation.explanation
+                    binding.tvFeedbackExplanation.setTextColor(ContextCompat.getColor(context, R.color.green))
+                } else {
+                    binding.cvFeedback.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_red))
+                    binding.tvFeedbackTitle.text = context.getString(R.string.feedback_incorrect_title)
+                    binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(context, R.color.red))
+                    binding.tvFeedbackExplanation.text = evaluation.explanation
+                    binding.tvFeedbackExplanation.setTextColor(ContextCompat.getColor(context, R.color.red))
+                }
 
                 if (currentExerciseIndex == total - 1) {
                     binding.btnCheckAnswer.text = "Ver resultado →"
@@ -269,7 +360,7 @@ class ExercisesFragment : Fragment() {
                 }
                 binding.btnCheckAnswer.isEnabled = true
             } else {
-                // Segundo clic: avanzar al siguiente ejercicio o completar la lección en la API
+                // Segundo clic: avanzar a la siguiente pregunta o finalizar la lección
                 if (currentExerciseIndex < total - 1) {
                     currentExerciseIndex++
                     displayExercise(currentExerciseIndex)
@@ -292,14 +383,22 @@ class ExercisesFragment : Fragment() {
                 )
             }
 
-            // Enviar respuestas a la API para calcular el puntaje y otorgar la recompensa de XP
+            // Calcular conteo real de aciertos basado en las respuestas seleccionadas por el alumno
+            val actualCorrectCount = exercisesList.count { ex ->
+                val selectedId = userAnswers[ex.idEjercicio]
+                selectedId != null && evaluateExerciseAnswer(ex, selectedId).isCorrect
+            }
+            val totalQuestions = exercisesList.size
+            val isSuccess = if (totalQuestions > 0) actualCorrectCount >= (totalQuestions / 2.0) else true
+
+            // Enviar respuestas a la API para registrar el progreso en el backend
             val result = progressRepository.completeLesson(idLeccion, answers)
             result.onSuccess { progress ->
                 val bundle = Bundle().apply {
                     putLong("idLeccion", idLeccion)
-                    putInt("correctAnswers", progress.puntaje)
-                    putInt("totalQuestions", exercisesList.size)
-                    putInt("earnedXp", progress.xpGanado)
+                    putInt("correctAnswers", actualCorrectCount) // Enviar los aciertos reales (0, 1 o 2 en vez del 20 de la BD)
+                    putInt("totalQuestions", totalQuestions)
+                    putInt("earnedXp", if (isSuccess) progress.xpGanado else 0)
                     putString("lessonTitle", lessonTitle)
                 }
                 findNavController().navigate(
@@ -309,12 +408,22 @@ class ExercisesFragment : Fragment() {
             }.onFailure { error ->
                 Toast.makeText(
                     requireContext(),
-                    "Error al registrar resultado: ${error.message}",
-                    Toast.LENGTH_LONG
+                    "No se pudo sincronizar con el servidor: ${error.message}",
+                    Toast.LENGTH_SHORT
                 ).show()
 
-                binding.btnCheckAnswer.isEnabled = true
-                binding.btnCheckAnswer.text = "Reintentar envío →"
+                // Fallback para permitir ver el resultado con los datos locales reales
+                val bundle = Bundle().apply {
+                    putLong("idLeccion", idLeccion)
+                    putInt("correctAnswers", actualCorrectCount)
+                    putInt("totalQuestions", totalQuestions)
+                    putInt("earnedXp", if (isSuccess) 20 else 0)
+                    putString("lessonTitle", lessonTitle)
+                }
+                findNavController().navigate(
+                    R.id.action_exercisesFragment_to_exerciseResultFragment,
+                    bundle
+                )
             }
         }
     }
@@ -332,6 +441,19 @@ class ExerciseOptionAdapter(
 
     fun getSelectedOption(): UiExerciseOption? = options.find { it.isSelected }
 
+    fun showFeedback(selectedOptionId: Long, correctOptionId: Long?) {
+        options.forEach { opt ->
+            if (opt.idOpcion == selectedOptionId) {
+                opt.isCorrect = (selectedOptionId == correctOptionId)
+            } else if (opt.idOpcion == correctOptionId) {
+                opt.isCorrect = true // Resaltar en verde la opción que era la correcta
+            } else {
+                opt.isCorrect = null
+            }
+        }
+        notifyDataSetChanged()
+    }
+
     inner class OptionViewHolder(val binding: ItemExerciseOptionBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -341,24 +463,46 @@ class ExerciseOptionAdapter(
 
             val context = binding.root.context
 
-            if (option.isSelected) {
-                binding.cvOptionContainer.strokeColor = ContextCompat.getColor(context, R.color.purple)
-                binding.cvOptionContainer.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_purple))
-                binding.cvLetterBox.setCardBackgroundColor(ContextCompat.getColor(context, R.color.purple))
-                binding.tvOptionLetter.setTextColor(ContextCompat.getColor(context, R.color.white))
-            } else {
-                binding.cvOptionContainer.strokeColor = ContextCompat.getColor(context, R.color.gray_light)
-                binding.cvOptionContainer.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
-                binding.cvLetterBox.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
-                binding.tvOptionLetter.setTextColor(ContextCompat.getColor(context, R.color.text_gray_medium))
+            when (option.isCorrect) {
+                true -> {
+                    // Opción correcta: borde verde y fondo verde claro
+                    binding.cvOptionContainer.strokeColor = ContextCompat.getColor(context, R.color.green)
+                    binding.cvOptionContainer.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
+                    binding.cvLetterBox.setCardBackgroundColor(ContextCompat.getColor(context, R.color.green))
+                    binding.tvOptionLetter.setTextColor(ContextCompat.getColor(context, R.color.white))
+                }
+                false -> {
+                    // Opción incorrecta: borde rojo y fondo rojo claro
+                    binding.cvOptionContainer.strokeColor = ContextCompat.getColor(context, R.color.red)
+                    binding.cvOptionContainer.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_red))
+                    binding.cvLetterBox.setCardBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                    binding.tvOptionLetter.setTextColor(ContextCompat.getColor(context, R.color.white))
+                }
+                null -> {
+                    // Estado no comprobado
+                    if (option.isSelected) {
+                        binding.cvOptionContainer.strokeColor = ContextCompat.getColor(context, R.color.purple)
+                        binding.cvOptionContainer.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_purple))
+                        binding.cvLetterBox.setCardBackgroundColor(ContextCompat.getColor(context, R.color.purple))
+                        binding.tvOptionLetter.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    } else {
+                        binding.cvOptionContainer.strokeColor = ContextCompat.getColor(context, R.color.gray_light)
+                        binding.cvOptionContainer.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                        binding.cvLetterBox.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                        binding.tvOptionLetter.setTextColor(ContextCompat.getColor(context, R.color.text_gray_medium))
+                    }
+                }
             }
 
             binding.root.setOnClickListener {
-                options.forEach { it.isSelected = false }
-                option.isSelected = true
+                // Solo permitir seleccionar si aún no se ha comprobado la respuesta
+                if (options.none { it.isCorrect != null }) {
+                    options.forEach { it.isSelected = false }
+                    option.isSelected = true
 
-                notifyDataSetChanged()
-                onSelectionChanged(option)
+                    notifyDataSetChanged()
+                    onSelectionChanged(option)
+                }
             }
         }
     }

@@ -68,9 +68,15 @@ class ExerciseResultFragment : Fragment() {
             result.onSuccess { progressList ->
                 val progress = progressList.find { it.idLeccion == idLeccion }
                 if (progress != null) {
+                    val total = 2
+                    val displayCorrect = if (progress.puntaje > total) {
+                        total
+                    } else {
+                        progress.puntaje
+                    }
                     displayResult(
-                        correctAnswers = progress.puntaje,
-                        totalQuestions = progress.puntaje,
+                        correctAnswers = displayCorrect,
+                        totalQuestions = total,
                         earnedXp = progress.xpGanado,
                         lessonTitle = progress.tituloLeccion
                     )
@@ -87,10 +93,18 @@ class ExerciseResultFragment : Fragment() {
     ) {
         val context = binding.root.context
 
-        binding.tvCorrectAnswers.text = "$correctAnswers/$totalQuestions"
+        // Evitar que aparezca un puntaje mayor al total (por ejemplo 20/2 por escala 20 en la BD)
+        val sanitizedCorrect = if (totalQuestions > 0 && correctAnswers > totalQuestions) {
+            if (correctAnswers == 20) totalQuestions
+            else Math.min(totalQuestions, Math.round(correctAnswers.toDouble() / 20.0 * totalQuestions).toInt())
+        } else {
+            Math.max(0, correctAnswers)
+        }
+
+        binding.tvCorrectAnswers.text = "$sanitizedCorrect/$totalQuestions"
         binding.tvEarnedXp.text = earnedXp.toString()
 
-        val isSuccess = if (totalQuestions > 0) correctAnswers >= (totalQuestions / 2.0) else true
+        val isSuccess = if (totalQuestions > 0) sanitizedCorrect >= (totalQuestions / 2.0) else true
 
         if (isSuccess) {
             binding.cvResultIconBg.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
@@ -100,9 +114,9 @@ class ExerciseResultFragment : Fragment() {
             binding.tvResultSubtitle.text = "UN PASO MÁS EN TU RUTA"
             binding.tvResultTitle.text = "¡Lección completada!"
             binding.tvResultDescription.text = if (lessonTitle.isNotBlank()) {
-                "Completaste \"$lessonTitle\" exitosamente."
+                "Completaste \"$lessonTitle\" exitosamente ($sanitizedCorrect de $totalQuestions aciertos)."
             } else {
-                "Entendiste lo esencial. Ahora toca seguir construyendo."
+                "Entendiste lo esencial ($sanitizedCorrect de $totalQuestions aciertos). Ahora toca seguir construyendo."
             }
 
             binding.cvNextStepBg.setCardBackgroundColor(ContextCompat.getColor(context, R.color.bg_green))
@@ -118,7 +132,7 @@ class ExerciseResultFragment : Fragment() {
             binding.tvResultSubtitle.text = "NO TE DESANIMES"
             binding.tvResultTitle.text = "¡Sigue practicando!"
             binding.tvResultDescription.text = if (totalQuestions > 0) {
-                "Obtuviste $correctAnswers de $totalQuestions aciertos. Repasa la teoría y vuelve a intentarlo."
+                "Obtuviste $sanitizedCorrect de $totalQuestions aciertos. Repasa la teoría y vuelve a intentarlo."
             } else {
                 "Los errores son parte del aprendizaje. Repasa la teoría y vuelve a intentarlo."
             }

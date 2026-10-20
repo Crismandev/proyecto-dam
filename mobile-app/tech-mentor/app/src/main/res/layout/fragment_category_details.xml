@@ -80,14 +80,17 @@
         <!-- Descripción de la ruta -->
         <TextView
             android:id="@+id/tvRouteDescription"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/plus_jakarta_sans_medium"
             android:lineSpacingExtra="4dp"
             android:textColor="@color/text_gray"
             android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cvRouteIcon"
+            app:layout_constraintBottom_toBottomOf="parent"
             tools:text="Desarrolla aplicaciones web desde cero y haz realidad tu carrera como Web Developer. Sé parte de la industria con los empleos mejor pagados a nivel global." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
