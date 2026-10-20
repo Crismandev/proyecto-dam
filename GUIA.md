@@ -23,8 +23,8 @@ Rutas del repo:
 backend/          API REST + JWT
 frontend/         portal admin Angular
 mobile-app/tech-mentor/   app Android
-datos_prueba.sql  semilla de desarrollo (NO es Flyway)
-techmentor.sql    esquema de 31 tablas
+techmentor.sql    esquema de 31 tablas + datos base (roles, estados, categorías, recompensas)
+datos.sql         datos de prueba + demo (NO es Flyway)
 ```
 
 ---
@@ -40,7 +40,7 @@ El login es con **username**, no con el correo. `POST /auth/login` body: `{ "use
 | ALUMNO | `alumno` | `Alumno123*` | alumno@techmentor.test | No | Home de estudiante (misiones propias) |
 | USUARIO_VIP | `vip` | `Vip123*` | vip@techmentor.test | No | Home de estudiante |
 
-Estas cuentas las crea `datos_prueba.sql` (hashes bcrypt con pgcrypto).
+Estas cuentas las crea `datos.sql` (hashes bcrypt con pgcrypto).
 
 ### Roles en seguridad
 
@@ -108,27 +108,58 @@ psql -h localhost -U postgres -c "CREATE DATABASE techmentor;"
 psql -h localhost -U postgres -c "CREATE DATABASE techmentor;"
 ```
 
-3. Esquema (31 tablas), desde la raíz del repo:
+3. Esquema (31 tablas + roles, estados, categorías y recompensas), desde la raíz del repo:
 
 ```bash
 psql -h localhost -U postgres -d techmentor -f techmentor.sql
 ```
 
-4. Datos de prueba (después del esquema, se puede repetir con cuidado por `ON CONFLICT`):
+4. Datos de prueba y demo, en un paso aparte (después del esquema):
 
 ```bash
-psql -h localhost -U postgres -d techmentor -f datos_prueba.sql
+psql -h localhost -U postgres -d techmentor -f datos.sql
 ```
 
-`datos_prueba.sql` no es migración Flyway. No lo pongas en `db/migration`.
+`datos.sql` no es migración Flyway. No lo pongas en `db/migration`. Está pensado para una base recién creada: si ya cargaste los datos antes, recrea la base en vez de volver a correrlo.
 
-**Opcional — datos demo para el dashboard web** (24 estudiantes con registros en los últimos 12 meses, inscripciones y lecciones completadas). Correr después de `datos_prueba.sql`; es idempotente y solo crea correos `@demo.techmentor.test`:
+Trae dos partes:
+
+- **Secciones 1–14:** catálogo (cursos, niveles, lecciones, ejercicios), diagnóstico, misiones y las cuatro cuentas de la tabla de credenciales.
+- **Sección 15 — demo del dashboard web:** 24 estudiantes con registros en los últimos 12 meses, inscripciones y lecciones completadas. Usuario = parte del correo antes de `@` con `_` en vez de punto (ej. `lucia_ramirez`), contraseña `Demo123*`. Para quitarlos: `DELETE FROM usuarios WHERE email LIKE '%@demo.techmentor.test';`
+
+### Recrear la base con los SQL actuales
+
+Úsalo si antes cargaste `datos_prueba.sql` / `datos_demo.sql` (ya no existen) o si tu base quedó a medias. **Borra todo lo que tengas en `techmentor`.** Detén el backend antes y corre todo desde la raíz del repo.
+
+**Linux / macOS**
 
 ```bash
-psql -h localhost -U postgres -d techmentor -f datos_demo.sql
+git pull --no-rebase origin main
+export PGPASSWORD=postgres   # tu password de Postgres
+psql -h localhost -U postgres -c "DROP DATABASE IF EXISTS techmentor WITH (FORCE);"
+psql -h localhost -U postgres -c "CREATE DATABASE techmentor;"
+psql -h localhost -U postgres -d techmentor -v ON_ERROR_STOP=1 -f techmentor.sql
+psql -h localhost -U postgres -d techmentor -v ON_ERROR_STOP=1 -f datos.sql
 ```
 
-Usuario = parte del correo antes de `@` con `_` en vez de punto (ej. `lucia_ramirez`), contraseña `Demo123*`. Para quitarlos: `DELETE FROM usuarios WHERE email LIKE '%@demo.techmentor.test';`
+**Windows PowerShell**
+
+```powershell
+git pull --no-rebase origin main
+$env:PGPASSWORD="postgres"   # tu password de Postgres
+psql -h localhost -U postgres -c "DROP DATABASE IF EXISTS techmentor WITH (FORCE);"
+psql -h localhost -U postgres -c "CREATE DATABASE techmentor;"
+psql -h localhost -U postgres -d techmentor -v ON_ERROR_STOP=1 -f techmentor.sql
+psql -h localhost -U postgres -d techmentor -v ON_ERROR_STOP=1 -f datos.sql
+```
+
+Comprobación rápida (debe dar `28`):
+
+```bash
+psql -h localhost -U postgres -d techmentor -tAc "SELECT count(*) FROM usuarios;"
+```
+
+Luego arranca el backend de nuevo y vuelve a iniciar sesión en la app (el token anterior deja de servir si cambian los IDs de usuario).
 
 ---
 
@@ -236,7 +267,7 @@ Si el build falla en `extractDeepLinksDebug` / XML mal formado: `File → Sync P
 
 ## 6. Orden para levantar todo
 
-1. PostgreSQL en marcha, base `techmentor` con esquema + `datos_prueba.sql`.
+1. PostgreSQL en marcha, base `techmentor` con `techmentor.sql` + `datos.sql`.
 2. Backend en `:8080` (password de BD correcta).
 3. Frontend en `:4200` si vas a usar el admin.
 4. App: `local.properties` con tu IP → Rebuild → instalar. PC y teléfono en la misma red; firewall permitiendo 8080.
@@ -252,7 +283,7 @@ Si el build falla en `extractDeepLinksDebug` / XML mal formado: `File → Sync P
 - Actualizar el repo con `git pull`, no clonando otra carpeta.
 - Web admin: emojis de acción no; iconos Remix (`ri-pencil-line`, `ri-delete-bin-line`, `ri-eye-line`).
 - Home móvil: staff ve panel de catálogo; alumno ve progreso y misiones propias.
-- Semilla extra (diagnóstico, misiones del alumno) vive en `datos_prueba.sql`. Si tocas seed, no borres bloques de compañeros: fusiona.
+- Semilla extra (diagnóstico, misiones del alumno, demo) vive en `datos.sql`. Si tocas seed, no borres bloques de compañeros: fusiona.
 
 ### Login API
 

@@ -14,6 +14,6 @@ Reglas duras:
 - IP del móvil: `mobile-app/tech-mentor/local.properties` → `api.ip`. **Nunca** hardcodear IP en `ApiClient.kt`.
 - `local.properties` no se sube a git. Plantilla: `local.properties.example`.
 - Java 21, backend `:8080`, Angular `:4200`, Postgres `techmentor`. Password de BD: `DB_PASSWORD` / `SPRING_DATASOURCE_PASSWORD` (yml default `root`; en muchos locales es `postgres`).
-- Semilla: `techmentor.sql` luego `datos_prueba.sql`. No es Flyway.
+- Semilla: `techmentor.sql` (esquema + datos base) luego `datos.sql` (prueba + demo). No es Flyway.
 - Actualizar repo: `git pull`. No clonar encima. No commit/push salvo que el usuario lo pida.
 - `@EsStaff` = admin+maestro. `@EsEstudiante` = alumno+VIP. Unirse a misión es estudiante; listar catálogo/mis-misiones es autenticado.
